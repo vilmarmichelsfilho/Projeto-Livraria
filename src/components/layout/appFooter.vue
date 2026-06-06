@@ -65,7 +65,7 @@ import EmailIcon from '@iconify-vue/mdi/email'
 footer {
   background-color: #27ae60;
   padding: 4vw 0 1.5vw 0;
-  font-size: 2rem;
+  font-size: 1.2rem;
 }
 
 div.container {
@@ -87,7 +87,7 @@ div.container-direita {
 
 div.redes-sociais a {
   margin: 0 0.8vw 0 0;
-  font-size: 4rem;
+  font-size: 2rem;
 }
 div.contato ul {
   padding: 0;
