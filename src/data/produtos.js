@@ -1,4 +1,5 @@
-const produtos = [
+import { reactive } from 'vue'
+const produtos = reactive([
   {
     id: 1,
     titulo: 'Clean Code',
@@ -7,6 +8,7 @@ const produtos = [
       'Um livro sobre boas práticas de programação, escrita de código limpo e melhoria da qualidade de software.',
     preco: 129.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9780132350884-L.jpg',
+    favorito: false,
   },
   {
     id: 2,
@@ -16,6 +18,7 @@ const produtos = [
       'Uma obra clássica sobre postura profissional, organização e boas práticas no desenvolvimento de software.',
     preco: 149.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9780201616224-L.jpg',
+    favorito: false,
   },
   {
     id: 3,
@@ -25,6 +28,7 @@ const produtos = [
       'Uma introdução prática à linguagem JavaScript, com exemplos e conceitos fundamentais para desenvolvimento web.',
     preco: 89.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9781593279509-L.jpg',
+    favorito: false,
   },
   {
     id: 4,
@@ -33,6 +37,7 @@ const produtos = [
     resenha: 'Livro voltado ao aprofundamento dos principais conceitos da linguagem JavaScript.',
     preco: 79.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9781091210092-L.jpg',
+    favorito: false,
   },
   {
     id: 5,
@@ -42,6 +47,7 @@ const produtos = [
       'Livro clássico sobre padrões de projeto e soluções reutilizáveis para problemas comuns de software.',
     preco: 159.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9780201633610-L.jpg',
+    favorito: false,
   },
   {
     id: 6,
@@ -50,6 +56,7 @@ const produtos = [
     resenha: 'Referência ampla sobre algoritmos, estruturas de dados e análise de complexidade.',
     preco: 199.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9780262033848-L.jpg',
+    favorito: false,
   },
   {
     id: 7,
@@ -59,6 +66,7 @@ const produtos = [
       'Apresenta técnicas para melhorar a estrutura interna do código sem alterar seu comportamento externo.',
     preco: 139.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9780134757599-L.jpg',
+    favorito: false,
   },
   {
     id: 8,
@@ -67,6 +75,7 @@ const produtos = [
     resenha: 'Livro introdutório e visual sobre construção de páginas web com HTML e CSS.',
     preco: 99.9,
     capa: 'https://covers.openlibrary.org/b/isbn/9781118008188-L.jpg',
+    favorito: false,
   },
-]
+])
 export {produtos}
