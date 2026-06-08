@@ -17,7 +17,7 @@ import HeartOutlineIcon from '@iconify-vue/mdi/heart-outline';
     <button @click.prevent="$emit('favoritar', props.id)"><HeartIcon height="1.2em" color="#27AE60" v-if="props.favorito == true"></HeartIcon> <HeartOutlineIcon color="#27AE60" height="1.2em" v-else></HeartOutlineIcon> </button>
     </div>
     </div>
-   <div class="button"><button @click.prevent="$emit='adicionarcarrinho'"><CartIcon height="1.2em"></CartIcon>COMPRAR</button></div>
+   <div class="button"><button @click.prevent="$emit('adicionarcarrinho', props.id, 1)"><CartIcon height="1.2em"></CartIcon>COMPRAR</button></div>
   </li>
 </template>
 
