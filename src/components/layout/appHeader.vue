@@ -91,6 +91,6 @@ import SearchIcon from '@iconify-vue/material-symbols/search';
   padding: 0 0.5vw;
 }
 .container {
-  margin: 0vw 0vw 40vw;
+  padding: 1vw;
 }
 </style>
