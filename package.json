@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@iconify-vue/icon-park-solid": "^1.0.3",
-    "@iconify-vue/material-symbols": "^1.0.37",
+    "@iconify-vue/material-symbols": "^1.0.38",
     "@iconify-vue/mdi": "^1.0.3",
     "@iconify/vue": "^5.0.1",
     "vue": "^3.5.32",

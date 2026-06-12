@@ -17,3 +17,4 @@ function favoritar(lista, iddoproduto,){
  return lista
 }}
 export { formataPreco, favoritar}
+  
