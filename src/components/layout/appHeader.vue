@@ -5,6 +5,11 @@ import CartIcon from '@iconify-vue/mdi/cart';
 import AccountIcon from '@iconify-vue/mdi/account';
 import StarIcon from '@iconify-vue/mdi/star';
 import SearchIcon from '@iconify-vue/mdi/search';
+import { produtos } from '@/data/produtos';
+import { computed } from 'vue';
+let quantidadefavoritos = computed(() => {
+  return produtos.filter(item => item.favorito).length;
+})
 </script>
 
 <template>
@@ -24,6 +29,7 @@ import SearchIcon from '@iconify-vue/mdi/search';
         <ul>
           <li><RouterLink to="/carrinho"><CartIcon style="width:46px;" /></RouterLink></li>
           <li><RouterLink to="/favoritos"><StarIcon style="width:46px;" /></RouterLink></li>
+          <span class="favoritos" v-show="quantidadefavoritos!=0">{{ quantidadefavoritos }}</span>
           <li><RouterLink to="/usuario"><AccountIcon style="width:46px;" /></RouterLink></li>
         </ul>
       </nav>
@@ -32,6 +38,17 @@ import SearchIcon from '@iconify-vue/mdi/search';
 </template>
 
 <style scoped>
+.favoritos {
+  font-size: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-align: center;
+  right: 4.8rem;
+  position: absolute;
+  border-radius: 100rem;
+  background: red;
+}
 a:hover {
   transform: scale(1.1);
   text-shadow: 3px 3px 5px black;
