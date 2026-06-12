@@ -50,5 +50,6 @@ function adicionaraoarrinho(idLivro, quantidade){
       })
     }
   }
+  console.log (carrinho) 
 }
 export{adicionaraoarrinho}

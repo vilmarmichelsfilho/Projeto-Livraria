@@ -36,7 +36,7 @@ const pesquisar = ref("")
       <li><RouterLink to="/">Devoluções</RouterLink></li>
       <div class ="icones">
       <li><RouterLink to="/"><ShoppingCartIcon height="1.5em"/></RouterLink></li>
-      <span> <li><RouterLink to="/"> <p>{{quantidadefavoritos }}</p> <HeartIcon height="1.5em" /></RouterLink></li> </span>
+      <span> <li><RouterLink to="/favoritos"> <p>{{quantidadefavoritos }}</p> <HeartIcon height="1.5em" /></RouterLink></li> </span>
       <li><RouterLink to="/"> <PeopleIcon height="1.5em" /></RouterLink></li>
       </div>
     </ul>
