@@ -4,6 +4,12 @@ import ShoppingCartIcon from '@iconify-vue/material-symbols/shopping-cart';
 import HeartIcon from '@iconify-vue/mdi/heart';
 import PeopleIcon from '@iconify-vue/icon-park-solid/people';
 import SearchIcon from '@iconify-vue/material-symbols/search';
+import { computed, ref } from 'vue';
+import { produtos } from '@/data/produtos';
+let quantidadefavoritos = computed(() => {
+  return produtos.filter(item => item.favorito).length;
+})
+const pesquisar = ref("")
 </script>
 
 <template>
@@ -24,14 +30,14 @@ import SearchIcon from '@iconify-vue/material-symbols/search';
   <div class="navegacao">
    <nav>
     <ul>
-      <li><RouterLink to="#">Termos</RouterLink></li>
-      <li><RouterLink to="#">Equipe</RouterLink></li>
-      <li><RouterLink to="#">Envio </RouterLink></li>
-      <li><RouterLink to="#">Devoluções</RouterLink></li>
+      <li><RouterLink to="/">Termos</RouterLink></li>
+      <li><RouterLink to="/">Equipe</RouterLink></li>
+      <li><RouterLink to="/">Envio </RouterLink></li>
+      <li><RouterLink to="/">Devoluções</RouterLink></li>
       <div class ="icones">
-      <li><RouterLink to="#"><ShoppingCartIcon height="1.5em"/></RouterLink></li>
-      <span> <li><RouterLink to="#"> <HeartIcon height="1.5em" /></RouterLink></li> </span>
-      <li><RouterLink to="#"> <PeopleIcon height="1.5em" /></RouterLink></li>
+      <li><RouterLink to="/"><ShoppingCartIcon height="1.5em"/></RouterLink></li>
+      <span> <li><RouterLink to="/"> <p>{{quantidadefavoritos }}</p> <HeartIcon height="1.5em" /></RouterLink></li> </span>
+      <li><RouterLink to="/"> <PeopleIcon height="1.5em" /></RouterLink></li>
       </div>
     </ul>
    </nav>
@@ -52,6 +58,9 @@ import SearchIcon from '@iconify-vue/material-symbols/search';
   align-items: center;
   list-style-type: none;
   gap: 1vw;
+}
+.navegacao nav ul li span{
+  display: flex;
 }
 .icones {
   display: flex;
