@@ -1,42 +1,33 @@
 <script setup>
 import { RouterLink } from 'vue-router'
-import ShoppingCartIcon from '@iconify-vue/material-symbols/shopping-cart';
-import HeartIcon from '@iconify-vue/mdi/heart';
-import PeopleIcon from '@iconify-vue/icon-park-solid/people';
-import SearchIcon from '@iconify-vue/material-symbols/search';
+import BookOpenVariantIcon from '@iconify-vue/mdi/book-open-variant';
+import CartIcon from '@iconify-vue/mdi/cart';
+import AccountIcon from '@iconify-vue/mdi/account';
+import StarIcon from '@iconify-vue/mdi/star';
+import SearchIcon from '@iconify-vue/mdi/search';
 </script>
 
 <template>
   <div class="container">
-
-
-  <div class = "logo-container">
-   <a href="/">IFbooks</a>
-    <span>Apreço a <br> Leitura</span>
-  </div>
-
-  <div class = "pesquisar">
-    <input type="search"
-    v-model="pesquisar"
-    placeholder="pesquisar"
-    > <a href="#"><SearchIcon height="1em" /></a>
-  </div>
-  <div class="navegacao">
-   <nav>
-    <ul>
-      <li><RouterLink to="#">Termos</RouterLink></li>
-      <li><RouterLink to="#">Equipe</RouterLink></li>
-      <li><RouterLink to="#">Envio </RouterLink></li>
-      <li><RouterLink to="#">Devoluções</RouterLink></li>
-      <div class ="icones">
-      <li><RouterLink to="#"><ShoppingCartIcon height="1.5em"/></RouterLink></li>
-      <span> <li><RouterLink to="#"> <HeartIcon height="1.5em" /></RouterLink></li> </span>
-      <li><RouterLink to="#"> <PeopleIcon height="1.5em" /></RouterLink></li>
-      </div>
-    </ul>
-   </nav>
-
-  </div>
+    <div class="logo">
+      <RouterLink to="/">
+        <BookOpenVariantIcon style="width: 46px;" />
+        <h2>IFLibrary</h2>
+      </RouterLink>
+    </div>
+    <div class="barra-pesquisa">
+      <input type="text" placeholder="Pesquisar">
+      <SearchIcon style="width: 46px;" />
+    </div>
+    <div class="nav">
+      <nav>
+        <ul>
+          <li><RouterLink to="/carrinho"><CartIcon style="width:46px;" /></RouterLink></li>
+          <li><RouterLink to="/favoritos"><StarIcon style="width:46px;" /></RouterLink></li>
+          <li><RouterLink to="/usuario"><AccountIcon style="width:46px;" /></RouterLink></li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </template>
 
@@ -66,7 +57,7 @@ li {
   font-weight: bold;
   gap: 5px;
 }
-.icones {
+.logo a {
   display: flex;
   align-items: center;
   color: black;
@@ -90,7 +81,13 @@ li {
   border-radius: 50px;
   padding: 0 1rem;
 }
-.container {
-  margin: 0vw 0vw 40vw;
+.barra-pesquisa input {
+  width: 600px;
+  text-decoration: none;
+  border: none;
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
 }
 </style>
