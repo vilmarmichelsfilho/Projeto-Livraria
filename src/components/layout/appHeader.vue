@@ -65,6 +65,10 @@ li {
   font-weight: bold;
   gap: 5px;
 }
+.logo h2 {
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
+}
 .nav ul {
   display: flex;
   list-style: none;
