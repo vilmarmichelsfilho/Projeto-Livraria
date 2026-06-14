@@ -4,8 +4,12 @@ import CartIcon from '@iconify-vue/mdi/cart';
 import AccountIcon from '@iconify-vue/mdi/account';
 import StarIcon from '@iconify-vue/mdi/star';
 import SearchIcon from '@iconify-vue/mdi/search';
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { produtos } from '@/data/produtos';
+let quantidadefavoritos = computed(() => {
+  return produtos.filter(item => item.favorito).length;
+})
 const route = useRoute()
 const router = useRouter()
 
