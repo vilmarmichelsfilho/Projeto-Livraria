@@ -64,7 +64,7 @@ div.button{
 div.button button {
   display: flex;
   justify-content: center;
-  background-color: rgb(71, 105, 120);
+  background-color: #476978;
   font-size: 1rem;
   padding: 16px 32px;
   border: none;
