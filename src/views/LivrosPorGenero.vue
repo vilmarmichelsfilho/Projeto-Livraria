@@ -1,26 +1,19 @@
 <script setup>
+import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';
-import produtoCard from '../Produtos/produtoCard.vue';
-import { favoritar} from '@/utils/produtosUtils.js';
-import { adicionaraoarrinho } from '@/utils/cartUtils.js';
-import { computed } from 'vue'
-import { useRoute, RouterLink } from 'vue-router'
-function escutarFavorito(idDoProduto) {
-  favoritar(produtos, idDoProduto);
-}
-function adicionarcarrinho(idDoProduto, quantidade){
-   adicionaraoarrinho(idDoProduto, quantidade)
-}
-const route = useRoute()
+import { computed } from 'vue';
+import produtoCard from '@/components/Produtos/produtoCard.vue';
 
-const produtosFiltrados = computed(() => {
-  const q = (route.query.q ?? '').toLowerCase()
-  if (!q) return produtos
-  return produtos.filter((p) => p.titulo.toLowerCase().includes(q))
+const rota = useRoute();
+
+let livrosPorGenero = computed(() => {
+    return produtos.filter(p => p.genero === rota.params.genero)
 })
+
 </script>
+
 <template>
-  <main>
+    <main>
     <section class="lancamentos">
   <h2>Livros
   </h2>
@@ -37,7 +30,7 @@ const produtosFiltrados = computed(() => {
   </div>
   <div>
     <ul>
-      <produtoCard   v-for="produto in produtosFiltrados"
+      <produtoCard   v-for="produto in livrosPorGenero"
   :key="produto.id"
   :titulo="produto.titulo"
   :autor="produto.autor"
@@ -57,6 +50,7 @@ const produtosFiltrados = computed(() => {
   </section>
   </main>
 </template>
+
 <style scoped>
 section.lancamentos{
   margin: 6vw 6vw;
