@@ -1,5 +1,5 @@
 <script setup>
-import { useRoute, RouterLink } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';
 import { formataPreco } from '@/utils/produtosUtils';
 import CartIcon from '@iconify-vue/mdi/cart';
