@@ -2,6 +2,7 @@ import { reactive } from 'vue'
 const produtos = reactive([
   {
     id: 1,
+    endereco: 'sombra-e-ossos',
     titulo: 'Sombra e Ossos',
     autor: 'Leigh Bardugo',
     resenha:
@@ -14,6 +15,7 @@ const produtos = reactive([
   },
   {
     id: 2,
+    endereco: 'cinquenta-tons-de-cinza',
     titulo: 'Cinquenta tons de cinza',
     autor: 'E L James',
     resenha:
@@ -26,6 +28,7 @@ const produtos = reactive([
   },
   {
     id: 3,
+    endereco: 'a-empregada',
     titulo: 'A empregada',
     autor: 'Freida McFadden',
     resenha:
@@ -38,6 +41,7 @@ const produtos = reactive([
   },
   {
     id: 4,
+    endereco: 'harry-potter-e-a-pedra-filosofal',
     titulo: "Harry Potter e a pedra filosofal",
     autor: 'J.K. Rowling',
     resenha: 'O livro introduz com maestria o universo mágico de Hogwarts, equilibrando temas como coragem e amizade com uma atmosfera de mistério, tornando-se uma leitura nostálgica, cativante e atemporal.',
@@ -49,6 +53,7 @@ const produtos = reactive([
   },
   {
     id: 5,
+    endereco: 'coraline',
     titulo: 'Coraline',
     autor: 'Neil Gaiman',
     resenha:
@@ -60,6 +65,7 @@ const produtos = reactive([
     favorito: false,
   },
   {
+    endereco: 'vermelho-branco-e-sangue-azul',
     id: 6,
     titulo: 'Vermelho, branco e sangue azul',
     autor: 'Casey McQuiston',
@@ -72,6 +78,7 @@ const produtos = reactive([
   },
   {
     id: 7,
+    endereco: 'textos-crueis-demais-para-serem-lidos-rapidamente',
     titulo: 'Textos cruéis demais para serem lidos rapidamente',
     autor: 'Igor Pires e Gabriela Barreira',
     resenha:
@@ -84,6 +91,7 @@ const produtos = reactive([
   },
   {
     id: 8,
+    endereco: 'ninguem-vai-te-ouvir-gritar',
     titulo: 'Ninguém vai te ouvir gritar',
     autor: 'Mark Miller',
     resenha: 'Ninguém Vai Te Ouvir Gritar é um suspense e romance LGBT escrito por Mark Miller. A trama acompanha Andrew, um jovem que vê seu irmão gêmeo, Calvin, desaparecer misteriosamente no primeiro dia em uma ilha isolada que abriga um colégio interno para garotos. Ao investigar o caso, ele se depara com uma rede de segredos e enfrenta uma perigosa conspiração.',
@@ -95,6 +103,7 @@ const produtos = reactive([
   },
   {
     id: 9,
+    endereco: 'rivalidade-ardente',
     titulo: 'Rivalidade ardente',
     autor: 'Rachel Reid',
     resenha: 'Aclamada tanto como livro quanto como série de TV, Rivalidade Ardente (originalmente Heated Rivalry) acompanha a intensa relação secreta entre Shane Hollander e Ilya Rozanov, astros do hóquei e rivais no rinque. A obra combina romance, tensão e paixão de forma equilibrada.',
@@ -106,6 +115,7 @@ const produtos = reactive([
   },
   {
     id: 10,
+    endereco: 'o-iluminado',
     titulo: 'O iluminado',
     autor: 'Stephen King',
     resenha: 'é uma obra-prima do terror psicológico. A história acompanha a família Torrance isolada no Hotel Overlook durante o inverno. O livro explora temas como o alcoolismo, traumas familiares e forças sobrenaturais malignas, sendo muito mais focado no desenvolvimento dos personagens que a famosa adaptação cinematográfica.',
@@ -117,6 +127,7 @@ const produtos = reactive([
   },
   {
     id: 11,
+    endereco: 'fallen',
     titulo: 'Fallen',
     autor: 'Lauren Kate',
     resenha: 'Fallen, de Lauren Kate, é um romance gótico e de fantasia sobrenatural lançado em 2009. A história acompanha Lucinda "Luce" Price, uma adolescente enviada a um reformatório severo após ser acusada de causar a morte de seu namorado. Lá, ela se apaixona por Daniel, um garoto misterioso que esconde um segredo mortal.',
@@ -128,6 +139,7 @@ const produtos = reactive([
   },
   {
     id: 12,
+    endereco: 'verity',
     titulo: 'Verity',
     autor: 'Colleen Hoover',
     resenha: 'Verity, escrito por Colleen Hoover e publicado no Brasil pela Editora Galera Record, é um thriller psicológico viciante. A trama acompanha Lowen, uma escritora falida contratada para terminar os livros de Verity Crawford, uma autora de sucesso que sofreu um acidente. Na casa de Verity, Lowen encontra um manuscrito perturbador que revela segredos obscuros, virando sua vida de cabeça para baixo.',

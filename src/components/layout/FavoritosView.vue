@@ -23,7 +23,7 @@ function adicionarcarrinho(idDoProduto, quantidade){
     <h3 class="aviso" v-if="livroFavoritos.length === 0">Você ainda não tem livros favoritos, adicione alguns para vê-los aqui!</h3>
     <RouterLink to="/" v-if="livroFavoritos.length === 0">Clique aqui para voltar para a página inicial</RouterLink>
     <ul v-else>
- <produtoCard v-for="produto in livroFavoritos" :key="produto.id" :titulo="produto.titulo" :autor="produto.autor" :preco="produto.preco" :capa="produto.capa" :favorito="produto.favorito" :id="produto.id" @favoritar="escutarFavorito" @adicionarcarrinho="adicionarcarrinho">
+ <produtoCard v-for="produto in livroFavoritos" :key="produto.id" :titulo="produto.titulo" :autor="produto.autor" :preco="produto.preco" :capa="produto.capa" :favorito="produto.favorito" :id="produto.id" :endereco="produto.endereco" @favoritar="escutarFavorito" @adicionarcarrinho="adicionarcarrinho">
       </produtoCard>
       </ul>
    </section>

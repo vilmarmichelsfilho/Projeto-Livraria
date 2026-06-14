@@ -1,7 +1,8 @@
 <script setup>
-const props = defineProps(['titulo', 'autor', 'preco', 'capa', 'id', 'favorito'])
+const props = defineProps(['titulo', 'endereco', 'autor', 'preco', 'capa', 'id', 'favorito'])
 defineEmits(['adicionarcarrinho', 'favoritar'])
 import { formataPreco} from '@/utils/produtosUtils';
+import { RouterLink } from 'vue-router';
 import HeartIcon from '@iconify-vue/mdi/heart'
 import CartIcon from '@iconify-vue/mdi/cart';
 import HeartOutlineIcon from '@iconify-vue/mdi/heart-outline';
@@ -9,7 +10,7 @@ import HeartOutlineIcon from '@iconify-vue/mdi/heart-outline';
 <template>
   <li>
     <div class="conteudocard">
-       <img :src="props.capa" :alt="'Capa do livro ' + props.titulo">
+      <RouterLink :to="'/livro/'+props.endereco"><img :src="props.capa" :alt="'Capa do livro ' + props.titulo"></RouterLink>
     <h3>{{props.titulo }}</h3>
     <p class="autor">{{props.autor }}</p>
     <div class="conteiner">
