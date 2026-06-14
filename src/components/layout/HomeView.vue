@@ -3,12 +3,21 @@ import { produtos } from '@/data/produtos';
 import produtoCard from '../Produtos/produtoCard.vue';
 import { favoritar} from '@/utils/produtosUtils.js';
 import { adicionaraoarrinho } from '@/utils/cartUtils.js';
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 function escutarFavorito(idDoProduto) {
   favoritar(produtos, idDoProduto);
 }
 function adicionarcarrinho(idDoProduto, quantidade){
    adicionaraoarrinho(idDoProduto, quantidade)
 }
+const route = useRoute()
+
+const produtosFiltrados = computed(() => {
+  const q = (route.query.q ?? '').toLowerCase()
+  if (!q) return produtos
+  return produtos.filter((p) => p.titulo.toLowerCase().includes(q))
+})
 </script>
 <template>
   <main>
@@ -17,9 +26,21 @@ function adicionarcarrinho(idDoProduto, quantidade){
   </h2>
   <div>
     <ul>
-      <produtoCard v-for="produto in produtos" :key="produto.id" :titulo="produto.titulo" :autor="produto.autor" :preco="produto.preco" :capa="produto.capa" :favorito="produto.favorito" :id="produto.id" @favoritar="escutarFavorito" @adicionarcarrinho="adicionarcarrinho">
+      <produtoCard   v-for="produto in produtosFiltrados"
+  :key="produto.id"
+  :titulo="produto.titulo"
+  :autor="produto.autor"
+  :preco="produto.preco"
+  :capa="produto.capa"
+  :favorito="produto.favorito"
+  :id="produto.id"
+  @favoritar="escutarFavorito"
+  @adicionarcarrinho="adicionarcarrinho">
       </produtoCard>
     </ul>
+  </div>
+    <div class="catalogo">
+    <ProdutoCard v-for="produto in produtosFiltrados" :key="produto.id" :produto="produto" />
   </div>
   </section>
   </main>
