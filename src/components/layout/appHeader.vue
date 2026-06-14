@@ -1,10 +1,29 @@
 <script setup>
-import { RouterLink } from 'vue-router'
 import BookOpenVariantIcon from '@iconify-vue/mdi/book-open-variant';
 import CartIcon from '@iconify-vue/mdi/cart';
 import AccountIcon from '@iconify-vue/mdi/account';
 import StarIcon from '@iconify-vue/mdi/star';
 import SearchIcon from '@iconify-vue/mdi/search';
+import { ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+const route = useRoute()
+const router = useRouter()
+
+const pesquisa = ref(route.query.q ?? '')
+
+watch(pesquisa, (valor) => {
+  router.push({
+    path: '/',
+    query: valor ? { q: valor } : {},
+  })
+})
+
+watch(
+  () => route.query.q,
+  (valor) => {
+    pesquisa.value = valor ?? ''
+  },
+)
 </script>
 
 <template>
@@ -16,7 +35,7 @@ import SearchIcon from '@iconify-vue/mdi/search';
       </RouterLink>
     </div>
     <div class="barra-pesquisa">
-      <input type="text" placeholder="Pesquisar">
+    <input v-model="pesquisa" type="search" placeholder="Buscar produto..." class="busca" />
       <SearchIcon style="width: 46px;" />
     </div>
     <div class="nav">
