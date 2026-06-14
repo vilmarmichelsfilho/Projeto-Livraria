@@ -15,6 +15,6 @@ import AppHeader from './components/layout/appHeader.vue';
 div.app-container {
   display: flex;
   flex-direction: column;
-  width: 100vw;
+  width: 98.9vw;
 }
 </style>

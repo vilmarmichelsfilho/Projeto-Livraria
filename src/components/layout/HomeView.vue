@@ -22,7 +22,7 @@ const produtosFiltrados = computed(() => {
 <template>
   <main>
     <section class="lancamentos">
-  <h2>Lançamentos
+  <h2>Livros
   </h2>
   <div>
     <ul>
@@ -34,7 +34,6 @@ const produtosFiltrados = computed(() => {
   :capa="produto.capa"
   :favorito="produto.favorito"
   :id="produto.id"
-  :endereco="produto.endereco"
   @favoritar="escutarFavorito"
   @adicionarcarrinho="adicionarcarrinho">
       </produtoCard>
@@ -51,17 +50,18 @@ section.lancamentos{
   margin: 6vw 6vw;
 }
 section.lancamentos h2{
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: bold;
   color: black;
-  margin: 0 0 3vw 2.7vw;
+  margin: 0 0 1vw 2.7vw;
   text-align: center;
 }
 section.lancamentos ul{
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 2vw;
+  justify-content: center;
+  gap: 1rem 4rem;
   align-items: stretch;
 }
 </style>

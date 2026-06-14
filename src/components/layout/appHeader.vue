@@ -62,7 +62,7 @@ watch(
   width: 1.5rem;
   height: 1.5rem;
   text-align: center;
-  right: 4.8rem;
+  right: 6rem;
   position: absolute;
   border-radius: 100rem;
   background: red;

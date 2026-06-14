@@ -51,7 +51,8 @@ section.livros-favoritos ul{
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 2vw;
+  gap: 1rem 4rem;
   align-items: stretch;
+  justify-content: center; 
 }
 </style>
