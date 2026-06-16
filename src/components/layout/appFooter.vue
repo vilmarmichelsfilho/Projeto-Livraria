@@ -1,4 +1,3 @@
-
 <script setup>
 import { RouterLink } from 'vue-router'
 import InstagramIcon from '@iconify-vue/mdi/instagram'
@@ -13,18 +12,26 @@ import EmailIcon from '@iconify-vue/mdi/email'
   <footer>
     <div class="container">
       <div class="container-esquerda">
-        <RouterLink class="logo" to="/">IFbooks</RouterLink>
+        <RouterLink class="logo" to="/">IFLibrary</RouterLink>
         <div class="redes-sociais">
-          <a href="#">
+          <a href="https://www.instagram.com">
             <InstagramIcon height="1em" />
           </a>
-          <a href="#">
+          <a href="https://www.facebook.com">
             <FacebookIcon height="1em" />
           </a>
-          <a href="#">
+          <a href="https://x.com">
             <TwitterIcon height="1em" />
           </a>
         </div>
+      </div>
+      <div class="desenvolvedores">
+        <h2>Desenvolvido por:</h2>
+        <ul>
+          <li>Vilmar Michels Filho</li>
+          <li>Igor Gabriel Decker</li>
+          <li>Davi Augusto Ramos</li>
+        </ul>
       </div>
       <div class="container-direita">
         <div class="contato">
@@ -40,38 +47,34 @@ import EmailIcon from '@iconify-vue/mdi/email'
             </li>
             <li>
               <EmailIcon height="1em"/>
-              <span>contato@ifbooks.com</span>
+              <span>contato@iflibrary.com</span>
             </li>
-          </ul>
-        </div>
-
-        <div class="bandeiras-de-cartoes">
-          <ul>
-            <li><img src="/images/paypal-logo.jpg" alt="PayPal" /></li>
-            <li><img src="/images/mastercard-logo.png" alt="Mastercard" /></li>
-            <li><img src="/images/visa-logo.png" alt="Visa" /></li>
           </ul>
         </div>
       </div>
     </div>
 
     <div class="direitos">
-      <p>© Alguns direitos reservados. IFbooks 2025.</p>
+      <p>© Alguns direitos reservados. IFLibrary 2026.</p>
     </div>
   </footer>
 </template>
 
 <style scoped>
+a {
+  color: black;
+}
 footer {
-  background-color: #27ae60;
-  padding: 4vw 0 1.5vw 0;
+  background-color: #A0CDE0;
+  padding: 1.5vw 0 1.5vw 0;
   font-size: 1.2rem;
 }
 
 div.container {
   display: flex;
   justify-content: space-between;
-  margin: 0 8vw;
+  align-items: center;
+  margin: 0 5vw;
 }
 
 div.container-esquerda {
@@ -86,44 +89,28 @@ div.container-direita {
 }
 
 div.redes-sociais a {
-  margin: 0 0.8vw 0 0;
+  margin: 0 0.5vw 0 0;
   font-size: 2rem;
+  color: black;
 }
 div.contato ul {
   padding: 0;
   margin: 0;
 }
 div.contato ul li {
-  margin-bottom: 1vw;
-}
-div.contato ul li {
-  margin-bottom: 1vw;
-}
-div.bandeiras-de-cartoes {
-  margin-top: 3vw;
-}
-
-div.bandeiras-de-cartoes ul {
-  display: flex;
-  padding: 0;
-  margin: 0;
-}
-
-div.bandeiras-de-cartoes ul li img {
-  height: 2.3vw;
-  width: 3.3vw;
-  margin: 0 0.8vw 0 0;
+  margin-bottom: 0.5vw;
 }
 
 div.direitos {
   padding-top: 1vw;
-  margin-top: 3vw;
+  margin-top: 1vw;
   text-align: center;
-  border-top: 1px solid #ffffff;
+  border-top: 1px solid black;
 }
 
-a {
-  color: white;
+.logo {
+  font-weight: bolder;
+  font-size: 1.5rem;
 }
 
 li {
@@ -135,15 +122,29 @@ li {
 
 li span {
   margin-left: 0.6vw;
-  color: #ffffff99;
+  color: black;
+  opacity: 0.7;
 }
 
 p {
-  color: #ffffff99;
+  color: black;
+  font-weight: bold;
+  opacity: 0.7;
 }
 
 h3 {
-  color: white;
-  margin: 0 0 1rem 0;
+  color: black;
+  font-weight: bold;
+}
+.desenvolvedores ul {
+  padding: 0;
+}
+.desenvolvedores ul li {
+  font-weight: bold;
+  opacity: 0.8;
+}
+.desenvolvedores h2 {
+  font-weight: bolder;
+  font-size: 1.5rem;
 }
 </style>
