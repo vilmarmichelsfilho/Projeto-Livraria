@@ -7,9 +7,14 @@ import SearchIcon from '@iconify-vue/mdi/search';
 import { ref, watch, computed } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { produtos } from '@/data/produtos';
+import { carrinho } from '@/utils/cartUtils'
+
 let quantidadefavoritos = computed(() => {
   return produtos.filter(item => item.favorito).length;
 })
+const quantidadeCarrinho = computed(() =>
+  carrinho.reduce((total, item) => total + item.quantidade, 0)
+)
 const route = useRoute()
 const router = useRouter()
 
@@ -28,6 +33,9 @@ watch(
     pesquisa.value = valor ?? ''
   },
 )
+
+
+
 </script>
 
 <template>
@@ -45,7 +53,10 @@ watch(
     <div class="nav">
       <nav>
         <ul>
-          <li><RouterLink to="/carrinho"><CartIcon style="width:46px;" /></RouterLink></li>
+          <li>
+  <RouterLink to="/carrinho"><CartIcon style="width:46px;" /></RouterLink>
+  <span>{{ quantidadeCarrinho }}</span>
+         </li>
           <li><RouterLink to="/favoritos"><StarIcon style="width:46px;" /></RouterLink></li>
           <span class="favoritos" v-show="quantidadefavoritos!=0">{{ quantidadefavoritos }}</span>
           <li><RouterLink to="/usuario"><AccountIcon style="width:46px;" /></RouterLink></li>
