@@ -6,6 +6,7 @@ import { RouterLink } from 'vue-router';
 import StarIcon from '@iconify-vue/mdi/star';
 import CartIcon from '@iconify-vue/mdi/cart';
 import StarOutlineIcon from '@iconify-vue/mdi/star-outline';
+
 </script>
 <template>
   <li>
