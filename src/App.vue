@@ -7,7 +7,7 @@ import AppHeader from './components/layout/appHeader.vue';
 <template>
   <div class="app-container">
     <AppHeader></AppHeader>
-     <RouterView/>
+     <RouterView class="content-wrap"/>
      <appFooter></appFooter>
   </div>
 </template>
@@ -15,6 +15,10 @@ import AppHeader from './components/layout/appHeader.vue';
 div.app-container {
   display: flex;
   flex-direction: column;
-  width: 98.9vw;
+  min-height: 100vh;
+  width: 100vw;
+}
+.content-wrap {
+  flex: 1;
 }
 </style>

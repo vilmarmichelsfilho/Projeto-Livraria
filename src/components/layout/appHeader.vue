@@ -47,19 +47,29 @@ watch(
       </RouterLink>
     </div>
     <div class="barra-pesquisa">
-    <input v-model="pesquisa" type="search" placeholder="Buscar produto..." class="busca" />
+      <input v-model="pesquisa" type="search" placeholder="Buscar produto..." class="busca" />
       <SearchIcon style="width: 46px;" />
     </div>
     <div class="nav">
       <nav>
         <ul>
           <li>
-  <RouterLink to="/carrinho"><CartIcon style="width:46px;" /></RouterLink>
-  <span>{{ quantidadeCarrinho }}</span>
-         </li>
-          <li><RouterLink to="/favoritos"><StarIcon style="width:46px;" /></RouterLink></li>
-          <span class="favoritos" v-show="quantidadefavoritos!=0">{{ quantidadefavoritos }}</span>
-          <li><RouterLink to="/usuario"><AccountIcon style="width:46px;" /></RouterLink></li>
+            <RouterLink to="/carrinho">
+              <CartIcon style="width:46px;" />
+            </RouterLink>
+          </li>
+          <span class="carrinho" v-show="quantidadeCarrinho!=0">{{ quantidadeCarrinho }}</span>
+          <li>
+            <RouterLink to="/favoritos">
+              <StarIcon style="width:46px;" />
+            </RouterLink>
+          </li>
+          <span class="favoritos" v-show="quantidadefavoritos != 0">{{ quantidadefavoritos }}</span>
+          <li>
+            <RouterLink to="/usuario">
+              <AccountIcon style="width:46px;" />
+            </RouterLink>
+          </li>
         </ul>
       </nav>
     </div>
@@ -78,13 +88,28 @@ watch(
   border-radius: 100rem;
   background: red;
 }
+
+.carrinho {
+  font-size: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-align: center;
+  right: 10.5rem;
+  position: absolute;
+  border-radius: 100rem;
+  background: red;
+}
+
 a:hover {
   transform: scale(1.1);
   text-shadow: 3px 3px 5px black;
 }
+
 li:hover {
   transform: scale(1.1);
 }
+
 li {
   transition: 0.4s;
 }
@@ -95,6 +120,7 @@ li {
   display: flex;
   justify-content: space-between;
 }
+
 .logo {
   display: flex;
   align-items: center;
@@ -103,6 +129,7 @@ li {
   font-weight: bold;
   gap: 5px;
 }
+
 .logo a {
   display: flex;
   align-items: center;
@@ -111,18 +138,22 @@ li {
   font-weight: bold;
   gap: 5px;
 }
+
 .logo h2 {
   font-family: "Afacad", sans-serif;
   font-weight: bold;
 }
+
 .nav ul {
   display: flex;
   list-style: none;
   gap: 22px;
 }
+
 .nav ul li a {
   color: black;
 }
+
 .barra-pesquisa {
   color: black;
   display: flex;
@@ -131,6 +162,7 @@ li {
   border-radius: 50px;
   padding: 0 1rem;
 }
+
 .barra-pesquisa input {
   width: 600px;
   text-decoration: none;
