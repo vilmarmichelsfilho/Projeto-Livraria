@@ -2,6 +2,7 @@
 import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';
 import { formataPreco } from '@/utils/produtosUtils';
+import { adicionaraoarrinho } from '@/utils/cartUtils';
 import CartIcon from '@iconify-vue/mdi/cart';
 
 const rota = useRoute();
@@ -18,7 +19,7 @@ const livro = produtos.find(p => p.endereco === rota.params.endereco);
                 <h3>{{ livro.autor }}</h3>
                 <p>{{ livro.resenha }}</p>
                 <h2>{{ formataPreco(livro.preco) }}</h2>
-                <button><CartIcon width="2vw" />Adicionar ao carrinho</button>
+                <button @click.prevent="adicionaraoarrinho(livro.id,1)"><CartIcon width="2vw" />Adicionar ao carrinho</button>
                  <ul>
                 <li>
                     <h2>Gênero</h2>
