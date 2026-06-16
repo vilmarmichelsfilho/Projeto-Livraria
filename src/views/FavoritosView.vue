@@ -1,6 +1,6 @@
 <script setup>
 import { produtos } from '@/data/produtos';
-import produtoCard from '../Produtos/produtoCard.vue';
+import produtoCard from '@/components/Produtos/produtoCard.vue';
 import { favoritar} from '@/utils/produtosUtils.js';
 import { adicionaraoarrinho } from '@/utils/cartUtils.js';
 import { ref, computed } from 'vue';
