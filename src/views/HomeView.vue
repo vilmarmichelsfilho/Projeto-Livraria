@@ -1,8 +1,8 @@
 <script setup>
 import { produtos } from '@/data/produtos';
-import produtoCard from '../Produtos/produtoCard.vue';
-import { favoritar} from '@/utils/produtosUtils.js';
-import { adicionaraoarrinho } from '@/utils/cartUtils.js';
+import produtoCard from '@/components/Produtos/produtoCard.vue';
+import { favoritar } from '@/utils/produtosUtils';
+import { adicionaraoarrinho } from '@/utils/cartUtils';
 import { computed } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 function escutarFavorito(idDoProduto) {
