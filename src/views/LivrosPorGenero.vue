@@ -6,7 +6,6 @@ import produtoCard from '@/components/Produtos/produtoCard.vue';
 import { favoritar } from '@/utils/produtosUtils';
 import { adicionaraoarrinho } from '@/utils/cartUtils'; 
 const rota = useRoute();
-import { adicionaraoarrinho } from '@/utils/cartUtils';
 function escutarFavorito(idDoProduto) {
   favoritar(produtos, idDoProduto);
 }
