@@ -5,6 +5,7 @@ import { computed } from 'vue';
 import produtoCard from '@/components/Produtos/produtoCard.vue';
 import { favoritar } from '@/utils/produtosUtils'; 
 const rota = useRoute();
+import { adicionaraoarrinho } from '@/utils/cartUtils';
 function escutarFavorito(idDoProduto) {
   favoritar(produtos, idDoProduto);
 }
@@ -42,7 +43,7 @@ let livrosPorGenero = computed(() => {
   :id="produto.id"
   :endereco="produto.endereco"
   @favoritar="escutarFavorito"
-  @adicionarcarrinho="adicionarcarrinho">
+  @adicionarcarrinho="adicionaraoarrinho(produto.id,1)">
       </produtoCard>
     </ul>
   </div>
