@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/Projeto-Livraria/(.*)", "destination": "/Projeto-Livraria/" }
+  ]
+}
