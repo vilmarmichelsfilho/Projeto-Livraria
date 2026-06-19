@@ -16,7 +16,7 @@ import StarOutlineIcon from '@iconify-vue/mdi/star-outline';
     <p class="autor">{{props.autor }}</p>
     <div class="conteiner">
       <p class="preco">{{ formataPreco(props.preco)}}</p>
-    <button @click.prevent="$emit('favoritar', props.id)"><HeartIcon height="1.2em" color="#27AE60" v-if="props.favorito == true"></HeartIcon> <HeartOutlineIcon color="#27AE60" height="1.2em" v-else></HeartOutlineIcon> </button>
+    <button @click.prevent="$emit('favoritar', props.id)" class="favoritar"><StarIcon height="1.5rem" color="#476978" v-if="props.favorito == true"></StarIcon> <StarOutlineIcon color="#476978" height="1.5rem" v-else></StarOutlineIcon> </button>
     </div>
     </div>
    <div class="button"><button @click.prevent="$emit('adicionarcarrinho', props.id, 1)"><CartIcon height="1.2em"></CartIcon>Adicionar ao carrinho</button></div>
