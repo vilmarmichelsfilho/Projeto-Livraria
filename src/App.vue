@@ -16,6 +16,8 @@ div.app-container {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  max-width: 100vw;
 }
 .content-wrap {
   flex: 1;

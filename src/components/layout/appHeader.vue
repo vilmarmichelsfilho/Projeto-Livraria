@@ -39,6 +39,7 @@ watch(
 </script>
 
 <template>
+  <header>
   <div class="container">
     <div class="logo">
       <RouterLink to="/">
@@ -74,9 +75,13 @@ watch(
       </nav>
     </div>
   </div>
+  </header>
 </template>
 
 <style scoped>
+header {
+  max-width: 100vw;
+} 
 .favoritos {
   font-size: 1rem;
   font-weight: bold;
@@ -164,7 +169,7 @@ li {
 }
 
 .barra-pesquisa input {
-  width: 600px;
+  width: 40vw;
   text-decoration: none;
   border: none;
   background-color: rgba(255, 255, 255, 0);

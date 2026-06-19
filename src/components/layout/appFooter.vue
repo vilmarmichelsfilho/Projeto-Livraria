@@ -61,6 +61,9 @@ import EmailIcon from '@iconify-vue/mdi/email'
 </template>
 
 <style scoped>
+footer {
+  max-width: 100vw;
+}
 a {
   color: black;
 }

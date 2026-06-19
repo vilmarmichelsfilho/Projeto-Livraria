@@ -1,0 +1,5 @@
+{
+    "chat.agent.sandbox.enabled": "off",
+    "chat.editMode.hidden": true,
+    "chat.detectParticipant.enabled": false
+}
