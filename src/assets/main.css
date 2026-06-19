@@ -10,14 +10,3 @@ a,
   color: #476978;
   transition: 0.4s;
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: grid;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-}
