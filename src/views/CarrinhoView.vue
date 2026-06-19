@@ -1,29 +1,8 @@
 <script setup>
-import { computed } from 'vue'
-import { carrinho, adicionaraoarrinho } from '@/utils/cartUtils'
+import { carrinho, total, removerItem, alterarQuantidade} from '@/utils/cartUtils'
 import { formataPreco } from '@/utils/produtosUtils'
 import { RouterLink } from 'vue-router'
 import ShoppingIcon from '@iconify-vue/mdi/shopping';
-
-const total = computed(() =>
-  carrinho.reduce((soma, item) => soma + item.precoTotal, 0)
-)
-
-function removerItem(id) {
-  const index = carrinho.findIndex(item => item.id === id)
-  if (index !== -1) carrinho.splice(index, 1)
-}
-
-function alterarQuantidade(id, delta) {
-  const item = carrinho.find(item => item.id === id)
-  if (!item) return
-  const novaQtd = item.quantidade + delta
-  if (novaQtd <= 0) {
-    removerItem(id)
-  } else {
-    adicionaraoarrinho(id, delta)
-  }
-}
 </script>
 
 <template>
