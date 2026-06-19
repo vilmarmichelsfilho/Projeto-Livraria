@@ -47,7 +47,8 @@ const produtosFiltrados = computed(() => {
   :id="produto.id"
   :endereco="produto.endereco"
   @favoritar="escutarFavorito"
-  @adicionarcarrinho="adicionarcarrinho">
+  @adicionarcarrinho="adicionarcarrinho"
+  >
       </produtoCard>
     </ul>
   </div>
