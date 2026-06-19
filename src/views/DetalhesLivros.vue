@@ -13,7 +13,7 @@ const livro = produtos.find(p => p.endereco === rota.params.endereco);
 <template>
     <div class="container" v-if="livro">
         <div class="info">
-            <img :src="livro.capa" :alt="'Capa do Livro '+livro.titulo">
+            <img :src="'/'+livro.capa" :alt="'Capa do Livro '+livro.titulo">
             <div>
                 <h1>{{ livro.titulo }}</h1>
                 <h3>{{ livro.autor }}</h3>
