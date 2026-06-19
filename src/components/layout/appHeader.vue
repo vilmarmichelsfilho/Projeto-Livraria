@@ -1,105 +1,175 @@
 <script setup>
-import { RouterLink } from 'vue-router'
-import ShoppingCartIcon from '@iconify-vue/material-symbols/shopping-cart';
-import HeartIcon from '@iconify-vue/mdi/heart';
-import PeopleIcon from '@iconify-vue/icon-park-solid/people';
-import SearchIcon from '@iconify-vue/material-symbols/search';
-import { computed, ref } from 'vue';
+import BookOpenVariantIcon from '@iconify-vue/mdi/book-open-variant';
+import CartIcon from '@iconify-vue/mdi/cart';
+import AccountIcon from '@iconify-vue/mdi/account';
+import StarIcon from '@iconify-vue/mdi/star';
+import SearchIcon from '@iconify-vue/mdi/search';
+import { ref, watch, computed } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { produtos } from '@/data/produtos';
+import { carrinho } from '@/utils/cartUtils'
+
 let quantidadefavoritos = computed(() => {
   return produtos.filter(item => item.favorito).length;
 })
-const pesquisar = ref("")
+const quantidadeCarrinho = computed(() =>
+  carrinho.reduce((total, item) => total + item.quantidade, 0)
+)
+const route = useRoute()
+const router = useRouter()
+
+const pesquisa = ref(route.query.q ?? '')
+
+watch(pesquisa, (valor) => {
+  router.push({
+    path: '/',
+    query: valor ? { q: valor } : {},
+  })
+})
+
+watch(
+  () => route.query.q,
+  (valor) => {
+    pesquisa.value = valor ?? ''
+  },
+)
+
+
+
 </script>
 
 <template>
   <div class="container">
-
-
-  <div class = "logo-container">
-   <a href="/">IFbooks</a>
-    <span>Apreço a <br> Leitura</span>
-  </div>
-
-  <div class = "pesquisar">
-    <input type="search"
-    v-model="pesquisar"
-    placeholder="pesquisar"
-    > <a href="#"><SearchIcon height="1em" /></a>
-  </div>
-  <div class="navegacao">
-   <nav>
-    <ul>
-      <li><RouterLink to="/">Termos</RouterLink></li>
-      <li><RouterLink to="/">Equipe</RouterLink></li>
-      <li><RouterLink to="/">Envio </RouterLink></li>
-      <li><RouterLink to="/">Devoluções</RouterLink></li>
-      <div class ="icones">
-      <li><RouterLink to="/"><ShoppingCartIcon height="1.5em"/></RouterLink></li>
-      <span> <li><RouterLink to="/favoritos"> <p>{{quantidadefavoritos }}</p> <HeartIcon height="1.5em" /></RouterLink></li> </span>
-      <li><RouterLink to="/"> <PeopleIcon height="1.5em" /></RouterLink></li>
-      </div>
-    </ul>
-   </nav>
-
-  </div>
+    <div class="logo">
+      <RouterLink to="/">
+        <BookOpenVariantIcon style="width: 46px;" />
+        <h2>IFLibrary</h2>
+      </RouterLink>
+    </div>
+    <div class="barra-pesquisa">
+      <input v-model="pesquisa" type="search" placeholder="Buscar produto..." class="busca" />
+      <SearchIcon style="width: 46px;" />
+    </div>
+    <div class="nav">
+      <nav>
+        <ul>
+          <li>
+            <RouterLink to="/carrinho">
+              <CartIcon style="width:46px;" />
+            </RouterLink>
+          </li>
+          <span class="carrinho" v-show="quantidadeCarrinho!=0">{{ quantidadeCarrinho }}</span>
+          <li>
+            <RouterLink to="/favoritos">
+              <StarIcon style="width:46px;" />
+            </RouterLink>
+          </li>
+          <span class="favoritos" v-show="quantidadefavoritos != 0">{{ quantidadefavoritos }}</span>
+          <li>
+            <RouterLink to="/usuario">
+              <AccountIcon style="width:46px;" />
+            </RouterLink>
+          </li>
+        </ul>
+      </nav>
+    </div>
   </div>
 </template>
 
 <style scoped>
- .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
- }
-.navegacao nav ul  {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  list-style-type: none;
-  gap: 1vw;
+.favoritos {
+  font-size: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-align: center;
+  right: 6rem;
+  position: absolute;
+  border-radius: 100rem;
+  background: red;
 }
-.navegacao nav ul li span{
-  display: flex;
-}
-.icones {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  list-style-type: none;
-  gap: 1vw;
 
+.carrinho {
+  font-size: 1rem;
+  font-weight: bold;
+  width: 1.5rem;
+  height: 1.5rem;
+  text-align: center;
+  right: 10.5rem;
+  position: absolute;
+  border-radius: 100rem;
+  background: red;
 }
-.icones span {
-  border-right: 1px green solid;
-  border-left: 1px green solid;
-  padding: 0vw 0.4vw 0vw 0.4vw;
+
+a:hover {
+  transform: scale(1.1);
+  text-shadow: 3px 3px 5px black;
 }
-.icones {
-  margin: 0vw 10vw 0vw 0vw;
+
+li:hover {
+  transform: scale(1.1);
 }
-.navegacao ul li{
-  font-size: 1vw;
+
+li {
+  transition: 0.4s;
 }
-.logo-container a {
+
+.container {
+  padding: 1rem 2rem;
+  background: #A0CDE0;
   display: flex;
   justify-content: space-between;
+}
+
+.logo {
+  display: flex;
   align-items: center;
   color: black;
-  font-size: 1.3rem;
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
+  gap: 5px;
 }
-.logo-container {
+
+.logo a {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin: 0 10vw;
+  color: black;
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
+  gap: 5px;
 }
-.logo-container span {
-  color: green;
-  border-left: 1px green solid;
-  padding: 0 0.5vw;
+
+.logo h2 {
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
 }
-.container {
-  padding: 1vw;
+
+.nav ul {
+  display: flex;
+  list-style: none;
+  gap: 22px;
+}
+
+.nav ul li a {
+  color: black;
+}
+
+.barra-pesquisa {
+  color: black;
+  display: flex;
+  cursor: pointer;
+  background: #7DB6CF;
+  border-radius: 50px;
+  padding: 0 1rem;
+}
+
+.barra-pesquisa input {
+  width: 600px;
+  text-decoration: none;
+  border: none;
+  background-color: rgba(255, 255, 255, 0);
+  font-family: "Afacad", sans-serif;
+  font-weight: bold;
+  font-size: 1rem;
 }
 </style>

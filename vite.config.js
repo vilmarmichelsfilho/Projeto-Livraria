@@ -5,7 +5,8 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig({ 
+  base: '/Projeto-Livraria/',
   plugins: [
     vue(),
     vueDevTools(),

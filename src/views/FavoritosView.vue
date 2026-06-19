@@ -1,6 +1,6 @@
 <script setup>
 import { produtos } from '@/data/produtos';
-import produtoCard from '../Produtos/produtoCard.vue';
+import produtoCard from '@/components/Produtos/produtoCard.vue';
 import { favoritar} from '@/utils/produtosUtils.js';
 import { adicionaraoarrinho } from '@/utils/cartUtils.js';
 import { ref, computed } from 'vue';
@@ -23,7 +23,7 @@ function adicionarcarrinho(idDoProduto, quantidade){
     <h3 class="aviso" v-if="livroFavoritos.length === 0">Você ainda não tem livros favoritos, adicione alguns para vê-los aqui!</h3>
     <RouterLink to="/" v-if="livroFavoritos.length === 0">Clique aqui para voltar para a página inicial</RouterLink>
     <ul v-else>
- <produtoCard v-for="produto in livroFavoritos" :key="produto.id" :titulo="produto.titulo" :autor="produto.autor" :preco="produto.preco" :capa="produto.capa" :favorito="produto.favorito" :id="produto.id" @favoritar="escutarFavorito" @adicionarcarrinho="adicionarcarrinho">
+ <produtoCard v-for="produto in livroFavoritos" :key="produto.id" :titulo="produto.titulo" :autor="produto.autor" :preco="produto.preco" :capa="produto.capa" :favorito="produto.favorito" :id="produto.id" :endereco="produto.endereco" @favoritar="escutarFavorito" @adicionarcarrinho="adicionarcarrinho">
       </produtoCard>
       </ul>
    </section>
@@ -51,7 +51,8 @@ section.livros-favoritos ul{
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 2vw;
+  gap: 1rem 4rem;
   align-items: stretch;
+  justify-content: center; 
 }
 </style>

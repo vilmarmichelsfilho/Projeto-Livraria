@@ -1,11 +1,12 @@
 {
   "name": "projetolivraria",
-  "version": "0.0.0",
+  "version": "0.0.5",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
@@ -22,11 +23,13 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@iconify-json/mdi": "^1.2.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-oxlint": "~1.60.0",
     "eslint-plugin-vue": "~10.8.0",
+    "gh-pages": "^6.3.0",
     "globals": "^17.5.0",
     "npm-run-all2": "^8.0.4",
     "oxlint": "~1.60.0",
