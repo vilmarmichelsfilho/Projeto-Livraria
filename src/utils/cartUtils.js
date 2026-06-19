@@ -1,5 +1,5 @@
 import { produtos } from '@/data/produtos'
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 const carrinho = reactive([])
 function adicionaraoarrinho(idLivro, quantidade){
   const livro = produtos.find((p) => p.id === idLivro)
@@ -17,4 +17,24 @@ function adicionaraoarrinho(idLivro, quantidade){
     }
   }
 }
-export{adicionaraoarrinho, carrinho}
+const total = computed(() =>
+  carrinho.reduce((soma, item) => soma + item.precoTotal, 0)
+)
+
+function removerItem(id) {
+  const index = carrinho.findIndex(item => item.id === id)
+  if (index !== -1) carrinho.splice(index, 1)
+}
+
+function alterarQuantidade(id, delta) {
+  const item = carrinho.find(item => item.id === id)
+  if (!item) return
+  const novaQtd = item.quantidade + delta
+  if (novaQtd <= 0) {
+    removerItem(id)
+  } else {
+    adicionaraoarrinho(id, delta)
+  }
+}
+
+export{adicionaraoarrinho, carrinho, total, removerItem, alterarQuantidade }
