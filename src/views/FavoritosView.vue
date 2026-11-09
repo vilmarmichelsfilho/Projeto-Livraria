@@ -1,3 +1,4 @@
+<!-- ETAPA API: favoritos permanecem um recurso local. Ao integrar, carregar livros pela API e cruzar seus IDs com os favoritos locais, sem criar outra entidade. -->
 <script setup>
 import { produtos } from '@/data/produtos';
 import produtoCard from '@/components/Produtos/produtoCard.vue';

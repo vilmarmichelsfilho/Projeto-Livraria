@@ -1,3 +1,4 @@
+<!-- ETAPA API: consultar o livro pelo slug em /livros?endereco=... e consultar seu id em /livros/:id. Tratar ausência, disponibilidade e falha antes de permitir adicionar ao carrinho. -->
 <script setup>
 import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';

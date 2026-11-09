@@ -1,3 +1,4 @@
+<!-- ETAPA API: consultar /livros?genero=... usando livrosService, preservar a rota de gênero e tratar carregamento, lista vazia e falha. -->
 <script setup>
 import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';

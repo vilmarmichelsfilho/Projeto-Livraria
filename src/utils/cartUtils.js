@@ -1,3 +1,4 @@
+// ETAPA API: substituir futuramente o estado local pelos serviços de pedidos e itens_pedido. O carrinho será RASCUNHO; consultar e validar relações antes de criar, editar ou excluir itens e recalcular o total após cada resposta.
 import { produtos } from '@/data/produtos'
 import { reactive, computed } from 'vue'
 const carrinho = reactive([])

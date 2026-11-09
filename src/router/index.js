@@ -1,3 +1,4 @@
+// ETAPA API: as novas rotas estão descritas em docs/mapa-dos-arquivos.md. Os novos arquivos Vue têm somente comentários; implementar seus blocos antes de importar ou registrar as rotas. Preservar as rotas existentes e revisar o caminho genérico /:genero ao adicionar páginas.
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '@/views/HomeView.vue'
 import FavoritosView from '@/views/FavoritosView.vue'

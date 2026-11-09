@@ -1,3 +1,4 @@
+<!-- ETAPA API: migrar o carrinho para um pedido RASCUNHO e consultar /itens_pedido?id_pedido=:id. Implementar cadastro, consulta por ID, alteração de quantidade e exclusão de itens, confirmando antes de remover e recalculando total. -->
 <script setup>
 import { carrinho, total, removerItem, alterarQuantidade } from '@/utils/cartUtils'
 import { formataPreco } from '@/utils/produtosUtils'

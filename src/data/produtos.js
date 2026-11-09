@@ -1,3 +1,4 @@
+// ETAPA API: estes dados locais continuam atendendo às telas existentes. db.json contém a cópia inicial do catálogo para a API. Migrar consumidores para livrosService antes de remover esta fonte; favoritos não são um campo persistido de livros.
 import { reactive } from 'vue'
 const produtos = reactive([
   {
