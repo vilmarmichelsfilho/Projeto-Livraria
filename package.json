@@ -4,20 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host localhost --port 5173 --strictPort",
     "build": "vite build",
     "deploy": "gh-pages -d dist",
     "preview": "vite preview",
     "lint": "run-s lint:*",
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
-    "format": "prettier --write --experimental-cli src/"
+    "format": "prettier --write --experimental-cli src/",
+    "api": "json-server --watch db.json --host localhost --port 3000",
+    "dev:all": "run-p dev api"
   },
   "dependencies": {
     "@iconify-vue/icon-park-solid": "^1.0.3",
     "@iconify-vue/material-symbols": "^1.0.38",
     "@iconify-vue/mdi": "^1.0.3",
     "@iconify/vue": "^5.0.1",
+    "axios": "^1.21.1",
     "vue": "^3.5.32",
     "vue-router": "^5.0.4"
   },
@@ -31,10 +34,11 @@
     "eslint-plugin-vue": "~10.8.0",
     "gh-pages": "^6.3.0",
     "globals": "^17.5.0",
+    "json-server": "0.17.4",
     "npm-run-all2": "^8.0.4",
     "oxlint": "~1.60.0",
     "prettier": "3.8.3",
-    "vite": "^8.0.8",
+    "vite": "^8.1.6",
     "vite-plugin-vue-devtools": "^8.1.1"
   },
   "engines": {

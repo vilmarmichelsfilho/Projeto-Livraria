@@ -1,3 +1,4 @@
+<!-- ETAPA API: substituir a leitura de src/data/produtos.js por GET /livros quando a integração começar; filtrar ativos, tratar carregamento, lista vazia e falha. Este comentário não altera o catálogo atual. -->
 <script setup>
 import { produtos } from '@/data/produtos';
 import produtoCard from '@/components/Produtos/produtoCard.vue';
@@ -47,7 +48,8 @@ const produtosFiltrados = computed(() => {
   :id="produto.id"
   :endereco="produto.endereco"
   @favoritar="escutarFavorito"
-  @adicionarcarrinho="adicionarcarrinho">
+  @adicionarcarrinho="adicionarcarrinho"
+  >
       </produtoCard>
     </ul>
   </div>
