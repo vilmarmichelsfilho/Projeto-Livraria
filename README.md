@@ -1,25 +1,27 @@
-# Livraria
+# IFLibrary
+
+Projeto de livraria da equipe de Igor Gabriel Decker, Vitor Avanzi Lipinski,
+Vilmar Michels Filho e Davi Augusto Ramos.
 
 ```sh
 npm install
 npm run dev:all
 ```
 
-Frontend: http://localhost:5173. JSON Server: http://localhost:3000.
-Para alterar a URL da API, copie `.env.example` para `.env` e ajuste `VITE_API_URL`.
+Abra http://localhost:5173. O JSON Server usa o arquivo `db.json` e roda em
+http://localhost:3000. Para mudar a URL da API, copie `.env.example` para
+`.env` e ajuste `VITE_API_URL`.
 
-O catálogo, os favoritos, as avaliações e o carrinho são carregados do JSON Server.
-Os dados persistentes ficam em `db.json`; o estado reativo do Vue apenas exibe as respostas da API.
-Não há persistência em localStorage, sessionStorage, IndexedDB ou cookies.
+As coleções do projeto são `livros`, `usuarios`, `pedidos` e `avaliacoes`.
+O pedido guarda seus itens no campo `itens`. O carrinho e os favoritos da
+loja usam armazenamento local.
 
-O carrinho usa `pedidos` com status `RASCUNHO` e os registros de `itens_pedido`.
-O cliente de demonstração é o usuário 2 (Ana Exemplo), sem autenticação; seus favoritos
-e carrinho são compartilhados entre navegadores. As avaliações mantêm uma entrada por livro.
-Dados antigos que estavam apenas no navegador não são importados.
+A página de cada livro mostra as avaliações publicadas. Um cliente com
+sessão ativa pode criar, editar e excluir a própria avaliação de um livro
+ativo. A área `/admin/avaliacoes` permite consultar e excluir avaliações
+de leitores. As regras de acesso são demonstradas no Vue com dados fictícios.
+O JSON Server fornece as operações REST e não implementa essas regras no servidor.
 
-Os serviços de livros, usuários, pedidos e itens oferecem operações pela API.
-As telas e formulários que ainda contêm roteiros são funcionalidades planejadas;
-login e finalização de compra ainda não estão implementados.
-JSON Server não oferece autenticação nem transações entre recursos.
-
-Verificação: `npm run build`.
+Consulte `README.txt` para o CRUD de livros e `README-conta.md` para as
+contas de demonstração. Execute `npm run build` para gerar a versão de
+produção e `node --test` para executar os testes do projeto.

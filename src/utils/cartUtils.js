@@ -1,62 +1,37 @@
-﻿import { reactive, computed } from 'vue'
-import { produtos, usuarioId, executarOperacao } from '../services/lojaService.js'
-import pedidos from '../services/pedidosService.js'
-import itens from '../services/itensPedidoService.js'
+// Estado compartilhado do carrinho; as consultas da API ficam nas telas Vue.
+import { reactive, computed } from 'vue';
 
-export const carrinho = reactive([])
-export const total = computed(() => Number(carrinho.reduce((soma, item) => soma + item.precoTotal, 0).toFixed(2)))
-async function obterPedido(criar = false) {
-  const lista = await pedidos.listar({ id_usuario: usuarioId, status: 'RASCUNHO' })
-  return lista[0] ?? (criar ? await pedidos.cadastrar({ id_usuario: usuarioId }) : null)
+export const carrinho = reactive([]);
+export const total = computed(() => {
+  let centavos = 0;
+  for (const item of carrinho) {
+    centavos += Math.round(item.precoTotal * 100);
+  }
+  return centavos / 100;
+});
+
+export function adicionarAoCarrinho(livro, quantidade) {
+  const item = carrinho.find((registro) => registro.id === livro.id);
+  const novaQuantidade = (item ? item.quantidade : 0) + quantidade;
+  if (!livro.ativo || novaQuantidade > livro.estoque || novaQuantidade < 1) {
+    throw new Error('A quantidade solicitada não está disponível no estoque.');
+  }
+  const dados = {
+    ...livro,
+    capa: livro.capa_url,
+    quantidade: novaQuantidade,
+    precoTotal: Math.round(novaQuantidade * livro.preco * 100) / 100,
+  };
+  if (item) {
+    Object.assign(item, dados);
+  } else {
+    carrinho.push(dados);
+  }
 }
-export async function carregarCarrinho() {
-  const pedido = await obterPedido()
-  const registros = pedido ? await itens.listar({ id_pedido: pedido.id }) : []
-  carrinho.splice(0, carrinho.length, ...registros.map(item => {
-    const livro = produtos.find(produto => produto.id === item.id_livro)
-    return {
-      ...livro, id: item.id_livro, itemId: item.id,
-      titulo: livro?.titulo ?? item.titulo_livro,
-      preco: item.preco_unitario, quantidade: item.quantidade,
-      precoTotal: Number((item.quantidade * item.preco_unitario).toFixed(2)),
-    }
-  }))
-}
-function modificar(acao) {
-  return executarOperacao(async () => {
-    try { await acao() }
-    finally { await carregarCarrinho() }
-  })
-}
-export function adicionaraoarrinho(idLivro, quantidade) {
-  return modificar(async () => {
-    if (!Number.isInteger(quantidade) || quantidade < 1) throw new Error('Quantidade invalida.')
-    const pedido = await obterPedido(true)
-    const existentes = await itens.listar({ id_pedido: pedido.id, id_livro: idLivro })
-    if (existentes.length) {
-      await itens.atualizar(existentes[0].id, { quantidade: existentes[0].quantidade + quantidade })
-    } else {
-      await itens.cadastrar({ id_pedido: pedido.id, id_livro: idLivro, quantidade })
-    }
-  })
-}
-export function removerItem(idLivro) {
-  return modificar(async () => {
-    const pedido = await obterPedido()
-    if (!pedido) return
-    const registros = await itens.listar({ id_pedido: pedido.id, id_livro: idLivro })
-    for (const item of registros) await itens.excluir(item.id)
-  })
-}
-export function alterarQuantidade(idLivro, delta) {
-  return modificar(async () => {
-    if (!Number.isInteger(delta)) throw new Error('Quantidade invalida.')
-    const pedido = await obterPedido()
-    if (!pedido) return
-    const [item] = await itens.listar({ id_pedido: pedido.id, id_livro: idLivro })
-    if (!item) return
-    const quantidade = item.quantidade + delta
-    if (quantidade <= 0) await itens.excluir(item.id)
-    else await itens.atualizar(item.id, { quantidade })
-  })
+
+export function removerItem(id) {
+  const indice = carrinho.findIndex((item) => item.id === id);
+  if (indice !== -1) {
+    carrinho.splice(indice, 1);
+  }
 }

@@ -1,24 +1,60 @@
+<!-- ETAPA DE DAVI: persistir o carrinho como pedido RASCUNHO com lista itens em POST/PATCH /pedidos. Consultar GET /pedidos/:id, confirmar exclusões e recalcular total. Os livros já são consultados na API. Não existe coleção itens_pedido. -->
 <script setup>
-import { carrinho, total, removerItem, alterarQuantidade } from '@/utils/cartUtils'
-import { formataPreco } from '@/utils/produtosUtils'
-import { RouterLink } from 'vue-router'
-import ShoppingIcon from '@iconify-vue/mdi/shopping'
-import cartCard from '@/components/Carrinho/cartCard.vue'
+import { ref } from 'vue';
+import {
+  carrinho,
+  total,
+  removerItem,
+  adicionarAoCarrinho,
+} from '@/utils/cartUtils';
+import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
+import { formataPreco } from '@/utils/produtosUtils';
+import { RouterLink } from 'vue-router';
+import cartCard from '@/components/Carrinho/cartCard.vue';
+
+const erroCarrinho = ref('');
+async function alterarQuantidade(id, delta) {
+  erroCarrinho.value = '';
+  const item = carrinho.find((registro) => registro.id === id);
+  if (!item) {
+    return;
+  }
+  if (item.quantidade + delta <= 0) {
+    removerItem(id);
+    return;
+  }
+  try {
+    const resposta = await fetch(`${API_URL}/livros/${id}`);
+    const livro = await lerResposta(resposta);
+    adicionarAoCarrinho(livro, delta);
+  } catch (e) {
+    erroCarrinho.value = mensagemErro(e);
+  }
+}
 </script>
 
 <template>
   <main>
     <section class="carrinho">
       <h2>Seu carrinho</h2>
+      <p
+        v-if="erroCarrinho"
+        role="alert"
+      >
+        {{ erroCarrinho }}
+      </p>
 
       <template v-if="carrinho.length === 0">
         <h3 class="aviso">Seu carrinho está vazio!</h3>
-        <RouterLink to="/">Clique aqui para voltar para a página inicial</RouterLink>
+        <RouterLink to="/"
+          >Clique aqui para voltar para a página inicial</RouterLink
+        >
       </template>
 
       <template v-else>
         <ul>
-          <cartCard v-for="item in carrinho"
+          <cartCard
+            v-for="item in carrinho"
             :key="item.id"
             :id="item.id"
             :titulo="item.titulo"
@@ -29,12 +65,19 @@ import cartCard from '@/components/Carrinho/cartCard.vue'
             :quantidade="item.quantidade"
             :precoTotal="item.precoTotal"
             @remover="removerItem"
-            @alterarQuantidade="alterarQuantidade">
+            @alterarQuantidade="alterarQuantidade"
+          >
           </cartCard>
         </ul>
         <div class="rodape-carrinho">
           <h3>Total: {{ formataPreco(total) }}</h3>
-          <button class="finalizar"><ShoppingIcon width="15px"/> Finalizar compra</button>
+          <button class="finalizar">
+            <v-icon
+              icon="mdi-shopping"
+              size="15"
+            />
+            Finalizar compra
+          </button>
         </div>
       </template>
     </section>

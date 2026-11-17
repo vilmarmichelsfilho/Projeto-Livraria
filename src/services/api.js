@@ -1,15 +1,20 @@
-import axios from 'axios'
+import axios from 'axios';
+import { API_URL } from '@/utils/api';
 
 const api = axios.create({
-  baseURL: import.meta.env?.VITE_API_URL || 'http://localhost:3000',
-  timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
-})
-
-export function mensagemErroApi(erro, acao) {
-  return erro.response
-    ? `Não foi possível ${acao} (HTTP ${erro.response.status}). Tente novamente.`
-    : `Não foi possível ${acao}. Verifique se o JSON Server está em execução e tente novamente.`
+  baseURL: API_URL,
+});
+export function mensagemErro(erro) {
+  if (erro.response?.status === 404) {
+    return 'Registro não encontrado.';
+  }
+  if (erro.request && !erro.response) {
+    return 'Não foi possível conectar à API. Confira se npm run api está em execução.';
+  }
+  return (
+    erro.response?.data?.message ||
+    erro.message ||
+    'Não foi possível concluir a operação.'
+  );
 }
-
-export default api
+export default api;

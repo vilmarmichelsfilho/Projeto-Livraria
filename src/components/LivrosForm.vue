@@ -1,5 +1,410 @@
-<!--
-ROTEIRO DE IMPLEMENTAÇÃO — componente ainda sem código funcional.
-Reutilizar título, autor, gênero, resenha, preço, páginas, estoque e capa. Validar valores e apoiar cadastro e edição.
-Criar os blocos Vue necessários antes de importar este arquivo.
--->
+<script setup>
+import { computed, ref } from 'vue';
+import { RouterLink } from 'vue-router';
+import { generos, criarEndereco } from '@/utils/livrosUtils';
+
+const props = defineProps({
+  inicial: Object,
+  ocupado: Boolean,
+  errosCampos: { type: Object, default: () => ({}) },
+  cancelar: { type: String, default: '/admin/livros' },
+});
+const emit = defineEmits(['salvar']);
+
+// O mesmo formulário é usado no cadastro e na edição.
+const livro = ref({
+  titulo: '',
+  autor: '',
+  genero: '',
+  preco: '',
+  paginas: '',
+  estoque: '',
+  estoque_minimo: 5,
+  capa_url: '',
+  descricao: '',
+  ativo: true,
+  endereco: '',
+  ...props.inicial,
+});
+const erros = ref({});
+const textoBotao = computed(() => {
+  if (props.ocupado) {
+    return 'Salvando…';
+  }
+  if (props.inicial) {
+    return 'Salvar alterações';
+  }
+  return 'Cadastrar livro';
+});
+
+function erroCampo(campo) {
+  return erros.value[campo] || props.errosCampos[campo];
+}
+
+function salvarLivro() {
+  if (props.ocupado) {
+    return;
+  }
+  if (!livro.value.endereco.trim()) {
+    livro.value.endereco = criarEndereco(livro.value.titulo);
+  }
+  erros.value = validarLivro(livro.value);
+  const camposComErro = Object.keys(erros.value);
+  if (camposComErro.length > 0) {
+    const campo = document.getElementById('livro-' + camposComErro[0]);
+    if (campo) {
+      campo.focus();
+    }
+    return;
+  }
+  emit('salvar', { ...livro.value });
+}
+
+// required, min, max e step também ajudam na validação pelo navegador.
+function validarLivro(livro) {
+  const erros = {};
+  if (!livro.titulo.trim() || livro.titulo.length > 180) {
+    erros.titulo = 'Informe um título com até 180 caracteres.';
+  }
+  if (!livro.autor.trim() || livro.autor.length > 120) {
+    erros.autor = 'Informe o autor com até 120 caracteres.';
+  }
+  if (!livro.genero.trim() || livro.genero.length > 60) {
+    erros.genero = 'Selecione o gênero.';
+  }
+  if (!livro.descricao.trim() || livro.descricao.length > 10000) {
+    erros.descricao = 'Informe uma descrição com até 10000 caracteres.';
+  }
+  // Arredondar para centavos não pode mudar o preço informado.
+  if (
+    !Number.isFinite(livro.preco) ||
+    livro.preco <= 0 ||
+    livro.preco > 99999999.99 ||
+    Math.round(livro.preco * 100) / 100 !== livro.preco
+  ) {
+    erros.preco =
+      'Informe um preço maior que zero, com até duas casas decimais.';
+  }
+  if (!Number.isSafeInteger(livro.paginas) || livro.paginas < 1) {
+    erros.paginas = 'Informe um número inteiro maior que zero.';
+  }
+  if (!Number.isSafeInteger(livro.estoque) || livro.estoque < 0) {
+    erros.estoque = 'Informe um número inteiro igual ou maior que zero.';
+  }
+  if (!Number.isSafeInteger(livro.estoque_minimo) || livro.estoque_minimo < 0) {
+    erros.estoque_minimo = 'Informe um número inteiro igual ou maior que zero.';
+  }
+  if (typeof livro.ativo !== 'boolean') {
+    erros.ativo = 'Selecione se o livro está ativo.';
+  }
+  // O endereço usa palavras separadas por hífens, como sombra-e-ossos.
+  if (
+    !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(livro.endereco) ||
+    livro.endereco.length > 200
+  ) {
+    erros.endereco =
+      'Use letras minúsculas, números e hífens no endereço do livro.';
+  }
+  if (
+    livro.capa_url &&
+    (livro.capa_url.length > 500 ||
+      !/^(\/images\/[\w.-]+|https?:\/\/[^\s]+)$/i.test(livro.capa_url))
+  ) {
+    erros.capa_url = 'Use /images/arquivo.jpg ou uma URL http/https válida.';
+  }
+  return erros;
+}
+</script>
+
+<template>
+  <form
+    class="painel livro-form"
+    :aria-busy="ocupado"
+    @submit.prevent="salvarLivro"
+  >
+    <fieldset :disabled="ocupado">
+      <legend class="sr-only">Dados do livro</legend>
+      <div class="form-grid">
+        <div class="campo">
+          <label for="livro-titulo">Título *</label>
+          <input
+            id="livro-titulo"
+            v-model.trim="livro.titulo"
+            type="text"
+            maxlength="180"
+            required
+            :aria-invalid="!!erroCampo('titulo')"
+            aria-describedby="erro-titulo"
+          />
+          <p
+            v-if="erroCampo('titulo')"
+            id="erro-titulo"
+            class="erro-campo"
+          >
+            {{ erroCampo('titulo') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-autor">Autor *</label>
+          <input
+            id="livro-autor"
+            v-model.trim="livro.autor"
+            type="text"
+            maxlength="120"
+            required
+            :aria-invalid="!!erroCampo('autor')"
+            aria-describedby="erro-autor"
+          />
+          <p
+            v-if="erroCampo('autor')"
+            id="erro-autor"
+            class="erro-campo"
+          >
+            {{ erroCampo('autor') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-genero">Gênero *</label>
+          <select
+            id="livro-genero"
+            v-model="livro.genero"
+            required
+            :aria-invalid="!!erroCampo('genero')"
+            aria-describedby="erro-genero"
+          >
+            <option
+              value=""
+              disabled
+            >
+              Selecione o gênero
+            </option>
+            <option
+              v-for="genero in generos"
+              :key="genero"
+            >
+              {{ genero }}
+            </option>
+            <option v-if="livro.genero && !generos.includes(livro.genero)">
+              {{ livro.genero }}
+            </option>
+          </select>
+          <p
+            v-if="erroCampo('genero')"
+            id="erro-genero"
+            class="erro-campo"
+          >
+            {{ erroCampo('genero') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-preco">Preço (R$) *</label>
+          <input
+            id="livro-preco"
+            v-model.number="livro.preco"
+            type="number"
+            min="0.01"
+            max="99999999.99"
+            step="0.01"
+            required
+            :aria-invalid="!!erroCampo('preco')"
+            aria-describedby="erro-preco"
+          />
+          <p
+            v-if="erroCampo('preco')"
+            id="erro-preco"
+            class="erro-campo"
+          >
+            {{ erroCampo('preco') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-paginas">Páginas *</label>
+          <input
+            id="livro-paginas"
+            v-model.number="livro.paginas"
+            type="number"
+            min="1"
+            step="1"
+            required
+            :aria-invalid="!!erroCampo('paginas')"
+            aria-describedby="erro-paginas"
+          />
+          <p
+            v-if="erroCampo('paginas')"
+            id="erro-paginas"
+            class="erro-campo"
+          >
+            {{ erroCampo('paginas') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-estoque">Estoque disponível *</label>
+          <input
+            id="livro-estoque"
+            v-model.number="livro.estoque"
+            type="number"
+            min="0"
+            step="1"
+            required
+            :aria-invalid="!!erroCampo('estoque')"
+            aria-describedby="erro-estoque"
+          />
+          <p
+            v-if="erroCampo('estoque')"
+            id="erro-estoque"
+            class="erro-campo"
+          >
+            {{ erroCampo('estoque') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-estoque_minimo">Estoque mínimo *</label>
+          <input
+            id="livro-estoque_minimo"
+            v-model.number="livro.estoque_minimo"
+            type="number"
+            min="0"
+            step="1"
+            required
+            :aria-invalid="!!erroCampo('estoque_minimo')"
+            aria-describedby="erro-estoque_minimo"
+          />
+          <p
+            v-if="erroCampo('estoque_minimo')"
+            id="erro-estoque_minimo"
+            class="erro-campo"
+          >
+            {{ erroCampo('estoque_minimo') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-capa_url">Capa (opcional)</label>
+          <input
+            id="livro-capa_url"
+            v-model.trim="livro.capa_url"
+            type="text"
+            maxlength="500"
+            placeholder="/images/sombra-e-ossos.jpg"
+            :aria-invalid="!!erroCampo('capa_url')"
+            aria-describedby="erro-capa_url"
+          />
+          <p
+            v-if="erroCampo('capa_url')"
+            id="erro-capa_url"
+            class="erro-campo"
+          >
+            {{ erroCampo('capa_url') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-descricao">Descrição *</label>
+          <textarea
+            id="livro-descricao"
+            v-model.trim="livro.descricao"
+            rows="3"
+            maxlength="10000"
+            required
+            :aria-invalid="!!erroCampo('descricao')"
+            aria-describedby="erro-descricao"
+          ></textarea>
+          <p
+            v-if="erroCampo('descricao')"
+            id="erro-descricao"
+            class="erro-campo"
+          >
+            {{ erroCampo('descricao') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-ativo">Ativo *</label>
+          <select
+            id="livro-ativo"
+            v-model="livro.ativo"
+            required
+          >
+            <option :value="true">Sim</option>
+            <option :value="false">Não</option>
+          </select>
+          <p
+            v-if="erroCampo('ativo')"
+            class="erro-campo"
+          >
+            {{ erroCampo('ativo') }}
+          </p>
+        </div>
+
+        <div class="campo">
+          <label for="livro-endereco">Endereço do livro (opcional)</label>
+          <input
+            id="livro-endereco"
+            v-model.trim="livro.endereco"
+            type="text"
+            maxlength="200"
+            placeholder="Gerado a partir do título"
+            :aria-invalid="!!erroCampo('endereco')"
+            aria-describedby="erro-endereco"
+          />
+          <p
+            v-if="erroCampo('endereco')"
+            id="erro-endereco"
+            class="erro-campo"
+          >
+            {{ erroCampo('endereco') }}
+          </p>
+        </div>
+      </div>
+
+      <div class="acoes-form">
+        <button
+          class="btn"
+          type="submit"
+        >
+          {{ textoBotao }}
+        </button>
+        <RouterLink
+          :to="cancelar"
+          class="btn secundario"
+          :aria-disabled="ocupado"
+          @click="ocupado && $event.preventDefault()"
+        >
+          Cancelar
+        </RouterLink>
+      </div>
+    </fieldset>
+  </form>
+</template>
+
+<style>
+/* Estilos da tela, mantidos no componente. */
+
+.livro-form {
+  padding: 28px 32px 48px;
+}
+.livro-form fieldset {
+  border: 0;
+  padding: 0;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 30px;
+}
+@media (max-width: 700px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .livro-form {
+    padding: 22px 18px 28px;
+  }
+}
+</style>

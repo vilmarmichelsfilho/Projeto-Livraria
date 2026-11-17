@@ -1,9 +1,6 @@
-﻿import { moedaPais, idioma } from './globalUtils'
-import { alternarFavorito } from '../services/lojaService.js'
-function formataPreco(preco) {
-  return Number(preco ?? 0).toLocaleString(idioma, { style: 'currency', currency: moedaPais })
+export function formataPreco(preco) {
+  return Number(preco || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  });
 }
-function favoritar(lista, idDoProduto) {
-  return alternarFavorito(idDoProduto)
-}
-export { formataPreco, favoritar }
