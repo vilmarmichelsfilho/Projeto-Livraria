@@ -7,6 +7,20 @@ import CarrinhoView from "@/views/CarrinhoView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) return savedPosition;
+    if (to.hash) return { el: to.hash };
+    if (
+      [
+        "entrar",
+        "cadastro",
+        "minha-conta",
+        "editar-dados",
+        "alterar-senha",
+      ].includes(to.name)
+    )
+      return { top: 0 };
+  },
   routes: [
     {
       path: "/admin",

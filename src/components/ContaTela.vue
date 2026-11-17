@@ -1,9 +1,10 @@
 <script setup>
 import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import ContaIcone from "@/components/ContaIcone.vue";
 import AccountCircle from "@iconify-vue/mdi/account-circle";
 import usuarios from "@/services/usuariosService";
-import { mensagemErro } from "@/services/api";
+import api, { mensagemErro } from "@/services/api";
 import "@/assets/conta.css";
 import { buscarCep } from "@/services/cepService";
 const props = defineProps({ modo: { type: String, required: true } });
@@ -72,6 +73,42 @@ async function atualizarCep() {
     if (versao === versaoCep) consultandoCep.value = false;
   }
 }
+const ufs =
+  "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(
+    " ",
+  );
+const subtitulosMobile = {
+  login: "Acesse sua conta para continuar.",
+  cadastro: "Todos os campos com * são obrigatórios.",
+  conta: "Seus dados e suas leituras.",
+  editar: "Mantenha seu contato e endereço atualizados.",
+  senha: "Confirme sua senha atual e escolha a nova senha.",
+};
+const destinoVoltar = computed(() =>
+  props.modo === "cadastro"
+    ? "/entrar"
+    : props.modo === "login"
+      ? "/"
+      : "/minha-conta",
+);
+const pedidosDialog = ref(null);
+const pedidos = ref([]);
+const buscandoPedidos = ref(false);
+const erroPedidos = ref("");
+async function abrirPedidos() {
+  pedidosDialog.value.showModal();
+  buscandoPedidos.value = true;
+  erroPedidos.value = "";
+  try {
+    pedidos.value = (
+      await api.get("/pedidos", { params: { id_usuario: usuario.value.id } })
+    ).data;
+  } catch (error) {
+    erroPedidos.value = mensagemErro(error);
+  } finally {
+    buscandoPedidos.value = false;
+  }
+}
 const titulos = {
   login: "Entrar",
   cadastro: "Criar conta",
@@ -123,8 +160,8 @@ const campos = computed(() => {
       email,
       campo("telefone", "Telefone", "tel", true, "tel"),
       senha,
-      endereco[0],
       confirmar,
+      endereco[0],
       ...endereco.slice(1),
     ];
   return [
@@ -263,14 +300,24 @@ async function excluir() {
 </script>
 <template>
   <main class="conta-pagina" :class="'conta-modo-' + modo">
-    <h1>{{ titulo }}</h1>
-    <p class="conta-subtitulo">
+    <div class="conta-titulo-linha">
+      <RouterLink
+        v-if="modo !== 'conta'"
+        :to="destinoVoltar"
+        class="conta-voltar-mobile"
+        aria-label="Voltar"
+        ><ContaIcone nome="voltar"
+      /></RouterLink>
+      <h1>{{ titulo }}</h1>
+    </div>
+    <p class="conta-subtitulo conta-desktop">
       {{
         modo === "conta"
           ? "Consulte seus dados e acompanhe suas compras"
           : "Preencha seus dados para continuar na IFLibrary"
       }}
     </p>
+    <p class="conta-subtitulo conta-mobile">{{ subtitulosMobile[modo] }}</p>
     <p v-if="erro" class="conta-aviso erro" role="alert">{{ erro }}</p>
     <p v-if="sucesso" class="conta-aviso sucesso" role="status">
       {{ sucesso }}
@@ -281,7 +328,7 @@ async function excluir() {
     </div>
     <section
       v-else-if="modo === 'conta' && usuario"
-      class="conta-painel conta-resumo"
+      class="conta-painel conta-resumo conta-desktop"
       aria-label="Dados da conta"
     >
       <div class="conta-identidade">
@@ -363,8 +410,71 @@ async function excluir() {
         </div>
       </div>
     </section>
+    <section
+      v-if="modo === 'conta' && usuario && !carregandoDados"
+      class="conta-mobile conta-mobile-resumo"
+      aria-label="Dados da conta"
+    >
+      <div class="conta-mobile-cartao">
+        <div class="conta-mobile-identidade">
+          <ContaIcone nome="conta" />
+          <h2>{{ usuario.nome }}</h2>
+        </div>
+        <p class="conta-mobile-email">{{ usuario.email }}</p>
+        <p class="conta-mobile-telefone">
+          {{ usuario.telefone || "Não informado" }}
+        </p>
+        <address>
+          {{ usuario.endereco || "Endereço não informado" }}<br />{{
+            [usuario.cidade, usuario.uf].filter(Boolean).join(" • ")
+          }}<br />CEP {{ usuario.cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2") }}
+        </address>
+        <RouterLink to="/minha-conta/editar" class="conta-botao secundario"
+          >Editar meus dados</RouterLink
+        >
+      </div>
+      <div class="conta-mobile-menu">
+        <RouterLink to="/minha-conta/senha" class="conta-botao secundario"
+          >Alterar senha</RouterLink
+        >
+        <button class="conta-botao secundario" @click="abrirPedidos">
+          Meus pedidos
+        </button>
+        <button
+          class="conta-botao secundario conta-sair-mobile"
+          :disabled="carregando"
+          @click="sair"
+        >
+          Sair da conta
+        </button>
+      </div>
+      <dialog
+        ref="pedidosDialog"
+        class="conta-pedidos-dialog"
+        aria-labelledby="titulo-pedidos"
+      >
+        <h2 id="titulo-pedidos">Meus pedidos</h2>
+        <p v-if="buscandoPedidos" role="status">Carregando pedidos…</p>
+        <p v-else-if="erroPedidos" role="alert">{{ erroPedidos }}</p>
+        <p v-else-if="!pedidos.length">Você ainda não tem pedidos.</p>
+        <ul v-else>
+          <li v-for="pedido in pedidos" :key="pedido.id">
+            Pedido #{{ pedido.id }} — {{ pedido.status.replaceAll("_", " ") }} —
+            {{
+              Number(pedido.total || 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
+            }}
+          </li>
+        </ul>
+        <button class="conta-botao secundario" @click="pedidosDialog.close()">
+          Fechar
+        </button>
+      </dialog>
+    </section>
     <form
-      v-else
+      v-if="modo !== 'conta' && !carregandoDados && (!protegido || usuario)"
       class="conta-painel conta-formulario"
       :aria-busy="carregando"
       @submit.prevent="enviar"
@@ -379,7 +489,20 @@ async function excluir() {
           <label :for="campo.key"
             >{{ campo.label }}{{ campo.required ? " *" : "" }}</label
           >
+          <select
+            v-if="campo.key === 'uf'"
+            id="uf"
+            v-model="dados.uf"
+            name="uf"
+            required
+            autocomplete="address-level1"
+            :disabled="carregando"
+          >
+            <option disabled value="">Selecione</option>
+            <option v-for="uf in ufs" :key="uf" :value="uf">{{ uf }}</option>
+          </select>
           <input
+            v-else
             :id="campo.key"
             v-model="dados[campo.key]"
             :name="campo.key"
@@ -415,8 +538,18 @@ async function excluir() {
       >
         {{ consultandoCep ? "Consultando CEP…" : avisoCep }}
       </p>
-      <p v-if="modo === 'cadastro'" class="conta-observacao conta-instrucoes">
+      <p
+        v-if="modo === 'cadastro'"
+        class="conta-observacao conta-instrucoes conta-desktop"
+      >
         * Campos obrigatórios. Informe telefone e endereço para criar sua conta.
+      </p>
+      <p v-if="modo === 'login'" class="conta-mobile conta-mobile-ajuda">
+        Senha com pelo menos 8 caracteres.
+      </p>
+      <p v-if="modo === 'cadastro'" class="conta-mobile conta-mobile-ajuda">
+        Informe um telefone válido e o endereço completo. A senha deve ter ao
+        menos 8 caracteres.
       </p>
       <div class="conta-acoes">
         <button
@@ -424,7 +557,12 @@ async function excluir() {
           type="submit"
           :disabled="carregando || consultandoCep"
         >
-          {{ carregando ? "Aguarde…" : acao }}
+          <span :class="{ 'conta-desktop': modo === 'login' && !carregando }">{{
+            carregando ? "Aguarde…" : acao
+          }}</span
+          ><span v-if="modo === 'login' && !carregando" class="conta-mobile"
+            >Entrar</span
+          >
         </button>
         <RouterLink
           class="conta-botao secundario"
@@ -435,15 +573,21 @@ async function excluir() {
                 ? '/entrar'
                 : '/minha-conta'
           "
-          >{{
+          ><span :class="{ 'conta-desktop': modo === 'login' }">{{
             modo === "login"
               ? "Criar conta"
               : modo === "cadastro"
                 ? "Voltar"
                 : "Cancelar"
-          }}</RouterLink
+          }}</span
+          ><span v-if="modo === 'login'" class="conta-mobile"
+            >Criar uma conta</span
+          ></RouterLink
         >
       </div>
+      <p v-if="modo === 'login'" class="conta-mobile conta-mobile-rodape-login">
+        Seus pedidos, dados e avaliações em um só lugar.
+      </p>
     </form>
   </main>
 </template>
