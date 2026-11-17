@@ -1,151 +1,65 @@
 <script setup>
-import { RouterLink } from 'vue-router'
-import InstagramIcon from '@iconify-vue/mdi/instagram'
-import FacebookIcon from '@iconify-vue/mdi/facebook'
-import TwitterIcon from '@iconify-vue/mdi/twitter'
-import PhoneIcon from '@iconify-vue/mdi/phone'
-import ClockIcon from '@iconify-vue/mdi/clock'
-import EmailIcon from '@iconify-vue/mdi/email'
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-  <footer>
-    <div class="container">
-      <div class="container-esquerda">
-        <RouterLink class="logo" to="/">IFLibrary</RouterLink>
-        <div class="redes-sociais">
-          <a href="https://www.instagram.com">
-            <InstagramIcon height="1em" />
-          </a>
-          <a href="https://www.facebook.com">
-            <FacebookIcon height="1em" />
-          </a>
-          <a href="https://x.com">
-            <TwitterIcon height="1em" />
-          </a>
-        </div>
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div>
+        <RouterLink
+          class="rodape-logo"
+          to="/"
+          >IFLibrary</RouterLink
+        >
+        <p>Uma livraria para encontrar sua próxima leitura</p>
       </div>
-      <div class="desenvolvedores">
-        <h2>Desenvolvido por:</h2>
-        <ul>
-          <li>Vilmar Michels Filho</li>
-          <li>Igor Gabriel Decker</li>
-          <li>Davi Augusto Ramos</li>
-          <li>Vitor Avanzi Lipinski</li>
-        </ul>
-      </div>
-      <div class="container-direita">
-        <div class="contato">
-          <h3>Contato</h3>
-          <ul>
-            <li>
-              <PhoneIcon height="1em"/>
-              <span>+55 47 40045263</span>
-            </li>
-            <li>
-              <ClockIcon height="1em"/>
-              <span>8h às 23h - Seg a Sex</span>
-            </li>
-            <li>
-              <EmailIcon height="1em"/>
-              <span>contato@iflibrary.com</span>
-            </li>
-          </ul>
-        </div>
+      <div>
+        <h2>Desenvolvido por</h2>
+        <p>
+          Vilmar Michels Filho • Igor Gabriel Decker • Davi Augusto Ramos •
+          Vitor Avanzi Lipinski
+        </p>
       </div>
     </div>
-
-    <div class="direitos">
-      <p>© Alguns direitos reservados. IFLibrary 2026.</p>
-    </div>
+    <p class="rodape-direitos">© Alguns direitos reservados. IFLibrary 2026.</p>
   </footer>
 </template>
-
 <style scoped>
-a {
-  color: black;
+.rodape {
+  background: #a0cde0;
+  color: #151f27;
+  padding: 18px 4.45% 16px;
 }
-footer {
-  background-color: #A0CDE0;
-  padding: 1.5vw 0 1.5vw 0;
-  font-size: 1.2rem;
+.rodape-conteudo {
+  display: grid;
+  grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+  gap: 20px;
 }
-
-div.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 5vw;
+.rodape-logo {
+  color: #151f27;
+  font-weight: 700;
+  font-size: 24px;
 }
-
-div.container-esquerda {
-  display: flex;
-  flex-direction: column;
+.rodape h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 3px 0 7px;
 }
-
-div.container-direita {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.rodape-conteudo p {
+  font-size: 14px;
+  margin-top: 10px;
 }
-
-div.redes-sociais a {
-  margin: 0 0.5vw 0 0;
-  font-size: 2rem;
-  color: black;
-}
-div.contato ul {
-  padding: 0;
-  margin: 0;
-}
-div.contato ul li {
-  margin-bottom: 0.5vw;
-}
-
-div.direitos {
-  padding-top: 1vw;
-  margin-top: 1vw;
+.rodape-direitos {
   text-align: center;
-  border-top: 1px solid black;
+  margin-top: 26px;
+  font-size: 13px;
+  color: #476b7b;
+  font-weight: 700;
 }
-
-.logo {
-  font-weight: bolder;
-  font-size: 1.5rem;
-}
-
-li {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
-
-li span {
-  margin-left: 0.6vw;
-  color: black;
-  opacity: 0.7;
-}
-
-p {
-  color: black;
-  font-weight: bold;
-  opacity: 0.7;
-}
-
-h3 {
-  color: black;
-  font-weight: bold;
-}
-.desenvolvedores ul {
-  padding: 0;
-}
-.desenvolvedores ul li {
-  font-weight: bold;
-  opacity: 0.8;
-}
-.desenvolvedores h2 {
-  font-weight: bolder;
-  font-size: 1.5rem;
+@media (max-width: 680px) {
+  .rodape-conteudo {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
 }
 </style>
