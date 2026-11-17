@@ -71,8 +71,14 @@ function pesquisar() {
           v-if="favoritos.length"
           class="contador"
           >{{ favoritos.length }}</span
-        ></RouterLink
-      ><RouterLink
+        ></RouterLink>
+      <RouterLink
+        to="/minha-conta"
+        aria-label="Minha conta"
+      >
+        <v-icon icon="mdi-account" />
+      </RouterLink>
+      <RouterLink
         class="link-admin"
         to="/admin/livros"
         >Administrar livros</RouterLink

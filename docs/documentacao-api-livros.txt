@@ -8,7 +8,7 @@ Coleção: livros. PK: id (equivalente a id_livro do modelo conceitual).
 Responsável pelo CRUD completo: Igor Gabriel Decker.
 Páginas, chamadas fetch, validações e estilos estão em componentes Vue.
 As pequenas funções compartilhadas ficam em src/utils.
-A API é o JSON Server padrão 0.17.4, iniciado por npm run api.
+A API usa JSON Server 0.17.4 com rotas de conta, iniciada por npm run api.
 
 Operações: POST /livros, GET /livros, GET /livros/:id,
 PATCH /livros/:id e DELETE /livros/:id.
@@ -17,16 +17,13 @@ As relações com pedidos e avaliações são conferidas na interface antes
 da exclusão. A remoção das avaliações usa requisições DELETE separadas.
 O servidor padrão não valida campos ou vínculos e não executa transações.
 
-2. USUÁRIOS — VILMAR MICHELS FILHO (PLANEJADO)
+2. USUÁRIOS — VILMAR MICHELS FILHO
 Finalidade: identificação de clientes e administradores.
 Coleção: usuarios.
 Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha_hash (texto, obrigatório, marcadores fictícios nesta base); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
 Relacionamentos: 1:N Pedidos e 1:N Avaliações por id_usuario.
-Endpoints planejados: POST /usuarios (cadastro), GET /usuarios (lista), GET /usuarios/:id (consulta), PATCH /usuarios/:id (edição), DELETE /usuarios/:id (exclusão sem pedidos).
-Atualização planejada: PATCH.
-Telas: cadastro, conta, edição de dados, listagem/cadastro/consulta/edição administrativa de usuários.
-Regras a implementar por Vilmar: telefone/endereço obrigatórios, e-mail único, senha mínima de 8 caracteres e hash seguro, proteção do último administrador ativo, inativar usuário com pedidos e excluir avaliações em cascata quando puder excluir.
-Estados previstos: carregando, sucesso, erro com formulário preservado, lista vazia e usuário não encontrado.
+O cadastro, o login e o gerenciamento da própria conta estão detalhados no README-conta.md.
+As telas administrativas de usuários seguem planejadas.
 
 3. PEDIDOS — DAVI AUGUSTO RAMOS (PLANEJADO)
 Finalidade: carrinho em rascunho e histórico de compras simuladas.
@@ -50,7 +47,7 @@ Endpoints planejados: POST /avaliacoes, GET /avaliacoes, GET /avaliacoes/:id, PA
 Atualização planejada: PATCH.
 Telas: avaliações nos detalhes, publicar, editar, confirmar exclusão; administração consulta/exclui para moderação.
 Regras a implementar por Vitor: somente autor edita/exclui a própria avaliação; administrador consulta/exclui para moderação; cliente deve estar autenticado e livro ativo.
-A leitura aparece na página do livro. As validações e a autorização do CRUD de Avaliações devem ser implementadas por Vitor nos respectivos fluxos; o JSON Server padrão não as fornece.
+A leitura aparece na página do livro. GET /avaliacoes?id_livro=:id retorna o nome do leitor junto à avaliação, com o cadastro de usuários protegido pelas rotas de conta. As validações e a autorização do CRUD de Avaliações devem ser implementadas por Vitor nos respectivos fluxos.
 Estados previstos: carregando, sucesso, erro, nenhuma avaliação e avaliação não encontrada.
 
 
@@ -65,14 +62,14 @@ A base da equipe permaneceu inalterada. Verificação visual/manual pendente.
 
 6. EXECUÇÃO E DEMONSTRAÇÃO
 npm install
-npm run api — API padrão em http://localhost:3000.
+npm run api — API em http://localhost:3000.
 npm run dev — front em http://localhost:5173.
 npm run dev:all — ambos.
 Acessar /admin/livros e demonstrar o fluxo completo descrito no README.txt.
 
 7. DECISÕES E LIMITES
-Não há servidor personalizado, serviços separados, testes de servidor ou
-arquivos SVG próprios. Os ícones continuam no Vuetify com Material Design Icons.
+Os livros usam as rotas padrão do JSON Server e as contas usam server.cjs.
+Os ícones continuam no Vuetify com Material Design Icons.
 Os estilos foram movidos para blocos style nos componentes.
 Pesquisa e paginação são realizadas no Vue.
 As regras do front podem ser contornadas por requisições diretas à API.

@@ -69,7 +69,9 @@ GET /livros?ativo=true
 GET /livros?endereco=sombra-e-ossos
 GET /pedidos
 GET /avaliacoes?id_livro=1
-GET /usuarios
+
+A lista de avaliações inclui o nome do leitor. A página do livro pode
+consultá-la sem acessar os dados da conta.
 
 A pesquisa por texto, os filtros administrativos e a paginação de oito
 registros são aplicados na página Vue após o GET. Os filtros ficam na URL
@@ -193,15 +195,14 @@ Resultado dessas verificações: aprovado.
 Build e ESLint: aprovados.
 Conferência visual e navegação manual no navegador: ainda pendentes.
 
-Os testes antigos da implementação com servidor personalizado foram retirados
-junto daquela estrutura. Não há comando de testes de servidor nesta versão.
+npm run test:conta verifica o servidor de contas e a leitura pública das avaliações.
 
 10. ORGANIZAÇÃO DA ENTREGA
 
 Como executar:
 1. Instalar Node.js compatível com o package.json.
 2. Executar npm install.
-3. Executar npm run api: JSON Server padrão na porta 3000.
+3. Executar npm run api: JSON Server com as rotas de conta na porta 3000.
 4. Em outro terminal, executar npm run dev: Vue na porta 5173.
 5. Alternativa: npm run dev:all inicia os dois.
 6. Abrir http://localhost:5173/admin/livros.
@@ -219,7 +220,7 @@ src/utils/favoritos.js — favoritos locais.
 src/utils/produtosUtils.js — formatação de moeda.
 src/main.js, src/router/index.js e src/plugins/vuetify.js — configuração.
 db.json — usuarios, livros, pedidos e avaliacoes.
-Não há servidor JavaScript próprio, pasta de serviços ou arquivos SVG próprios.
+server.cjs e src/services/ — rotas e serviços de conta. Veja README-conta.md.
 
 Dados fictícios atuais: 5 usuários, 16 livros, 4 pedidos e 5 avaliações.
 Sombra e Ossos tem pedido; Divergente tem avaliação e não tem pedido;

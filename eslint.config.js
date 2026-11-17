@@ -22,6 +22,10 @@ export default defineConfig([
   },
 
   js.configs.recommended,
+  {
+    files: ['server.cjs', 'tests/**/*.{cjs,mjs}'],
+    languageOptions: { globals: globals.node },
+  },
   ...pluginVue.configs['flat/essential'],
 
   ...pluginOxlint.buildFromOxlintConfigFile('.oxlintrc.json'),

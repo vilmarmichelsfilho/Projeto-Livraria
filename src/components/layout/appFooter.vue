@@ -3,194 +3,56 @@ import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-  <footer>
-    <div class="container">
-      <div class="container-esquerda">
-        <RouterLink
-          class="logo"
-          to="/"
-          >IFLibrary</RouterLink
-        >
-        <div class="redes-sociais">
-          <a
-            href="https://www.instagram.com"
-            aria-label="Instagram"
-          >
-            <v-icon
-              icon="mdi-instagram"
-              size="1em"
-            />
-          </a>
-          <a
-            href="https://www.facebook.com"
-            aria-label="Facebook"
-          >
-            <v-icon
-              icon="mdi-facebook"
-              size="1em"
-            />
-          </a>
-          <a
-            href="https://x.com"
-            aria-label="Twitter"
-          >
-            <v-icon
-              icon="mdi-twitter"
-              size="1em"
-            />
-          </a>
-        </div>
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div>
+        <RouterLink class="rodape-logo" to="/">IFLibrary</RouterLink>
+        <p>Uma livraria para encontrar sua próxima leitura</p>
       </div>
-      <div class="desenvolvedores">
-        <h2>Desenvolvido por:</h2>
-        <ul>
-          <li>Vilmar Michels Filho</li>
-          <li>Igor Gabriel Decker</li>
-          <li>Davi Augusto Ramos</li>
-        </ul>
-      </div>
-      <div class="container-direita">
-        <div class="contato">
-          <h3>Contato</h3>
-          <ul>
-            <li>
-              <v-icon
-                icon="mdi-phone"
-                size="1em"
-              />
-              <span>+55 47 40045263</span>
-            </li>
-            <li>
-              <v-icon
-                icon="mdi-clock-outline"
-                size="1em"
-              />
-              <span>8h às 23h - Seg a Sex</span>
-            </li>
-            <li>
-              <v-icon
-                icon="mdi-email"
-                size="1em"
-              />
-              <span>contato@iflibrary.com</span>
-            </li>
-          </ul>
-        </div>
+      <div>
+        <h2>Desenvolvido por</h2>
+        <p>Vilmar Michels Filho • Igor Gabriel Decker • Davi Augusto Ramos</p>
       </div>
     </div>
-
-    <div class="direitos">
-      <p>© Alguns direitos reservados. IFLibrary 2026.</p>
-    </div>
+    <p class="rodape-direitos">© Alguns direitos reservados. IFLibrary 2026.</p>
   </footer>
 </template>
-
 <style scoped>
-a {
-  color: black;
+.rodape {
+  background: #a0cde0;
+  color: #151f27;
+  padding: 18px 4.45% 16px;
 }
-footer {
-  background-color: #a0cde0;
-  padding: 1.5vw 0 1.5vw 0;
-  font-size: 1.2rem;
+.rodape-conteudo {
+  display: grid;
+  grid-template-columns: minmax(0, 40fr) minmax(0, 60fr);
+  gap: 20px;
 }
-
-div.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 0 5vw;
+.rodape-logo {
+  color: #151f27;
+  font-weight: 700;
+  font-size: 24px;
 }
-
-div.container-esquerda {
-  display: flex;
-  flex-direction: column;
+.rodape h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 3px 0 7px;
 }
-
-div.container-direita {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+.rodape-conteudo p {
+  font-size: 14px;
+  margin-top: 10px;
 }
-
-div.redes-sociais a {
-  margin: 0 0.5vw 0 0;
-  font-size: 2rem;
-  color: black;
-}
-div.contato ul {
-  padding: 0;
-  margin: 0;
-}
-div.contato ul li {
-  margin-bottom: 0.5vw;
-}
-
-div.direitos {
-  padding-top: 1vw;
-  margin-top: 1vw;
+.rodape-direitos {
   text-align: center;
-  border-top: 1px solid black;
+  margin-top: 26px;
+  font-size: 13px;
+  color: #476b7b;
+  font-weight: 700;
 }
-
-.logo {
-  font-weight: bolder;
-  font-size: 1.5rem;
-}
-
-li {
-  list-style: none;
-  display: flex;
-  align-items: center;
-  padding: 0;
-}
-
-li span {
-  margin-left: 0.6vw;
-  color: black;
-  opacity: 0.7;
-}
-
-p {
-  color: black;
-  font-weight: bold;
-  opacity: 0.7;
-}
-
-h3 {
-  color: black;
-  font-weight: bold;
-}
-.desenvolvedores ul {
-  padding: 0;
-}
-.desenvolvedores ul li {
-  font-weight: bold;
-  opacity: 0.8;
-}
-.desenvolvedores h2 {
-  font-weight: bolder;
-  font-size: 1.5rem;
-}
-</style>
-
-<style>
-/* Estilos da tela, mantidos no componente. */
-
-@media (max-width: 700px) {
-  footer .container {
-    flex-wrap: wrap;
-    gap: 28px;
-    padding: 20px 0;
-  }
-  footer .desenvolvedores h2 {
-    font-size: 20px;
-  }
-  footer .desenvolvedores ul li {
-    font-size: 15px;
-  }
-  footer .direitos p {
-    font-size: 13px;
+@media (max-width: 680px) {
+  .rodape-conteudo {
+    grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 </style>

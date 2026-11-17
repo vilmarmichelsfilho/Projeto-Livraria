@@ -1,4 +1,3 @@
-// Rotas de Igor: loja e CRUD administrativo de livros; colegas mantêm seus recursos.
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import FavoritosView from "@/views/FavoritosView.vue";
@@ -38,6 +37,35 @@ const router = createRouter({
       ],
     },
     {
+      path: "/entrar",
+      name: "entrar",
+      component: () => import("@/views/LoginView.vue"),
+    },
+    {
+      path: "/cadastro",
+      name: "cadastro",
+      component: () => import("@/views/CadastroView.vue"),
+    },
+    { path: "/usuario", redirect: "/minha-conta" },
+    {
+      path: "/minha-conta",
+      name: "minha-conta",
+      component: () => import("@/views/MinhaContaView.vue"),
+      meta: { requerLogin: true },
+    },
+    {
+      path: "/minha-conta/editar",
+      name: "editar-dados",
+      component: () => import("@/views/EditarDadosView.vue"),
+      meta: { requerLogin: true },
+    },
+    {
+      path: "/minha-conta/senha",
+      name: "alterar-senha",
+      component: () => import("@/views/AlterarSenhaView.vue"),
+      meta: { requerLogin: true },
+    },
+    {
       path: "/",
       name: "home",
       component: HomeView,
@@ -53,16 +81,20 @@ const router = createRouter({
       component: DetalhesLivros,
     },
     {
-      path: "/:genero",
-      name: "Livros Por Genero",
-      component: LivrosPorGenero,
-    },
-    {
       path: "/carrinho",
       name: "carrinho",
       component: CarrinhoView,
     },
+    {
+      path: "/:genero",
+      name: "Livros Por Genero",
+      component: LivrosPorGenero,
+    },
   ],
 });
 
+router.beforeEach((to) => {
+  if (to.meta.requerLogin && !sessionStorage.getItem("iflibrary_token"))
+    return "/entrar";
+});
 export default router;

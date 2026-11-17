@@ -38,14 +38,6 @@ async function carregarAvaliacoes(id = livro.value?.id) {
   try {
     const resposta = await fetch(`${API_URL}/avaliacoes?id_livro=${id}`);
     const dados = await lerResposta(resposta);
-    const respostaUsuarios = await fetch(`${API_URL}/usuarios`);
-    const usuarios = await lerResposta(respostaUsuarios);
-    for (const avaliacao of dados) {
-      const usuario = usuarios.find(
-        (item) => Number(item.id) === Number(avaliacao.id_usuario),
-      );
-      avaliacao.nome = usuario ? usuario.nome : 'Leitor';
-    }
     if (numero === consulta) avaliacoes.value = dados;
   } catch (e) {
     if (numero === consulta) erroAvaliacoes.value = mensagemErro(e);
@@ -213,7 +205,7 @@ watch(() => route.params.endereco, carregar, { immediate: true });
             :key="item.id"
             class="avaliacao"
           >
-            <h3>{{ item.nome }}</h3>
+            <h3>{{ item.nome || 'Leitor' }}</h3>
             <time :datetime="item.criado_em">{{
               new Date(item.criado_em).toLocaleDateString('pt-BR')
             }}</time>
