@@ -37,7 +37,7 @@
   font-weight: 700;
   margin-bottom: 6px;
 }
-.conta-campo input {
+.conta-campo :is(input, select) {
   width: 100%;
   height: 49px;
   min-height: 49px;
@@ -280,7 +280,7 @@
   line-height: 26px;
   margin-bottom: 8px;
 }
-.conta-modo-cadastro .conta-campo input {
+.conta-modo-cadastro .conta-campo :is(input, select) {
   height: 47px;
   min-height: 47px;
   font-size: 18px;
@@ -327,7 +327,7 @@
     line-height: 24px;
     margin-bottom: 6px;
   }
-  .conta-modo-cadastro .conta-campo input {
+  .conta-modo-cadastro .conta-campo :is(input, select) {
     font-size: 16px;
   }
   .conta-modo-cadastro .conta-instrucoes {
@@ -354,5 +354,231 @@
 @media (min-width: 1100px) {
   .conta-detalhes {
     grid-template-columns: minmax(0, 510px) minmax(0, 1fr);
+  }
+}
+
+.conta-mobile,
+.conta-voltar-mobile {
+  display: none;
+}
+.conta-campo select {
+  appearance: none;
+}
+@media (max-width: 680px) {
+  .conta-shell .conta-desktop {
+    display: none;
+  }
+  .conta-shell .conta-mobile {
+    display: block;
+  }
+  .conta-shell .conta-pagina {
+    width: calc(100% - 40px);
+    margin: 16px auto 28px;
+    color: #28434f;
+  }
+  .conta-titulo-linha {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .conta-shell .conta-titulo-linha h1 {
+    font-size: 25px;
+    line-height: 34px;
+    letter-spacing: -0.3px;
+  }
+  .conta-voltar-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    min-height: 44px;
+    color: #476b7b;
+    flex-shrink: 0;
+  }
+  .conta-voltar-mobile svg {
+    width: 18px;
+    height: 18px;
+  }
+  .conta-shell .conta-subtitulo {
+    font-size: 14px;
+    line-height: 22px;
+    margin-top: 10px;
+    color: #718d9c;
+  }
+  .conta-shell .conta-formulario {
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-top: 40px;
+    min-height: 0;
+    max-width: none;
+  }
+  .conta-shell .conta-campos {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    max-width: none;
+  }
+  .conta-shell .conta-campo label {
+    font-size: 14px;
+    line-height: 20px;
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .conta-shell .conta-campo :is(input, select) {
+    height: 49px;
+    min-height: 49px;
+    width: 100%;
+    font-size: 15px;
+    line-height: 22px;
+    color: #28434f;
+    border: 1px solid #d5e4eb;
+    border-radius: 9px;
+    padding: 12px;
+    background-color: white;
+    font-family: inherit;
+  }
+  .conta-shell .conta-campo select {
+    background-image:
+      linear-gradient(45deg, transparent 50%, #476b7b 50%),
+      linear-gradient(135deg, #476b7b 50%, transparent 50%);
+    background-position:
+      calc(100% - 21px) 22px,
+      calc(100% - 17px) 22px;
+    background-size: 4px 5px;
+    background-repeat: no-repeat;
+    padding-right: 34px;
+  }
+  .conta-shell .conta-botao {
+    width: 100%;
+    min-width: 0 !important;
+    min-height: 49px;
+    border-radius: 9px;
+    font-size: 15px;
+    line-height: 22px;
+  }
+  .conta-shell .conta-botao.secundario {
+    border-color: #d5e4eb;
+  }
+  .conta-shell .conta-acoes {
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 60px;
+  }
+  .conta-shell .conta-mobile-ajuda {
+    margin-top: 26px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #718d9c;
+  }
+  .conta-shell .conta-modo-login .conta-mobile-ajuda {
+    margin-top: 40px;
+  }
+  .conta-shell .conta-modo-login .conta-acoes {
+    margin-top: 36px;
+  }
+  .conta-shell .conta-modo-cadastro .conta-acoes {
+    margin-top: 50px;
+  }
+  .conta-mobile-rodape-login {
+    color: #718d9c;
+    font-size: 15px;
+    line-height: 24px;
+    margin-top: 44px;
+    max-width: 350px;
+  }
+  .conta-mobile-resumo {
+    margin-top: 40px;
+  }
+  .conta-mobile-cartao {
+    background: #fff;
+    border: 1px solid #d5e4eb;
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .conta-mobile-identidade {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    min-height: 46px;
+  }
+  .conta-mobile-identidade svg {
+    width: 36px;
+    height: 36px;
+    color: #476b7b;
+    flex-shrink: 0;
+  }
+  .conta-mobile-identidade h2 {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .conta-mobile-email {
+    color: #718d9c;
+    font-size: 16px;
+    margin-top: 8px;
+    overflow-wrap: anywhere;
+  }
+  .conta-mobile-telefone {
+    font-size: 17px;
+    line-height: 26px;
+    margin-top: 18px;
+  }
+  .conta-mobile-cartao address {
+    font-size: 15px;
+    line-height: 23px;
+    font-style: normal;
+    margin-top: 22px;
+    color: #476b7b;
+    overflow-wrap: anywhere;
+  }
+  .conta-mobile-cartao > .conta-botao {
+    margin-top: 18px;
+  }
+  .conta-mobile-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin-top: 25px;
+  }
+  .conta-pedidos-dialog {
+    margin: auto;
+    width: calc(100% - 40px);
+    max-width: 500px;
+    max-height: 80dvh;
+    padding: 20px;
+    color: #28434f;
+    border: 1px solid #d5e4eb;
+    border-radius: 12px;
+  }
+  .conta-pedidos-dialog::backdrop {
+    background: #151f2770;
+  }
+  .conta-pedidos-dialog h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .conta-pedidos-dialog .conta-botao {
+    margin-top: 20px;
+  }
+  .conta-pedidos-dialog ul {
+    padding-left: 20px;
+  }
+}
+
+.conta-botao > span {
+  font-weight: inherit;
+}
+@media (max-width: 680px) {
+  .conta-shell .conta-pagina {
+    margin-top: 12px;
+  }
+  .conta-voltar-mobile {
+    min-height: 34px;
+  }
+  .conta-shell :is(.conta-botao, .conta-campo) {
+    scroll-margin-bottom: calc(94px + env(safe-area-inset-bottom, 0px));
   }
 }
