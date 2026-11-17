@@ -1,1 +1,0 @@
-import{C as e,h as t}from"./index-BD0rzCbm.js";import{t as n}from"./AdminPedidoPagina-CHuzRi0i.js";var r={__name:`AdminDetalhesPedidoView`,setup(r){return(r,i)=>(e(),t(n,{key:r.$route.params.id,modo:`detalhes`}))}};export{r as default};

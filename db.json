@@ -4,8 +4,8 @@
       "id": 1,
       "nome": "Administrador Exemplo",
       "email": "admin@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
-      "telefone": null,
+      "senha_hash": "scrypt:c6a4cb0fcad9927e67fb2fe885c51d07:a76dc10e0cde84a9d99cafc6ffac902f74bd6038c4ff65e5e1f046740976ad4994ed5e178cd101104208eb09dd9b221dd675962d3e0d2206435caf018e31d59c",
+      "telefone": "(47) 99999-0000",
       "endereco": "Rua Exemplo, 100",
       "cidade": "Cidade Exemplo",
       "uf": "SC",
@@ -13,7 +13,7 @@
       "perfil": "ADMIN",
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-09T10:00:00-03:00"
+      "atualizado_em": "2026-11-17T01:17:10.569Z"
     },
     {
       "id": 2,
@@ -59,6 +59,22 @@
       "ativo": false,
       "criado_em": "2026-11-09T10:00:00-03:00",
       "atualizado_em": "2026-11-09T10:00:00-03:00"
+    },
+    {
+      "nome": "Vilmar Michels Filho",
+      "email": "vilmarmichelsfilho@gmail.com",
+      "telefone": "+5547991106430",
+      "endereco": "Itinga, Rua das Carpas, 594",
+      "cidade": "Araquari",
+      "uf": "SC",
+      "cep": "89245000",
+      "id": 5,
+      "id_usuario": 5,
+      "senha_hash": "scrypt:191d28295a50e5ab6671e9a17596b306:df357c67b6e65aa1e7b4e6ead28a7f6b0d3fdfae70424365cc3231da23b46d20c60ca9c5e77e9fd69666ddfe71cb9115314f7248c5940f7aaa2a57667fd767ed",
+      "perfil": "CLIENTE",
+      "ativo": true,
+      "criado_em": "2026-11-17T01:14:31.161Z",
+      "atualizado_em": "2026-11-17T01:22:52.212Z"
     }
   ],
   "livros": [
@@ -88,7 +104,7 @@
       "capa": "images/cinquenta-tons-de-cinza.jpg",
       "genero": "Romance",
       "paginas": 480,
-      "estoque": 2,
+      "estoque": 1,
       "estoque_minimo": 5,
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
@@ -371,6 +387,32 @@
       "atualizado_em": "2026-11-09T12:00:00-03:00",
       "cancelado_em": "2026-11-09T12:00:00-03:00",
       "motivo_cancelamento": "Cancelamento fictício para teste."
+    },
+    {
+      "id_usuario": 5,
+      "destinatario": "Vilmar Michels Filho",
+      "endereco_entrega": "Itinga, Rua das Carpas, 594 • Araquari • SC • 89245000",
+      "status": "RASCUNHO",
+      "total": 42.65,
+      "criado_em": "2026-11-17T01:21:47.597Z",
+      "atualizado_em": "2026-11-17T01:21:56.878Z",
+      "confirmado_em": null,
+      "cancelado_em": null,
+      "motivo_cancelamento": null,
+      "id": 5
+    },
+    {
+      "id_usuario": 3,
+      "destinatario": "Bruno Exemplo",
+      "endereco_entrega": "Rua Exemplo, 100 • Cidade Exemplo • SC • 89000000",
+      "status": "ENTREGUE",
+      "total": 51.29,
+      "criado_em": "2026-11-17T01:22:10.129Z",
+      "atualizado_em": "2026-11-17T01:22:18.743Z",
+      "confirmado_em": "2026-11-17T01:22:11.264Z",
+      "cancelado_em": null,
+      "motivo_cancelamento": null,
+      "id": 6
     }
   ],
   "itens_pedido": [
@@ -423,6 +465,26 @@
       "titulo_livro": "A empregada",
       "criado_em": "2026-11-09T10:00:00-03:00",
       "atualizado_em": "2026-11-09T10:00:00-03:00"
+    },
+    {
+      "id_pedido": 5,
+      "id_livro": 3,
+      "titulo_livro": "A empregada",
+      "quantidade": 1,
+      "preco_unitario": 42.65,
+      "atualizado_em": "2026-11-17T01:21:56.878Z",
+      "criado_em": "2026-11-17T01:21:47.597Z",
+      "id": 6
+    },
+    {
+      "id_pedido": 6,
+      "id_livro": 2,
+      "titulo_livro": "Cinquenta tons de cinza",
+      "quantidade": 1,
+      "preco_unitario": 51.29,
+      "atualizado_em": "2026-11-17T01:22:11.013Z",
+      "criado_em": "2026-11-17T01:22:10.129Z",
+      "id": 7
     }
   ]
 }

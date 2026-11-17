@@ -1,12 +1,13 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { RouterLink, useRouter, useRoute } from "vue-router";
 import usuariosService from "@/services/usuariosService";
 import AdminIcon from "@/components/admin/AdminIcon.vue";
 import "@/assets/admin.css";
 const usuario = ref(null);
 const menuAberto = ref(false);
 const router = useRouter();
+const route = useRoute();
 onMounted(async () => {
   if (!sessionStorage.getItem("iflibrary_token")) return;
   try {
@@ -77,13 +78,19 @@ async function sair() {
         <span class="admin-nav-item" aria-disabled="true"
           ><AdminIcon name="book" />Livros</span
         >
-        <span class="admin-nav-item" aria-disabled="true"
-          ><AdminIcon name="users" />Usuários</span
+        <RouterLink
+          to="/admin/usuarios"
+          class="admin-nav-item"
+          :class="{ active: route.path.startsWith('/admin/usuarios') }"
+          ><AdminIcon name="users" />Usuários</RouterLink
         >
         <RouterLink
           to="/admin/pedidos"
-          class="admin-nav-item active"
-          aria-current="page"
+          class="admin-nav-item"
+          :class="{ active: route.path.startsWith('/admin/pedidos') }"
+          :aria-current="
+            route.path.startsWith('/admin/pedidos') ? 'page' : undefined
+          "
           ><AdminIcon name="orders" />Pedidos</RouterLink
         >
         <span class="admin-nav-item" aria-disabled="true"

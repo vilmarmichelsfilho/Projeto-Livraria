@@ -1,5 +1,14 @@
 import api from "./api";
 export default {
+  async listar() {
+    return (await api.get("/usuarios")).data;
+  },
+  async obter(id) {
+    return (await api.get(`/usuarios/${id}`)).data;
+  },
+  async cadastrarAdmin(dados) {
+    return (await api.post("/admin/usuarios", dados)).data;
+  },
   async entrar(dados) {
     const { data } = await api.post("/auth/login", dados);
     sessionStorage.setItem("iflibrary_token", data.token);
