@@ -13,7 +13,11 @@ const { createServer } = require("../server.cjs");
   const api = createServer(path.join(dir, "db.json")).listen(0, "127.0.0.1");
   await new Promise((resolve) => api.once("listening", resolve));
   const { createServer: viteServer } = await import("vite");
+  const vuePlugin = (await import("@vitejs/plugin-vue")).default;
   const vite = await viteServer({
+    configFile: false,
+    plugins: [vuePlugin()],
+    resolve: { alias: { "@": path.resolve("src") } },
     server: { host: "127.0.0.1", port: 5178, strictPort: true },
     define: {
       "import.meta.env.VITE_API_URL": JSON.stringify(
@@ -64,6 +68,7 @@ const { createServer } = require("../server.cjs");
         console.error(JSON.stringify(m.params));
       if (m.id) {
         const p = pending.get(m.id);
+        if (!p) return;
         pending.delete(m.id);
         m.error ? p.reject(new Error(m.error.message)) : p.resolve(m.result);
       }
@@ -104,7 +109,7 @@ const { createServer } = require("../server.cjs");
           JSON.stringify(id) +
           ");e.value=" +
           JSON.stringify(value) +
-          ';e.dispatchEvent(new Event("input",{bubbles:true}));})()',
+          ';e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));})()',
       );
     const submit = () =>
       evaluate('document.querySelector("form").requestSubmit()');
@@ -159,7 +164,9 @@ const { createServer } = require("../server.cjs");
       await fill(id, value);
     await wait('!document.querySelector("button[type=submit]").disabled');
     await submit();
-    await wait('location.pathname === "/entrar"');
+    await wait(
+      'location.pathname === "/entrar" && !!document.getElementById("email")',
+    );
     await fill("email", "marina@example.com");
     await fill("senha", "SenhaTeste123");
     await submit();
@@ -192,26 +199,128 @@ const { createServer } = require("../server.cjs");
     await fill("confirmar", "NovaSenha123");
     await submit();
     await wait('!!document.querySelector(".conta-identidade")');
-    await send("Emulation.setDeviceMetricsOverride", {
-      width: 360,
-      height: 800,
-      deviceScaleFactor: 1,
-      mobile: true,
-    });
-    await shot("mobile-conta");
-    assert.ok(
-      await evaluate("document.documentElement.scrollWidth <= 360"),
-      "Sem rolagem horizontal em 360px",
+    const viewport = (width, height = 817) =>
+      send("Emulation.setDeviceMetricsOverride", {
+        width,
+        height,
+        deviceScaleFactor: 1,
+        mobile: true,
+      });
+    const semOverflow = async (width) =>
+      assert.ok(
+        await evaluate("document.documentElement.scrollWidth <= " + width),
+        "Sem rolagem horizontal em " + width + "px",
+      );
+    await viewport(391);
+    await send("Page.navigate", { url: "http://127.0.0.1:5178/minha-conta" });
+    await wait('!!document.querySelector(".conta-mobile-cartao")');
+    assert.equal(
+      await evaluate(
+        'getComputedStyle(document.querySelector(".conta-desktop-header")).display',
+      ),
+      "none",
     );
-    await evaluate('document.querySelector(".conta-sair").click()');
-    await wait('location.pathname === "/entrar"');
+    assert.equal(
+      await evaluate('document.querySelectorAll(".conta-mobile-nav a").length'),
+      4,
+    );
+    await shot("mobile-conta");
+    await semOverflow(391);
+    await click("/minha-conta/editar");
+    await wait(
+      'document.getElementById("nome")?.value === "Marina Atualizada"',
+    );
+    await viewport(391, 1017);
+    await shot("mobile-editar");
+    await viewport(391);
+    await semOverflow(391);
+    assert.equal(
+      await evaluate('document.getElementById("uf").tagName'),
+      "SELECT",
+    );
+    await fill("nome", "Marina Mobile");
+    await submit();
+    await wait('!!document.querySelector(".conta-mobile-cartao")');
+    assert.ok(
+      (
+        await evaluate(
+          'document.querySelector(".conta-mobile-cartao").textContent',
+        )
+      ).includes("Marina Mobile"),
+    );
+    await evaluate(
+      'document.querySelector(".conta-mobile-menu button").click()',
+    );
+    await wait(
+      'document.querySelector("dialog")?.open && document.querySelector("dialog").textContent.includes("Você ainda não tem pedidos.")',
+    );
+    await evaluate('document.querySelector("dialog button").click()');
+    await viewport(360);
+    await semOverflow(360);
+    await evaluate('document.querySelector(".conta-sair-mobile").click()');
+    await wait(
+      'location.pathname === "/entrar" && !!document.getElementById("email")',
+    );
+    await viewport(391, 771);
     await shot("mobile-login");
+    await semOverflow(391);
+    assert.ok(
+      await evaluate(
+        'getComputedStyle(document.querySelector(".conta-formulario")).backgroundColor === "rgba(0, 0, 0, 0)"',
+      ),
+    );
     await click("/cadastro");
     await wait('!!document.getElementById("confirmar")');
+    await viewport(391, 1227);
     await shot("mobile-cadastro");
-    assert.ok(await evaluate("document.documentElement.scrollWidth <= 360"));
+    await viewport(391);
+    assert.ok(
+      await evaluate(
+        'document.getElementById("confirmar").getBoundingClientRect().top < document.getElementById("endereco").getBoundingClientRect().top',
+      ),
+    );
+    for (const width of [360, 391, 680]) {
+      await viewport(width);
+      await semOverflow(width);
+    }
+    await viewport(391);
+    for (const [id, value] of Object.entries({
+      nome: "Cliente Mobile",
+      email: "mobile@example.com",
+      telefone: "47999990000",
+      senha: "SenhaMobile123",
+      confirmar: "SenhaMobile123",
+      cep: "89200000",
+    }))
+      await fill(id, value);
+    await wait(
+      'document.getElementById("cidade").value === "Joinville" && !document.querySelector("button[type=submit]").disabled',
+    );
+    assert.equal(await evaluate('document.getElementById("uf").value'), "SC");
+    assert.equal(
+      await evaluate('document.getElementById("endereco").value'),
+      "Centro, Rua das Flores",
+    );
+    await evaluate(
+      'document.querySelector("form .conta-acoes a").scrollIntoView({block:"end"})',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    assert.ok(
+      await evaluate(
+        'document.querySelector("form .conta-acoes a").getBoundingClientRect().bottom <= document.querySelector(".conta-mobile-nav").getBoundingClientRect().top',
+      ),
+      "Botões acessíveis acima da navegação",
+    );
+    await submit();
+    await wait(
+      'location.pathname === "/entrar" && !!document.getElementById("email")',
+    );
+    await fill("email", "mobile@example.com");
+    await fill("senha", "SenhaMobile123");
+    await submit();
+    await wait('!!document.querySelector(".conta-mobile-cartao")');
     console.log(
-      "Browser: cadastro, login, consulta, edição, troca de senha, logout e responsividade 360px passaram. Capturas em .vite/conta-qa.",
+      "Browser: desktop preservado; login, cadastro, conta, edição e CEP validados em mobile; navegação, pedidos e logout funcionais; sem overflow em 360, 391 e 680px.",
     );
   } finally {
     if (socket) {

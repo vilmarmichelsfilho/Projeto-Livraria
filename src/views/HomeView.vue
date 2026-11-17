@@ -23,7 +23,7 @@ const produtosFiltrados = computed(() => {
 <template>
   <main>
     <section class="lancamentos">
-  <h2>Livros
+  <h2 id="livros">Livros
   </h2>
   <div class="genero-butoes">
     <ul>
