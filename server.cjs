@@ -127,7 +127,7 @@ function createServer(database = path.join(__dirname, "db.json")) {
   };
   app.post("/usuarios", cadastrarUsuario);
   app.use((req, res, next) => {
-    if (!/^\/(usuarios|auth|admin)(\/|$)/.test(req.path)) return next();
+    if (!/^\/(usuarios|auth|admin|cliente)(\/|$)/.test(req.path)) return next();
     const token = (req.headers.authorization || "").replace(/^Bearer /, ""),
       session = sessions.get(token),
       u = session && db.get("usuarios").find({ id: session.id }).value();
@@ -139,6 +139,7 @@ function createServer(database = path.join(__dirname, "db.json")) {
     req.token = token;
     next();
   });
+  require("./cliente-pedidos.cjs")(app, db);
   app.post("/admin/usuarios", (req, res) => {
     if (req.user.perfil !== "ADMIN")
       return fail(res, 403, "Acesso restrito a administradores.");
@@ -298,7 +299,10 @@ function createServer(database = path.join(__dirname, "db.json")) {
       Array.isArray(res.locals.data)
     ) {
       const nomes = new Map(
-        db.get("usuarios").value().map((u) => [String(u.id), u.nome]),
+        db
+          .get("usuarios")
+          .value()
+          .map((u) => [String(u.id), u.nome]),
       );
       res.locals.data = res.locals.data.map((avaliacao) => ({
         ...avaliacao,

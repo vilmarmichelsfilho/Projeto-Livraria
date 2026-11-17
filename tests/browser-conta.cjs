@@ -12,6 +12,7 @@ const { createServer } = require("../server.cjs");
   );
   const api = createServer(path.join(dir, "db.json")).listen(0, "127.0.0.1");
   await new Promise((resolve) => api.once("listening", resolve));
+  process.env.VITE_API_URL = "http://127.0.0.1:" + api.address().port;
   const { createServer: viteServer } = await import("vite");
   const vuePlugin = (await import("@vitejs/plugin-vue")).default;
   const vite = await viteServer({
@@ -102,7 +103,7 @@ const { createServer } = require("../server.cjs");
           expression +
           " | " +
           (await evaluate(
-            "location.href + document.documentElement.outerHTML.slice(0, 1200)",
+            "location.href + (document.body?.innerText || '').slice(0, 2500)",
           )),
       );
     };
@@ -115,7 +116,7 @@ const { createServer } = require("../server.cjs");
           ';e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}));})()',
       );
     const submit = () =>
-      evaluate('document.querySelector("form").requestSubmit()');
+      evaluate('document.querySelector(".conta-formulario").requestSubmit()');
     const click = (href) =>
       evaluate(
         "document.querySelector(" +
@@ -165,7 +166,7 @@ const { createServer } = require("../server.cjs");
       cep: "01234567",
     }))
       await fill(id, value);
-    await wait('!document.querySelector("button[type=submit]").disabled');
+    await wait('!document.querySelector(".conta-formulario button[type=submit]").disabled');
     await submit();
     await wait(
       'location.pathname === "/entrar" && !!document.getElementById("email")',
@@ -252,12 +253,13 @@ const { createServer } = require("../server.cjs");
       ).includes("Marina Mobile"),
     );
     await evaluate(
-      'document.querySelector(".conta-mobile-menu button").click()',
+      `document.querySelector('.conta-mobile-menu a[href="/meus-pedidos"]').click()`,
     );
     await wait(
-      'document.querySelector("dialog")?.open && document.querySelector("dialog").textContent.includes("Você ainda não tem pedidos.")',
+      'location.pathname === "/meus-pedidos" && document.querySelector(".cliente-vazio")?.textContent.includes("Você ainda não tem pedidos")',
     );
-    await evaluate('document.querySelector("dialog button").click()');
+    await evaluate(`document.querySelector('.conta-mobile-nav a[href="/minha-conta"]').click()`);
+    await wait('!!document.querySelector(".conta-mobile-cartao")');
     await viewport(360);
     await semOverflow(360);
     await evaluate('document.querySelector(".conta-sair-mobile").click()');
@@ -297,7 +299,7 @@ const { createServer } = require("../server.cjs");
     }))
       await fill(id, value);
     await wait(
-      'document.getElementById("cidade").value === "Joinville" && !document.querySelector("button[type=submit]").disabled',
+      'document.getElementById("cidade").value === "Joinville" && !document.querySelector(".conta-formulario button[type=submit]").disabled',
     );
     assert.equal(await evaluate('document.getElementById("uf").value'), "SC");
     assert.equal(

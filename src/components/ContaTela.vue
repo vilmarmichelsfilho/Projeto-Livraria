@@ -3,7 +3,7 @@ import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ContaIcone from "@/components/ContaIcone.vue";
 import usuarios from "@/services/usuariosService";
-import api, { mensagemErro } from "@/services/api";
+import { mensagemErro } from "@/services/api";
 import "@/assets/conta.css";
 import { buscarCep } from "@/services/cepService";
 const props = defineProps({ modo: { type: String, required: true } });
@@ -84,30 +84,16 @@ const subtitulosMobile = {
   senha: "Confirme sua senha atual e escolha a nova senha.",
 };
 const destinoVoltar = computed(() =>
-  props.modo === "cadastro"
-    ? "/entrar"
-    : props.modo === "login"
-      ? "/"
-      : "/minha-conta",
+  props.modo === "editar" &&
+  typeof route.query.retornar === "string" &&
+  /^\/checkout\/revisao(?:\?|$)/.test(route.query.retornar)
+    ? route.query.retornar
+    : props.modo === "cadastro"
+      ? "/entrar"
+      : props.modo === "login"
+        ? "/"
+        : "/minha-conta",
 );
-const pedidosDialog = ref(null);
-const pedidos = ref([]);
-const buscandoPedidos = ref(false);
-const erroPedidos = ref("");
-async function abrirPedidos() {
-  pedidosDialog.value.showModal();
-  buscandoPedidos.value = true;
-  erroPedidos.value = "";
-  try {
-    pedidos.value = (
-      await api.get("/pedidos", { params: { id_usuario: usuario.value.id } })
-    ).data;
-  } catch (error) {
-    erroPedidos.value = mensagemErro(error);
-  } finally {
-    buscandoPedidos.value = false;
-  }
-}
 const titulos = {
   login: "Entrar",
   cadastro: "Criar conta",
@@ -257,10 +243,16 @@ async function enviar() {
         uf,
         cep,
       });
-      await router.push({
-        path: "/minha-conta",
-        query: { sucesso: "Dados atualizados com sucesso." },
-      });
+      const retornar = route.query.retornar;
+      await router.push(
+        typeof retornar === "string" &&
+          /^\/checkout\/revisao(?:\?|$)/.test(retornar)
+          ? retornar
+          : {
+              path: "/minha-conta",
+              query: { sucesso: "Dados atualizados com sucesso." },
+            },
+      );
     }
     if (props.modo === "senha") {
       await usuarios.alterarSenha(usuario.value.id, {
@@ -324,7 +316,9 @@ async function excluir() {
       }}
     </p>
     <p class="conta-subtitulo conta-mobile">{{ subtitulosMobile[modo] }}</p>
-    <p v-if="erro" class="conta-aviso erro" role="alert">{{ erro }}</p>
+    <p v-if="erro" class="conta-aviso erro" role="alert">
+      {{ erro }}
+    </p>
     <p v-if="sucesso" class="conta-aviso sucesso" role="status">
       {{ sucesso }}
     </p>
@@ -374,6 +368,9 @@ async function excluir() {
         </div>
       </dl>
       <div class="conta-acoes">
+        <RouterLink class="conta-botao secundario" to="/meus-pedidos"
+          >Meus pedidos</RouterLink
+        >
         <RouterLink class="conta-botao" to="/minha-conta/editar"
           >Editar meus dados</RouterLink
         >
@@ -443,9 +440,9 @@ async function excluir() {
         <RouterLink to="/minha-conta/senha" class="conta-botao secundario"
           >Alterar senha</RouterLink
         >
-        <button class="conta-botao secundario" @click="abrirPedidos">
+        <RouterLink class="conta-botao secundario" to="/meus-pedidos">
           Meus pedidos
-        </button>
+        </RouterLink>
         <button
           class="conta-botao secundario conta-sair-mobile"
           :disabled="carregando"
@@ -454,30 +451,6 @@ async function excluir() {
           Sair da conta
         </button>
       </div>
-      <dialog
-        ref="pedidosDialog"
-        class="conta-pedidos-dialog"
-        aria-labelledby="titulo-pedidos"
-      >
-        <h2 id="titulo-pedidos">Meus pedidos</h2>
-        <p v-if="buscandoPedidos" role="status">Carregando pedidos…</p>
-        <p v-else-if="erroPedidos" role="alert">{{ erroPedidos }}</p>
-        <p v-else-if="!pedidos.length">Você ainda não tem pedidos.</p>
-        <ul v-else>
-          <li v-for="pedido in pedidos" :key="pedido.id">
-            Pedido #{{ pedido.id }} — {{ pedido.status.replaceAll("_", " ") }} —
-            {{
-              Number(pedido.total || 0).toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })
-            }}
-          </li>
-        </ul>
-        <button class="conta-botao secundario" @click="pedidosDialog.close()">
-          Fechar
-        </button>
-      </dialog>
     </section>
     <form
       v-if="modo !== 'conta' && !carregandoDados && (!protegido || usuario)"
@@ -505,7 +478,9 @@ async function excluir() {
             :disabled="carregando"
           >
             <option disabled value="">Selecione</option>
-            <option v-for="uf in ufs" :key="uf" :value="uf">{{ uf }}</option>
+            <option v-for="uf in ufs" :key="uf" :value="uf">
+              {{ uf }}
+            </option>
           </select>
           <input
             v-else

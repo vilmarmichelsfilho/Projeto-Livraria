@@ -1,4 +1,3 @@
-<!-- ETAPA DE DAVI: persistir o carrinho como pedido RASCUNHO com lista itens em POST/PATCH /pedidos. Consultar GET /pedidos/:id, confirmar exclusões e recalcular total. Os livros já são consultados na API. Não existe coleção itens_pedido. -->
 <script setup>
 import { ref } from 'vue';
 import {
@@ -9,10 +8,11 @@ import {
 } from '@/utils/cartUtils';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { formataPreco } from '@/utils/produtosUtils';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRouter } from 'vue-router';
 import cartCard from '@/components/Carrinho/cartCard.vue';
 
 const erroCarrinho = ref('');
+const router = useRouter();
 async function alterarQuantidade(id, delta) {
   erroCarrinho.value = '';
   const item = carrinho.find((registro) => registro.id === id);
@@ -70,7 +70,10 @@ async function alterarQuantidade(id, delta) {
         </ul>
         <div class="rodape-carrinho">
           <h3>Total: {{ formataPreco(total) }}</h3>
-          <button class="finalizar">
+          <button
+            class="finalizar"
+            @click="router.push('/checkout/revisao')"
+          >
             <v-icon
               icon="mdi-shopping"
               size="15"

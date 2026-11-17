@@ -4,20 +4,29 @@ import { RouterView, useRoute } from "vue-router";
 import ContaMobileChrome from "./components/layout/ContaMobileChrome.vue";
 import appFooter from "./components/layout/appFooter.vue";
 import AppHeader from "./components/layout/appHeader.vue";
+import "./assets/cliente-pedidos.css";
 const route = useRoute();
-const contaMobile = computed(() =>
-  [
-    "/entrar",
-    "/cadastro",
-    "/minha-conta",
-    "/minha-conta/editar",
-    "/minha-conta/senha",
-  ].includes(route.path),
+const contaMobile = computed(
+  () =>
+    route.meta.pedidosCliente ||
+    [
+      "/entrar",
+      "/cadastro",
+      "/minha-conta",
+      "/minha-conta/editar",
+      "/minha-conta/senha",
+    ].includes(route.path),
 );
 </script>
 
 <template>
-  <div class="app-container" :class="{ 'conta-shell': contaMobile }">
+  <div
+    class="app-container"
+    :class="{
+      'conta-shell': contaMobile,
+      'pedidos-shell': route.meta.pedidosCliente,
+    }"
+  >
     <ContaMobileChrome v-if="contaMobile" />
     <AppHeader v-if="!route.meta.admin" class="conta-desktop-header" />
     <RouterView class="content-wrap" />
@@ -96,14 +105,14 @@ body {
     Inter,
     -apple-system,
     BlinkMacSystemFont,
-    'Segoe UI',
+    "Segoe UI",
     Roboto,
     Oxygen,
     Ubuntu,
     Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
+    "Fira Sans",
+    "Droid Sans",
+    "Helvetica Neue",
     sans-serif;
   font-size: 15px;
   text-rendering: optimizeLegibility;
@@ -230,7 +239,7 @@ button:disabled {
   resize: vertical;
   min-height: 88px;
 }
-.campo [aria-invalid='true'] {
+.campo [aria-invalid="true"] {
   border: 2px solid var(--livraria-perigo);
 }
 .erro-campo {

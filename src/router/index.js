@@ -10,6 +10,7 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) return savedPosition;
+    if (to.meta.pedidosCliente) return { top: 0 };
     if (to.hash) return { el: to.hash };
     if (
       [
@@ -23,6 +24,30 @@ const router = createRouter({
       return { top: 0 };
   },
   routes: [
+    {
+      path: "/checkout/revisao",
+      name: "revisar-pedido",
+      component: () => import("@/views/RevisarPedidoView.vue"),
+      meta: { requerLogin: true, pedidosCliente: true },
+    },
+    {
+      path: "/checkout/confirmado/:id",
+      name: "pedido-confirmado",
+      component: () => import("@/views/PedidoConfirmadoView.vue"),
+      meta: { requerLogin: true, pedidosCliente: true },
+    },
+    {
+      path: "/meus-pedidos",
+      name: "meus-pedidos",
+      component: () => import("@/views/MeusPedidosView.vue"),
+      meta: { requerLogin: true, pedidosCliente: true },
+    },
+    {
+      path: "/meus-pedidos/:id",
+      name: "detalhes-pedido",
+      component: () => import("@/views/DetalhesPedidoView.vue"),
+      meta: { requerLogin: true, pedidosCliente: true },
+    },
     {
       path: "/admin",
       component: () => import("@/components/layout/AdminLayout.vue"),
