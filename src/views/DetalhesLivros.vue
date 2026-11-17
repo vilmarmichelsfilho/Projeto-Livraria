@@ -3,34 +3,42 @@ import { computed, ref, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { formataPreco } from '@/utils/produtosUtils';
-import { adicionaraoarrinho } from '@/utils/cartUtils';
+import { adicionarAoCarrinho } from '@/utils/cartUtils';
 import { estaFavoritado, alternarFavorito } from '@/utils/favoritos';
 import CapaLivro from '@/components/CapaLivro.vue';
 import EstadoRequisicao from '@/components/EstadoRequisicao.vue';
 const route = useRoute();
-const livro = ref(null),
-  carregando = ref(false),
-  erro = ref(''),
-  aviso = ref(''),
-  adicionando = ref(false);
-const avaliacoes = ref([]),
-  erroAvaliacoes = ref(''),
-  carregandoAvaliacoes = ref(false);
-const media = computed(() =>
-  avaliacoes.value.length
-    ? (
-        avaliacoes.value.reduce((soma, item) => soma + item.nota, 0) /
-        avaliacoes.value.length
-      ).toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-    : '—',
-);
+const livro = ref(null);
+const carregando = ref(false);
+const erro = ref('');
+const aviso = ref('');
+const adicionando = ref(false);
+const avaliacoes = ref([]);
+const erroAvaliacoes = ref('');
+const carregandoAvaliacoes = ref(false);
+const media = computed(() => {
+  if (avaliacoes.value.length === 0) {
+    return '—';
+  }
+  let soma = 0;
+  for (const avaliacao of avaliacoes.value) {
+    soma += avaliacao.nota;
+  }
+  const resultado = soma / avaliacoes.value.length;
+  return resultado.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
+});
 function iconeMedia(estrela) {
   const nota = Number(media.value.replace(',', '.'));
-  if (nota >= estrela) return 'mdi-star';
-  if (nota >= estrela - 0.5) return 'mdi-star-half-full';
+  if (nota >= estrela) {
+    return 'mdi-star';
+  }
+  if (nota >= estrela - 0.5) {
+    return 'mdi-star-half-full';
+  }
   return 'mdi-star-outline';
 }
 let consulta = 0;
+// Evita mostrar dados antigos se o usuário trocar de livro durante a consulta.
 async function carregarAvaliacoes(id = livro.value?.id) {
   const numero = consulta;
   carregandoAvaliacoes.value = true;
@@ -38,11 +46,24 @@ async function carregarAvaliacoes(id = livro.value?.id) {
   try {
     const resposta = await fetch(`${API_URL}/avaliacoes?id_livro=${id}`);
     const dados = await lerResposta(resposta);
-    if (numero === consulta) avaliacoes.value = dados;
+    const respostaUsuarios = await fetch(`${API_URL}/usuarios`);
+    const usuarios = await lerResposta(respostaUsuarios);
+    // O JSON Server retorna cada coleção separada; a tela junta os nomes.
+    for (const avaliacao of dados) {
+      const usuario = usuarios.find((item) => item.id === avaliacao.id_usuario);
+      avaliacao.nome = usuario ? usuario.nome : 'Leitor';
+    }
+    if (numero === consulta) {
+      avaliacoes.value = dados;
+    }
   } catch (e) {
-    if (numero === consulta) erroAvaliacoes.value = mensagemErro(e);
+    if (numero === consulta) {
+      erroAvaliacoes.value = mensagemErro(e);
+    }
   } finally {
-    if (numero === consulta) carregandoAvaliacoes.value = false;
+    if (numero === consulta) {
+      carregandoAvaliacoes.value = false;
+    }
   }
 }
 async function carregar() {
@@ -58,36 +79,39 @@ async function carregar() {
       `${API_URL}/livros?endereco=${endereco}&ativo=true`,
     );
     const encontrados = await lerResposta(resposta);
-    if (numero !== consulta) return;
+    if (numero !== consulta) {
+      return;
+    }
     if (!encontrados.length) {
       erro.value =
         'Livro não encontrado. Ele pode ter sido excluído ou inativado.';
       return;
     }
-    const respostaLivro = await fetch(`${API_URL}/livros/${encontrados[0].id}`);
-    const dados = await lerResposta(respostaLivro);
-    if (numero === consulta) {
-      livro.value = dados;
-      carregarAvaliacoes(dados.id);
-    }
+    livro.value = encontrados[0];
+    carregarAvaliacoes(livro.value.id);
   } catch (e) {
-    if (numero === consulta) erro.value = mensagemErro(e);
+    if (numero === consulta) {
+      erro.value = mensagemErro(e);
+    }
   } finally {
-    if (numero === consulta) carregando.value = false;
+    if (numero === consulta) {
+      carregando.value = false;
+    }
   }
 }
 async function adicionar() {
-  if (adicionando.value) return;
+  if (adicionando.value) {
+    return;
+  }
   adicionando.value = true;
   aviso.value = '';
   try {
     const resposta = await fetch(`${API_URL}/livros/${livro.value.id}`);
     const atualizado = await lerResposta(resposta);
-    adicionaraoarrinho(atualizado, 1);
+    adicionarAoCarrinho(atualizado, 1);
     aviso.value = 'Livro adicionado ao carrinho.';
   } catch (e) {
-    aviso.value =
-      e.status || e instanceof TypeError ? mensagemErro(e) : e.message;
+    aviso.value = mensagemErro(e);
   } finally {
     adicionando.value = false;
   }

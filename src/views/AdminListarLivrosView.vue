@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { formataPreco } from '@/utils/produtosUtils';
@@ -9,9 +9,8 @@ import ConfirmacaoExclusao from '@/components/ConfirmacaoExclusao.vue';
 
 const route = useRoute();
 const router = useRouter();
-const livros = ref([]);
-const total = ref(0);
-const carregando = ref(true);
+const todosLivros = ref([]);
+const carregando = ref(false);
 const erro = ref('');
 const sucesso = ref('');
 const livroSelecionado = ref(null);
@@ -20,81 +19,107 @@ const genero = ref(String(route.query.genero || ''));
 const ativo = ref(String(route.query.ativo || ''));
 const disponibilidade = ref(String(route.query.disponibilidade || ''));
 const limite = 8;
-let consultaAtual = 0;
 
 if (route.query.resultado === 'excluido') {
   sucesso.value = 'Livro e suas avaliações excluídos com sucesso.';
 }
 
+// Cada if verifica um filtro. continue pula o livro que não atende ao filtro.
+const filtrados = computed(() => {
+  const resultado = [];
+  const filtros = route.query;
+  const pesquisa = normalizarTexto(filtros.q || '');
+
+  for (const livro of todosLivros.value) {
+    const texto = normalizarTexto(
+      livro.titulo + ' ' + livro.autor + ' ' + livro.genero + ' ' + livro.id,
+    );
+    if (pesquisa && !texto.includes(pesquisa)) {
+      continue;
+    }
+    if (filtros.genero && livro.genero !== filtros.genero) {
+      continue;
+    }
+    if (filtros.ativo && String(livro.ativo) !== filtros.ativo) {
+      continue;
+    }
+    if (filtros.disponibilidade === 'disponivel' && livro.estoque <= 0) {
+      continue;
+    }
+    if (filtros.disponibilidade === 'esgotado' && livro.estoque !== 0) {
+      continue;
+    }
+    if (
+      filtros.disponibilidade === 'baixo' &&
+      livro.estoque > livro.estoque_minimo
+    ) {
+      continue;
+    }
+    resultado.push(livro);
+  }
+  return resultado;
+});
+
+const total = computed(() => filtrados.value.length);
+const livros = computed(() => {
+  const inicio = (pagina() - 1) * limite;
+  return filtrados.value.slice(inicio, inicio + limite);
+});
+
 function pagina() {
-  return Math.max(1, Number(route.query.pagina) || 1);
+  const ultimaPagina = Math.max(1, Math.ceil(total.value / limite));
+  const solicitada = Math.floor(Number(route.query.pagina)) || 1;
+  return Math.min(ultimaPagina, Math.max(1, solicitada));
 }
 
 async function carregar() {
-  // Se houver duas pesquisas, somente a resposta mais recente altera a lista.
-  const consulta = ++consultaAtual;
+  if (carregando.value) {
+    return;
+  }
   carregando.value = true;
   erro.value = '';
-
   try {
-    const resposta = await fetch(`${API_URL}/livros`);
-    let dados = await lerResposta(resposta);
-    const filtros = route.query;
-    if (filtros.q) {
-      const busca = normalizarTexto(filtros.q);
-      dados = dados.filter((livro) =>
-        [livro.titulo, livro.autor, livro.genero, livro.id].some((valor) =>
-          normalizarTexto(valor).includes(busca),
-        ),
-      );
-    }
-    if (filtros.genero)
-      dados = dados.filter((livro) => livro.genero === filtros.genero);
-    if (filtros.ativo)
-      dados = dados.filter((livro) => String(livro.ativo) === filtros.ativo);
-    if (filtros.disponibilidade === 'disponivel')
-      dados = dados.filter((livro) => livro.estoque > 0);
-    if (filtros.disponibilidade === 'esgotado')
-      dados = dados.filter((livro) => livro.estoque === 0);
-    if (filtros.disponibilidade === 'baixo')
-      dados = dados.filter((livro) => livro.estoque <= livro.estoque_minimo);
-    if (consulta !== consultaAtual) return;
-
-    total.value = dados.length;
-    const inicio = (pagina() - 1) * limite;
-    livros.value = dados.slice(inicio, inicio + limite);
-
-    if (livros.value.length === 0 && pagina() > 1 && total.value > 0) {
-      await mudarPagina(Math.ceil(total.value / limite));
-    }
-  } catch (e) {
-    if (consulta === consultaAtual) erro.value = mensagemErro(e);
+    const resposta = await fetch(API_URL + '/livros');
+    todosLivros.value = await lerResposta(resposta);
+  } catch (erroApi) {
+    erro.value = mensagemErro(erroApi);
   } finally {
-    if (consulta === consultaAtual) carregando.value = false;
+    carregando.value = false;
   }
 }
 
 function aplicarFiltros() {
   const query = {};
-  if (busca.value.trim()) query.q = busca.value.trim();
-  if (genero.value) query.genero = genero.value;
-  if (ativo.value) query.ativo = ativo.value;
-  if (disponibilidade.value) query.disponibilidade = disponibilidade.value;
+  if (busca.value.trim()) {
+    query.q = busca.value.trim();
+  }
+  if (genero.value) {
+    query.genero = genero.value;
+  }
+  if (ativo.value) {
+    query.ativo = ativo.value;
+  }
+  if (disponibilidade.value) {
+    query.disponibilidade = disponibilidade.value;
+  }
   router.replace({ query });
 }
 
 function mudarPagina(numero) {
-  return router.replace({ query: { ...route.query, pagina: numero } });
+  router.replace({ query: { ...route.query, pagina: numero } });
 }
 
 async function atualizarLista(inativado) {
   livroSelecionado.value = null;
-  sucesso.value = inativado
-    ? 'Livro inativado com sucesso. O histórico foi preservado.'
-    : 'Livro e suas avaliações excluídos com sucesso.';
+  if (inativado) {
+    sucesso.value = 'Livro inativado com sucesso. O histórico foi preservado.';
+  } else {
+    sucesso.value = 'Livro e suas avaliações excluídos com sucesso.';
+  }
   await carregar();
 }
 
+// Mantém os filtros preenchidos quando o usuário volta pelo navegador.
 watch(
   () => route.query,
   () => {
@@ -102,7 +127,6 @@ watch(
     genero.value = String(route.query.genero || '');
     ativo.value = String(route.query.ativo || '');
     disponibilidade.value = String(route.query.disponibilidade || '');
-    carregar();
   },
 );
 

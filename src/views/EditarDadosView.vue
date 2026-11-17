@@ -1,4 +1,4 @@
 <script setup>
-import ContaTela from "@/components/ContaTela.vue";
+import ContaTela from '@/components/ContaTela.vue';
 </script>
 <template><ContaTela modo="editar" /></template>

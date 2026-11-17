@@ -5,7 +5,7 @@ import {
   carrinho,
   total,
   removerItem,
-  adicionaraoarrinho,
+  adicionarAoCarrinho,
 } from '@/utils/cartUtils';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { formataPreco } from '@/utils/produtosUtils';
@@ -16,7 +16,9 @@ const erroCarrinho = ref('');
 async function alterarQuantidade(id, delta) {
   erroCarrinho.value = '';
   const item = carrinho.find((registro) => registro.id === id);
-  if (!item) return;
+  if (!item) {
+    return;
+  }
   if (item.quantidade + delta <= 0) {
     removerItem(id);
     return;
@@ -24,10 +26,9 @@ async function alterarQuantidade(id, delta) {
   try {
     const resposta = await fetch(`${API_URL}/livros/${id}`);
     const livro = await lerResposta(resposta);
-    adicionaraoarrinho(livro, delta);
+    adicionarAoCarrinho(livro, delta);
   } catch (e) {
-    erroCarrinho.value =
-      e.status || e instanceof TypeError ? mensagemErro(e) : e.message;
+    erroCarrinho.value = mensagemErro(e);
   }
 }
 </script>

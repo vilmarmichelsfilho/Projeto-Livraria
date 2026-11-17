@@ -1,6 +1,9 @@
 <script setup>
-import AdminPedidoPagina from "@/components/admin/AdminPedidoPagina.vue";
+import AdminPedidoPagina from '@/components/admin/AdminPedidoPagina.vue';
 </script>
 <template>
-  <AdminPedidoPagina :key="$route.params.id" modo="detalhes" />
+  <AdminPedidoPagina
+    :key="$route.params.id"
+    modo="detalhes"
+  />
 </template>

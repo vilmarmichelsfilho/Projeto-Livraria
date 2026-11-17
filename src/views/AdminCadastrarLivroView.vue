@@ -16,7 +16,9 @@ const voltar = String(route.query.voltar || '').startsWith('/admin/livros')
 
 // Recebe os dados validados pelo formulário e cadastra na API.
 async function cadastrarLivro(novoLivro) {
-  if (salvando.value) return;
+  if (salvando.value) {
+    return;
+  }
   salvando.value = true;
   erro.value = '';
   errosCampos.value = {};
@@ -64,7 +66,7 @@ async function cadastrarLivro(novoLivro) {
     />
     <LivrosForm
       :ocupado="salvando"
-      :erros-api="errosCampos"
+      :erros-campos="errosCampos"
       :cancelar="voltar"
       @salvar="cadastrarLivro"
     />

@@ -1,33 +1,44 @@
 <script setup>
-import AdminIcon from "./AdminIcon.vue";
-import { moeda } from "@/services/pedidosService";
+import AdminIcon from './AdminIcon.vue';
+import { moeda } from '@/services/pedidosService';
 defineProps({
   itens: { type: Array, required: true },
   editavel: Boolean,
   disabled: Boolean,
   livros: { type: Array, default: () => [] },
 });
-const emit = defineEmits(["view", "edit", "remove", "quantity"]);
+const emit = defineEmits(['view', 'edit', 'remove', 'quantity']);
 const capa = (livro) =>
   livro?.capa
-    ? `${import.meta.env.BASE_URL}${livro.capa.replace(/^\//, "")}`
-    : "";
+    ? `${import.meta.env.BASE_URL}${livro.capa.replace(/^\//, '')}`
+    : '';
 </script>
 <template>
   <div class="admin-order-items">
     <div class="admin-table-wrap admin-desktop-only">
-      <table class="admin-table" aria-label="Itens do pedido">
+      <table
+        class="admin-table"
+        aria-label="Itens do pedido"
+      >
         <thead>
           <tr>
             <th scope="col">Livro</th>
             <th scope="col">Quantidade</th>
-            <th scope="col">{{ editavel ? "Preço" : "Preço unitário" }}</th>
+            <th scope="col">{{ editavel ? 'Preço' : 'Preço unitário' }}</th>
             <th scope="col">Subtotal</th>
-            <th v-if="editavel" scope="col">Ações</th>
+            <th
+              v-if="editavel"
+              scope="col"
+            >
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in itens" :key="item.id_livro">
+          <tr
+            v-for="item in itens"
+            :key="item.id_livro"
+          >
             <td>{{ item.titulo_livro }}</td>
             <td>{{ item.quantidade }}</td>
             <td>{{ moeda(item.preco_unitario) }}</td>
@@ -97,7 +108,10 @@ const capa = (livro) =>
             :alt="`Capa de ${item.titulo_livro}`"
             loading="lazy"
           />
-          <div v-else class="admin-book-cover admin-cover-placeholder">
+          <div
+            v-else
+            class="admin-book-cover admin-cover-placeholder"
+          >
             <AdminIcon name="book" />
           </div>
           <div class="admin-item-info">
@@ -119,7 +133,10 @@ const capa = (livro) =>
             ><span class="admin-badge">Qtd. {{ item.quantidade }}</span>
           </div>
         </article>
-        <div v-if="editavel" class="admin-item-card-actions">
+        <div
+          v-if="editavel"
+          class="admin-item-card-actions"
+        >
           <div
             class="admin-quantity-stepper"
             :aria-label="`Quantidade de ${item.titulo_livro}`"
@@ -155,7 +172,10 @@ const capa = (livro) =>
           </button>
         </div>
       </div>
-      <p v-if="!itens.length" class="admin-items-empty">
+      <p
+        v-if="!itens.length"
+        class="admin-items-empty"
+      >
         Adicione o primeiro livro ao rascunho.
       </p>
     </div>

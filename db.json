@@ -4,7 +4,6 @@
       "id": 1,
       "nome": "Ana Lima",
       "email": "admin@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
       "telefone": "(47) 99999-0001",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
@@ -13,13 +12,13 @@
       "perfil": "ADMIN",
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-16T12:00:00.000Z",
+      "senha": "Teste123!"
     },
     {
       "id": 2,
       "nome": "Marina Costa",
       "email": "ana@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
       "telefone": "(47) 99999-0002",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
@@ -28,13 +27,13 @@
       "perfil": "CLIENTE",
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-16T12:00:00.000Z",
+      "senha": "Teste123!"
     },
     {
       "id": 3,
       "nome": "Lucas Almeida",
       "email": "bruno@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
       "telefone": "(47) 99999-0003",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
@@ -43,13 +42,13 @@
       "perfil": "CLIENTE",
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-16T12:00:00.000Z",
+      "senha": "Teste123!"
     },
     {
       "id": 4,
       "nome": "Carla Martins",
       "email": "carla@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
       "telefone": "(47) 99999-0004",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
@@ -58,13 +57,13 @@
       "perfil": "CLIENTE",
       "ativo": false,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-16T12:00:00.000Z",
+      "senha": "Teste123!"
     },
     {
       "id": 5,
       "nome": "Pedro Lima",
       "email": "pedro@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
       "telefone": "(47) 99999-0005",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
@@ -73,7 +72,8 @@
       "perfil": "CLIENTE",
       "ativo": true,
       "criado_em": "2026-11-16T12:00:00.000Z",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-16T12:00:00.000Z",
+      "senha": "Teste123!"
     }
   ],
   "livros": [

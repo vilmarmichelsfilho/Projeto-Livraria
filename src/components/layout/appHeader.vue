@@ -3,12 +3,17 @@ import { ref, watch, computed } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { favoritos } from '@/utils/favoritos';
 import { carrinho } from '@/utils/cartUtils';
-const route = useRoute(),
-  router = useRouter();
+const route = useRoute();
+const router = useRouter();
 const pesquisa = ref(String(route.query.q || ''));
-const quantidadeCarrinho = computed(() =>
-  carrinho.reduce((total, item) => total + item.quantidade, 0),
-);
+// computed recalcula o contador quando o carrinho muda.
+const quantidadeCarrinho = computed(() => {
+  let quantidade = 0;
+  for (const item of carrinho) {
+    quantidade += item.quantidade;
+  }
+  return quantidade;
+});
 watch(
   () => route.query.q,
   (valor) => {
@@ -16,10 +21,12 @@ watch(
   },
 );
 function pesquisar() {
-  router.push({
-    path: '/',
-    query: pesquisa.value.trim() ? { q: pesquisa.value.trim() } : {},
-  });
+  const texto = pesquisa.value.trim();
+  if (texto) {
+    router.push({ path: '/', query: { q: texto } });
+  } else {
+    router.push('/');
+  }
 }
 </script>
 <template>
@@ -71,7 +78,8 @@ function pesquisar() {
           v-if="favoritos.length"
           class="contador"
           >{{ favoritos.length }}</span
-        ></RouterLink>
+        ></RouterLink
+      >
       <RouterLink
         to="/minha-conta"
         aria-label="Minha conta"

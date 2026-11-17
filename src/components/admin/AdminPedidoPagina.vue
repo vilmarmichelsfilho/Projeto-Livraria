@@ -1,48 +1,48 @@
 <script setup>
-import { computed, ref, onMounted } from "vue";
-import { useRoute, useRouter, RouterLink } from "vue-router";
-import PedidosForm from "@/components/PedidosForm.vue";
-import ItensPedidoForm from "@/components/ItensPedidoForm.vue";
-import ItemPedidoDetalhes from "@/components/ItemPedidoDetalhes.vue";
-import ConfirmacaoExclusaoPedido from "./ConfirmacaoExclusaoPedido.vue";
-import PedidoItensTabela from "./PedidoItensTabela.vue";
-import AdminModal from "./AdminModal.vue";
-import AdminIcon from "./AdminIcon.vue";
-import PedidoAdicionarItem from "./PedidoAdicionarItem.vue";
+import { computed, ref, onMounted } from 'vue';
+import { useRoute, useRouter, RouterLink } from 'vue-router';
+import PedidosForm from '@/components/PedidosForm.vue';
+import ItensPedidoForm from '@/components/ItensPedidoForm.vue';
+import ItemPedidoDetalhes from '@/components/ItemPedidoDetalhes.vue';
+import ConfirmacaoExclusaoPedido from './ConfirmacaoExclusaoPedido.vue';
+import PedidoItensTabela from './PedidoItensTabela.vue';
+import AdminModal from './AdminModal.vue';
+import AdminIcon from './AdminIcon.vue';
+import PedidoAdicionarItem from './PedidoAdicionarItem.vue';
 import pedidosService, {
   moeda,
   totalItens,
   situacoesPedido,
   etapasPedido,
   erroPedido,
-} from "@/services/pedidosService";
+} from '@/services/pedidosService';
 
 const props = defineProps({ modo: { type: String, required: true } });
-const route = useRoute(),
-  router = useRouter();
-const novo = computed(() => props.modo === "novo");
+const route = useRoute();
+const router = useRouter();
+const novo = computed(() => props.modo === 'novo');
 const editavel = computed(
   () =>
     novo.value ||
-    (props.modo === "editar" && pedido.value?.status === "RASCUNHO"),
+    (props.modo === 'editar' && pedido.value?.status === 'RASCUNHO'),
 );
-const pedido = ref(null),
-  itens = ref([]),
-  clientes = ref([]),
-  livros = ref([]);
-const dados = ref({ id_usuario: "", destinatario: "", endereco_entrega: "" });
-const carregando = ref(true),
-  busy = ref(false),
-  erro = ref(""),
-  sucesso = ref(route.query.salvo ? "Rascunho salvo com sucesso." : "");
-const itemForm = ref(false),
-  itemEdicao = ref(null),
-  itemDetalhes = ref(null),
-  itemRemocao = ref(null);
-const exclusao = ref(false),
-  erroExclusao = ref(""),
-  cancelamento = ref(false),
-  situacao = ref("");
+const pedido = ref(null);
+const itens = ref([]);
+const clientes = ref([]);
+const livros = ref([]);
+const dados = ref({ id_usuario: '', destinatario: '', endereco_entrega: '' });
+const carregando = ref(true);
+const busy = ref(false);
+const erro = ref('');
+const sucesso = ref(route.query.salvo ? 'Rascunho salvo com sucesso.' : '');
+const itemForm = ref(false);
+const itemEdicao = ref(null);
+const itemDetalhes = ref(null);
+const itemRemocao = ref(null);
+const exclusao = ref(false);
+const erroExclusao = ref('');
+const cancelamento = ref(false);
+const situacao = ref('');
 const idSalvo = ref(null);
 const cliente = computed(() =>
   clientes.value.find(
@@ -55,30 +55,25 @@ const proximas = computed(() => {
   return indice >= 0 ? etapasPedido.slice(indice + 1, indice + 2) : [];
 });
 const podeCancelar = computed(() =>
-  ["RECEBIDO", "EM_SEPARACAO"].includes(pedido.value?.status),
+  ['RECEBIDO', 'EM_SEPARACAO'].includes(pedido.value?.status),
 );
 const dataPedido = computed(() => {
   const data = pedido.value?.confirmado_em || pedido.value?.criado_em;
-  return data ? new Date(data).toLocaleDateString("pt-BR") : "";
+  return data ? new Date(data).toLocaleDateString('pt-BR') : '';
 });
 async function carregar() {
   carregando.value = true;
-  erro.value = "";
+  erro.value = '';
   try {
-    const resultados = await Promise.all([
-      pedidosService.clientes(),
-      pedidosService.livros(),
-      ...(novo.value ? [] : [pedidosService.obter(route.params.id)]),
-    ]);
-    clientes.value = resultados[0];
-    livros.value = resultados[1];
+    clientes.value = await pedidosService.clientes();
+    livros.value = await pedidosService.livros();
     if (!novo.value) {
-      pedido.value = resultados[2];
+      pedido.value = await pedidosService.obter(route.params.id);
       itens.value = pedido.value.itens ?? [];
       idSalvo.value = pedido.value.id;
       dados.value = {
         id_usuario: pedido.value.id_usuario,
-        destinatario: pedido.value.destinatario || cliente.value?.nome || "",
+        destinatario: pedido.value.destinatario || cliente.value?.nome || '',
         endereco_entrega:
           pedido.value.endereco_entrega ||
           [
@@ -88,13 +83,17 @@ async function carregar() {
             cliente.value?.cep,
           ]
             .filter(Boolean)
-            .join(" • "),
+            .join(' • '),
       };
-      situacao.value = proximas.value[0] || "";
-      if (props.modo === "editar" && pedido.value.status !== "RASCUNHO")
+      situacao.value = proximas.value[0] || '';
+      if (props.modo === 'editar' && pedido.value.status !== 'RASCUNHO') {
         await router.replace(`/admin/pedidos/${pedido.value.id}`);
-      else if (props.modo === "detalhes" && pedido.value.status === "RASCUNHO")
+      } else if (
+        props.modo === 'detalhes' &&
+        pedido.value.status === 'RASCUNHO'
+      ) {
         await router.replace(`/admin/pedidos/${pedido.value.id}/editar`);
+      }
     }
   } catch (error) {
     erro.value = erroPedido(error);
@@ -103,10 +102,12 @@ async function carregar() {
   }
 }
 async function salvar(confirmar = false) {
-  if (busy.value) return;
+  if (busy.value) {
+    return;
+  }
   busy.value = true;
-  erro.value = "";
-  sucesso.value = "";
+  erro.value = '';
+  sucesso.value = '';
   try {
     const salvo = await pedidosService.salvar(
       idSalvo.value,
@@ -116,11 +117,13 @@ async function salvar(confirmar = false) {
     idSalvo.value = salvo.id;
     pedido.value = salvo;
     if (confirmar) {
-      await pedidosService.mudarSituacao(salvo.id, "RECEBIDO");
+      await pedidosService.mudarSituacao(salvo.id, 'RECEBIDO');
       await router.push(`/admin/pedidos/${salvo.id}`);
-    } else if (novo.value)
+    } else if (novo.value) {
       await router.replace(`/admin/pedidos/${salvo.id}/editar?salvo=1`);
-    else sucesso.value = "Alterações salvas com sucesso.";
+    } else {
+      sucesso.value = 'Alterações salvas com sucesso.';
+    }
   } catch (error) {
     erro.value = erroPedido(error);
   } finally {
@@ -135,17 +138,22 @@ function salvarItem(item) {
   const indice = itens.value.findIndex(
     (existente) => String(existente.id_livro) === String(item.id_livro),
   );
-  if (indice < 0) itens.value.push(item);
-  else itens.value[indice] = item;
+  if (indice < 0) {
+    itens.value.push(item);
+  } else {
+    itens.value[indice] = item;
+  }
   itemForm.value = false;
 }
 async function excluir() {
-  if (busy.value) return;
+  if (busy.value) {
+    return;
+  }
   busy.value = true;
-  erroExclusao.value = "";
+  erroExclusao.value = '';
   try {
     await pedidosService.excluir(pedido.value.id);
-    await router.push("/admin/pedidos");
+    await router.push('/admin/pedidos');
   } catch (error) {
     erroExclusao.value = erroPedido(error);
   } finally {
@@ -153,18 +161,20 @@ async function excluir() {
   }
 }
 async function atualizar(status) {
-  if (busy.value) return;
+  if (busy.value) {
+    return;
+  }
   busy.value = true;
-  erro.value = "";
-  sucesso.value = "";
+  erro.value = '';
+  sucesso.value = '';
   try {
     pedido.value = await pedidosService.mudarSituacao(pedido.value.id, status);
-    situacao.value = proximas.value[0] || "";
+    situacao.value = proximas.value[0] || '';
     cancelamento.value = false;
     sucesso.value =
-      status === "CANCELADO"
-        ? "Pedido cancelado com sucesso."
-        : "Situação atualizada com sucesso.";
+      status === 'CANCELADO'
+        ? 'Pedido cancelado com sucesso.'
+        : 'Situação atualizada com sucesso.';
   } catch (error) {
     erro.value = erroPedido(error);
     cancelamento.value = false;
@@ -177,9 +187,18 @@ onMounted(carregar);
 
 <template>
   <section class="admin-page">
-    <p v-if="carregando" role="status">Carregando pedido…</p>
+    <p
+      v-if="carregando"
+      role="status"
+    >
+      Carregando pedido…
+    </p>
     <template v-else>
-      <div v-if="erro" class="admin-feedback error" role="alert">
+      <div
+        v-if="erro"
+        class="admin-feedback error"
+        role="alert"
+      >
         {{ erro }}
         <button
           v-if="!novo && !pedido"
@@ -189,7 +208,11 @@ onMounted(carregar);
           Tentar novamente
         </button>
       </div>
-      <div v-if="sucesso" class="admin-feedback" role="status">
+      <div
+        v-if="sucesso"
+        class="admin-feedback"
+        role="status"
+      >
         {{ sucesso }}
       </div>
       <template v-if="novo || pedido">
@@ -204,7 +227,7 @@ onMounted(carregar);
             <span class="admin-desktop-only">
               {{
                 novo
-                  ? "Criar pedido"
+                  ? 'Criar pedido'
                   : editavel
                     ? `Editar pedido #${pedido.id}`
                     : `Pedido #${pedido.id}`
@@ -212,23 +235,23 @@ onMounted(carregar);
             </span>
             <span class="admin-mobile-only">{{
               novo
-                ? "Criar pedido"
+                ? 'Criar pedido'
                 : editavel
-                  ? "Editar rascunho"
+                  ? 'Editar rascunho'
                   : `Pedido #${pedido.id}`
             }}</span>
           </h1>
           <p class="admin-subtitle admin-desktop-only">
             {{
               novo
-                ? "O pedido inicia como rascunho e ainda não altera o estoque"
-                : `${situacoesPedido[pedido.status]}${editavel ? "" : ` em ${dataPedido}`} • Cliente ${cliente?.nome || "não encontrado"}`
+                ? 'O pedido inicia como rascunho e ainda não altera o estoque'
+                : `${situacoesPedido[pedido.status]}${editavel ? '' : ` em ${dataPedido}`} • Cliente ${cliente?.nome || 'não encontrado'}`
             }}
           </p>
           <p class="admin-subtitle admin-mobile-only">
             {{
               editavel
-                ? "As alterações são permitidas no rascunho."
+                ? 'As alterações são permitidas no rascunho.'
                 : `${situacoesPedido[pedido.status]} em ${dataPedido}`
             }}
           </p>
@@ -238,7 +261,10 @@ onMounted(carregar);
             >{{ situacoesPedido[pedido.status] }}</span
           >
         </header>
-        <form v-if="editavel" @submit.prevent="salvar(false)">
+        <form
+          v-if="editavel"
+          @submit.prevent="salvar(false)"
+        >
           <PedidosForm
             v-model="dados"
             :clientes="clientes"
@@ -251,10 +277,22 @@ onMounted(carregar);
             :disabled="busy"
             @add="salvarItem"
           />
-          <h2 v-if="novo" class="admin-desktop-only">Itens do pedido</h2>
-          <div v-if="!itens.length" class="admin-empty admin-desktop-only">
+          <h2
+            v-if="novo"
+            class="admin-desktop-only"
+          >
+            Itens do pedido
+          </h2>
+          <div
+            v-if="!itens.length"
+            class="admin-empty admin-desktop-only"
+          >
             <p>Adicione o primeiro livro ao rascunho</p>
-            <button type="button" :disabled="busy" @click="abrirItem()">
+            <button
+              type="button"
+              :disabled="busy"
+              @click="abrirItem()"
+            >
               <AdminIcon name="plus" />Adicionar item
             </button>
           </div>
@@ -269,8 +307,15 @@ onMounted(carregar);
             @remove="itemRemocao = $event"
             @quantity="salvarItem"
           />
-          <div v-if="itens.length" class="admin-total-row admin-desktop-only">
-            <button type="button" :disabled="busy" @click="abrirItem()">
+          <div
+            v-if="itens.length"
+            class="admin-total-row admin-desktop-only"
+          >
+            <button
+              type="button"
+              :disabled="busy"
+              @click="abrirItem()"
+            >
               <AdminIcon name="plus" />Adicionar item
             </button>
             <p class="admin-total">Total {{ moeda(total) }}</p>
@@ -282,10 +327,10 @@ onMounted(carregar);
             <button :disabled="busy">
               {{
                 busy
-                  ? "Salvando…"
+                  ? 'Salvando…'
                   : novo
-                    ? "Salvar rascunho"
-                    : "Salvar alterações"
+                    ? 'Salvar rascunho'
+                    : 'Salvar alterações'
               }}</button
             ><RouterLink
               :class="{ 'admin-mobile-only': !novo }"
@@ -303,7 +348,10 @@ onMounted(carregar);
             </button>
           </div>
         </form>
-        <div v-else class="admin-confirmed-content">
+        <div
+          v-else
+          class="admin-confirmed-content"
+        >
           <div
             v-if="pedido.status !== 'CANCELADO'"
             class="admin-tracking-card admin-mobile-only"
@@ -316,19 +364,19 @@ onMounted(carregar);
                 :class="{ current: pedido.status === etapa }"
                 :aria-current="pedido.status === etapa ? 'step' : undefined"
               >
-                {{ pedido.status === etapa ? "●" : "○" }}
+                {{ pedido.status === etapa ? '●' : '○' }}
                 {{ situacoesPedido[etapa] }}
               </li>
             </ol>
             <p>
               {{
-                pedido.status === "RECEBIDO"
-                  ? "Pedido recebido. Em breve iniciaremos a separação."
-                  : pedido.status === "EM_SEPARACAO"
-                    ? "Seu pedido está sendo preparado para envio."
-                    : pedido.status === "ENVIADO"
-                      ? "Seu pedido está a caminho."
-                      : "Pedido entregue."
+                pedido.status === 'RECEBIDO'
+                  ? 'Pedido recebido. Em breve iniciaremos a separação.'
+                  : pedido.status === 'EM_SEPARACAO'
+                    ? 'Seu pedido está sendo preparado para envio.'
+                    : pedido.status === 'ENVIADO'
+                      ? 'Seu pedido está a caminho.'
+                      : 'Pedido entregue.'
               }}
             </p>
           </div>
@@ -346,14 +394,17 @@ onMounted(carregar);
               {{ situacoesPedido[etapa] }}
             </li>
           </ol>
-          <PedidoItensTabela :itens="itens" :livros="livros" />
+          <PedidoItensTabela
+            :itens="itens"
+            :livros="livros"
+          />
           <div class="admin-address">
             <h2>Destinatário e endereço</h2>
             <p>
               <span>{{ pedido.destinatario || cliente?.nome }}</span
               ><span class="admin-desktop-only"> • </span>
               <span>{{
-                pedido.endereco_entrega || "Endereço não informado"
+                pedido.endereco_entrega || 'Endereço não informado'
               }}</span>
             </p>
           </div>
@@ -366,9 +417,14 @@ onMounted(carregar);
             class="admin-status-form"
             @submit.prevent="atualizar(situacao)"
           >
-            <label v-if="proximas.length" class="admin-field"
+            <label
+              v-if="proximas.length"
+              class="admin-field"
               ><span>Atualizar situação</span
-              ><select v-model="situacao" :disabled="busy">
+              ><select
+                v-model="situacao"
+                :disabled="busy"
+              >
                 <option
                   v-for="status in proximas"
                   :key="status"
@@ -377,8 +433,11 @@ onMounted(carregar);
                   {{ situacoesPedido[status] }}
                 </option>
               </select></label
-            ><button v-if="proximas.length" :disabled="busy">
-              {{ busy ? "Salvando…" : "Salvar situação" }}</button
+            ><button
+              v-if="proximas.length"
+              :disabled="busy"
+            >
+              {{ busy ? 'Salvando…' : 'Salvar situação' }}</button
             ><button
               v-if="podeCancelar"
               type="button"
@@ -390,12 +449,15 @@ onMounted(carregar);
             </button>
           </form>
         </div>
-        <div v-if="!novo" class="admin-notice">
+        <div
+          v-if="!novo"
+          class="admin-notice"
+        >
           <p>
             {{
               editavel
-                ? "Somente pedidos em rascunho podem ser excluídos."
-                : "Pedidos confirmados são preservados; use o cancelamento permitido."
+                ? 'Somente pedidos em rascunho podem ser excluídos.'
+                : 'Pedidos confirmados são preservados; use o cancelamento permitido.'
             }}
           </p>
           <button
@@ -406,7 +468,7 @@ onMounted(carregar);
               exclusao = true;
             "
           >
-            {{ editavel ? "Excluir rascunho" : "Excluir pedido" }}
+            {{ editavel ? 'Excluir rascunho' : 'Excluir pedido' }}
           </button>
         </div>
       </template>
@@ -449,7 +511,10 @@ onMounted(carregar);
         alterações para aplicar.
       </p>
       <div class="admin-modal-actions">
-        <button class="admin-button-secondary" @click="itemRemocao = null">
+        <button
+          class="admin-button-secondary"
+          @click="itemRemocao = null"
+        >
           Cancelar</button
         ><button
           class="admin-button-destructive"
@@ -486,7 +551,7 @@ onMounted(carregar);
           :disabled="busy"
           @click="atualizar('CANCELADO')"
         >
-          {{ busy ? "Cancelando…" : "Cancelar pedido" }}
+          {{ busy ? 'Cancelando…' : 'Cancelar pedido' }}
         </button>
       </div></AdminModal
     >

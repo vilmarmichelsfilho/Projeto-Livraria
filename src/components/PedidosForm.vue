@@ -9,7 +9,9 @@ function selecionar() {
   const cliente = props.clientes.find(
     (cliente) => String(cliente.id) === String(model.value.id_usuario),
   );
-  if (!cliente) return;
+  if (!cliente) {
+    return;
+  }
   model.value.destinatario = cliente.nome;
   model.value.endereco_entrega = [
     cliente.endereco,
@@ -18,7 +20,7 @@ function selecionar() {
     cliente.cep,
   ]
     .filter(Boolean)
-    .join(" • ");
+    .join(' • ');
 }
 </script>
 <template>
@@ -31,24 +33,36 @@ function selecionar() {
         :disabled="disabled"
         @change="selecionar"
       >
-        <option value="" disabled>Selecione um cliente</option>
+        <option
+          value=""
+          disabled
+        >
+          Selecione um cliente
+        </option>
         <option
           v-for="cliente in clientes"
           :key="cliente.id"
           :value="cliente.id"
           :disabled="!cliente.ativo"
         >
-          {{ cliente.nome }}{{ cliente.ativo ? "" : " (inativo)" }}
+          {{ cliente.nome }}{{ cliente.ativo ? '' : ' (inativo)' }}
         </option>
       </select></label
     >
-    <label v-if="novo" class="admin-field admin-desktop-only"
+    <label
+      v-if="novo"
+      class="admin-field admin-desktop-only"
       ><span>Situação</span
-      ><select disabled aria-label="Situação inicial">
+      ><select
+        disabled
+        aria-label="Situação inicial"
+      >
         <option>Rascunho</option>
       </select></label
     >
-    <label v-if="novo" class="admin-field admin-desktop-only"
+    <label
+      v-if="novo"
+      class="admin-field admin-desktop-only"
       ><span>Destinatário</span
       ><input
         v-model="model.destinatario"

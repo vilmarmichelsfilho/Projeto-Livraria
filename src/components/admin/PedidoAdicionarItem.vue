@@ -1,14 +1,14 @@
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch } from 'vue';
 const props = defineProps({
   livros: { type: Array, required: true },
   itens: { type: Array, required: true },
   disabled: Boolean,
 });
-const emit = defineEmits(["add"]);
-const livroId = ref(""),
-  quantidade = ref(1),
-  erro = ref("");
+const emit = defineEmits(['add']);
+const livroId = ref('');
+const quantidade = ref(1);
+const erro = ref('');
 const disponiveis = computed(() =>
   props.livros.filter(
     (livro) =>
@@ -18,8 +18,9 @@ const disponiveis = computed(() =>
 watch(
   disponiveis,
   (livros) => {
-    if (!livros.some((livro) => String(livro.id) === String(livroId.value)))
-      livroId.value = livros[0]?.id ?? "";
+    if (!livros.some((livro) => String(livro.id) === String(livroId.value))) {
+      livroId.value = livros[0]?.id ?? '';
+    }
   },
   { immediate: true },
 );
@@ -28,28 +29,38 @@ function adicionar() {
     (livro) => String(livro.id) === String(livroId.value),
   );
   if (!livro || !Number.isInteger(quantidade.value) || quantidade.value < 1) {
-    erro.value = "Informe uma quantidade inteira maior que zero.";
+    erro.value = 'Informe uma quantidade inteira maior que zero.';
     return;
   }
-  emit("add", {
+  emit('add', {
     id_livro: livro.id,
     titulo_livro: livro.titulo,
     preco_unitario: livro.preco,
     quantidade: quantidade.value,
   });
   quantidade.value = 1;
-  erro.value = "";
+  erro.value = '';
 }
 </script>
 <template>
   <div class="admin-inline-item admin-mobile-only">
     <label class="admin-field"
       ><span>Adicionar livro</span
-      ><select v-model="livroId" :disabled="disabled || !disponiveis.length">
-        <option v-if="!disponiveis.length" value="">
+      ><select
+        v-model="livroId"
+        :disabled="disabled || !disponiveis.length"
+      >
+        <option
+          v-if="!disponiveis.length"
+          value=""
+        >
           Todos os livros foram adicionados
         </option>
-        <option v-for="livro in disponiveis" :key="livro.id" :value="livro.id">
+        <option
+          v-for="livro in disponiveis"
+          :key="livro.id"
+          :value="livro.id"
+        >
           {{ livro.titulo }}
         </option>
       </select></label
@@ -64,7 +75,13 @@ function adicionar() {
         step="1"
         :disabled="disabled"
     /></label>
-    <p v-if="erro" class="admin-feedback error" role="alert">{{ erro }}</p>
+    <p
+      v-if="erro"
+      class="admin-feedback error"
+      role="alert"
+    >
+      {{ erro }}
+    </p>
     <button
       type="button"
       class="admin-button-secondary"

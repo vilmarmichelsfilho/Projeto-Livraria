@@ -1,16 +1,16 @@
 <script setup>
-import { computed, ref } from "vue";
-import AdminModal from "./admin/AdminModal.vue";
-import { moeda } from "@/services/pedidosService";
+import { computed, ref } from 'vue';
+import AdminModal from './admin/AdminModal.vue';
+import { moeda } from '@/services/pedidosService';
 const props = defineProps({
   livros: { type: Array, required: true },
   itens: { type: Array, required: true },
   item: { type: Object, default: null },
 });
-const emit = defineEmits(["close", "save"]);
-const livroId = ref(props.item?.id_livro ?? "");
+const emit = defineEmits(['close', 'save']);
+const livroId = ref(props.item?.id_livro ?? '');
 const quantidade = ref(props.item?.quantidade ?? 1);
-const erro = ref("");
+const erro = ref('');
 const disponiveis = computed(() =>
   props.livros.filter(
     (livro) =>
@@ -28,10 +28,10 @@ function salvar() {
     quantidade.value < 1
   ) {
     erro.value =
-      "Selecione um livro e informe uma quantidade inteira maior que zero.";
+      'Selecione um livro e informe uma quantidade inteira maior que zero.';
     return;
   }
-  emit("save", {
+  emit('save', {
     ...props.item,
     id_livro: livro.value.id,
     titulo_livro: livro.value.titulo,
@@ -45,12 +45,21 @@ function salvar() {
     :label="item ? 'Editar item' : 'Adicionar item'"
     @close="emit('close')"
   >
-    <h2>{{ item ? "Editar item" : "Adicionar item" }}</h2>
+    <h2>{{ item ? 'Editar item' : 'Adicionar item' }}</h2>
     <form @submit.prevent="salvar">
       <label class="admin-field"
         ><span>Livro *</span
-        ><select v-model="livroId" required :disabled="!!item">
-          <option value="" disabled>Selecione um livro</option>
+        ><select
+          v-model="livroId"
+          required
+          :disabled="!!item"
+        >
+          <option
+            value=""
+            disabled
+          >
+            Selecione um livro
+          </option>
           <option
             v-for="opcao in disponiveis"
             :key="opcao.id"
@@ -69,14 +78,23 @@ function salvar() {
           step="1"
           required
       /></label>
-      <p v-if="livro" style="margin-top: 16px">
+      <p
+        v-if="livro"
+        style="margin-top: 16px"
+      >
         Preço unitário: {{ moeda(item?.preco_unitario ?? livro.preco) }} ·
         Estoque: {{ livro.estoque }}
       </p>
       <p v-if="!disponiveis.length">
         Todos os livros disponíveis já foram adicionados.
       </p>
-      <p v-if="erro" class="admin-feedback error" role="alert">{{ erro }}</p>
+      <p
+        v-if="erro"
+        class="admin-feedback error"
+        role="alert"
+      >
+        {{ erro }}
+      </p>
       <div class="admin-modal-actions">
         <button
           type="button"
@@ -85,7 +103,7 @@ function salvar() {
         >
           Cancelar</button
         ><button :disabled="!disponiveis.length">
-          {{ item ? "Salvar item" : "Adicionar item" }}
+          {{ item ? 'Salvar item' : 'Adicionar item' }}
         </button>
       </div>
     </form>

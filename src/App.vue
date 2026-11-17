@@ -1,27 +1,36 @@
 <script setup>
-import { computed } from "vue";
-import { RouterView, useRoute } from "vue-router";
-import ContaMobileChrome from "./components/layout/ContaMobileChrome.vue";
-import appFooter from "./components/layout/appFooter.vue";
-import AppHeader from "./components/layout/appHeader.vue";
+import { computed } from 'vue';
+import { RouterView, useRoute } from 'vue-router';
+import ContaMobileChrome from './components/layout/ContaMobileChrome.vue';
+import appFooter from './components/layout/appFooter.vue';
+import AppHeader from './components/layout/appHeader.vue';
 const route = useRoute();
 const contaMobile = computed(() =>
   [
-    "/entrar",
-    "/cadastro",
-    "/minha-conta",
-    "/minha-conta/editar",
-    "/minha-conta/senha",
+    '/entrar',
+    '/cadastro',
+    '/minha-conta',
+    '/minha-conta/editar',
+    '/minha-conta/senha',
   ].includes(route.path),
 );
 </script>
 
 <template>
-  <div class="app-container" :class="{ 'conta-shell': contaMobile }">
+  <div
+    class="app-container"
+    :class="{ 'conta-shell': contaMobile }"
+  >
     <ContaMobileChrome v-if="contaMobile" />
-    <AppHeader v-if="!route.meta.admin" class="conta-desktop-header" />
+    <AppHeader
+      v-if="!route.meta.admin"
+      class="conta-desktop-header"
+    />
     <RouterView class="content-wrap" />
-    <appFooter v-if="!route.meta.admin" class="conta-desktop-footer" />
+    <appFooter
+      v-if="!route.meta.admin"
+      class="conta-desktop-footer"
+    />
   </div>
 </template>
 <style scoped>

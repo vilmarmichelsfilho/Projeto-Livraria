@@ -1,10 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { favoritos, estaFavoritado, alternarFavorito } from '@/utils/favoritos';
 import { generos, normalizarTexto } from '@/utils/livrosUtils';
-import { adicionaraoarrinho } from '@/utils/cartUtils';
+import { adicionarAoCarrinho } from '@/utils/cartUtils';
 import ProdutoCard from '@/components/Produtos/produtoCard.vue';
 import EstadoRequisicao from './EstadoRequisicao.vue';
 
@@ -15,55 +15,65 @@ const carregando = ref(false);
 const erro = ref('');
 const aviso = ref('');
 const adicionando = ref([]);
-const exibidos = computed(() =>
-  props.somenteFavoritos
-    ? livros.value.filter((livro) => favoritos.value.includes(livro.id))
-    : livros.value,
-);
-let consulta = 0;
+
+// A API carrega os livros uma vez. Os filtros usam essa lista na tela.
+const exibidos = computed(() => {
+  const resultado = [];
+  const pesquisa = normalizarTexto(route.query.q || '');
+
+  for (const livro of livros.value) {
+    if (props.genero && livro.genero !== props.genero) {
+      continue;
+    }
+    if (props.somenteFavoritos && !favoritos.value.includes(livro.id)) {
+      continue;
+    }
+
+    const texto = normalizarTexto(livro.titulo + ' ' + livro.autor);
+    if (pesquisa && !texto.includes(pesquisa)) {
+      continue;
+    }
+    resultado.push(livro);
+  }
+  return resultado;
+});
 
 async function carregar() {
-  const numero = ++consulta;
+  if (carregando.value) {
+    return;
+  }
   carregando.value = true;
   erro.value = '';
   try {
-    const resposta = await fetch(`${API_URL}/livros?ativo=true`);
-    let dados = await lerResposta(resposta);
-    if (props.genero)
-      dados = dados.filter((livro) => livro.genero === props.genero);
-    const busca = normalizarTexto(route.query.q || '');
-    if (busca) {
-      dados = dados.filter(
-        (livro) =>
-          normalizarTexto(livro.titulo).includes(busca) ||
-          normalizarTexto(livro.autor).includes(busca),
-      );
-    }
-    if (numero === consulta) livros.value = dados;
-  } catch (e) {
-    if (numero === consulta) erro.value = mensagemErro(e);
+    const resposta = await fetch(API_URL + '/livros?ativo=true');
+    livros.value = await lerResposta(resposta);
+  } catch (erroApi) {
+    erro.value = mensagemErro(erroApi);
   } finally {
-    if (numero === consulta) carregando.value = false;
+    carregando.value = false;
   }
 }
 
 async function adicionar(id, quantidade) {
-  if (adicionando.value.includes(id)) return;
+  if (adicionando.value.includes(id)) {
+    return;
+  }
   adicionando.value.push(id);
   aviso.value = '';
   try {
-    const resposta = await fetch(`${API_URL}/livros/${id}`);
+    // Consulta o estoque atual antes de colocar o livro no carrinho.
+    const resposta = await fetch(API_URL + '/livros/' + id);
     const livro = await lerResposta(resposta);
-    adicionaraoarrinho(livro, quantidade);
+    adicionarAoCarrinho(livro, quantidade);
     aviso.value = 'Livro adicionado ao carrinho.';
-  } catch (e) {
-    aviso.value =
-      e.status || e instanceof TypeError ? mensagemErro(e) : e.message;
+  } catch (erroApi) {
+    aviso.value = mensagemErro(erroApi);
   } finally {
     adicionando.value = adicionando.value.filter((item) => item !== id);
   }
 }
-watch(() => [props.genero, route.query.q], carregar, { immediate: true });
+
+onMounted(carregar);
 </script>
 <template>
   <main class="loja-conteudo">

@@ -6,7 +6,11 @@ import { RouterLink } from 'vue-router';
   <footer class="rodape">
     <div class="rodape-conteudo">
       <div>
-        <RouterLink class="rodape-logo" to="/">IFLibrary</RouterLink>
+        <RouterLink
+          class="rodape-logo"
+          to="/"
+          >IFLibrary</RouterLink
+        >
         <p>Uma livraria para encontrar sua próxima leitura</p>
       </div>
       <div>

@@ -8,7 +8,7 @@ Turma: não informada; preencher antes da entrega.
 Equipe: Igor Gabriel Decker, Vilmar Michels Filho, Davi Augusto Ramos e Vitor.
 Entidade: Livros.
 Responsável pelo CRUD completo: Igor Gabriel Decker.
-Versão do documento: 1.4 — 16/11/2026.
+Versão do documento: 1.5 — 16/11/2026.
 Repositório: https://github.com/vilmarmichelsfilho/Projeto-Livraria
 API: http://localhost:3000 — JSON Server 0.17.4.
 Aplicação: http://localhost:5173
@@ -175,34 +175,24 @@ API padrão. Falhas de rede e outros erros HTTP são apresentados ao usuário.
 
 9. REGISTRO DAS VERIFICAÇÕES
 
-Data: 16/11/2026. Responsável pelo CRUD e demonstração: Igor Gabriel Decker.
-Ambiente: Node.js 24.15.0, Windows, JSON Server 0.17.4.
-Atualização: PATCH.
+A API é o JSON Server padrão. Testes de rotas personalizadas de autenticação
+foram removidos junto com o servidor próprio.
+Os fluxos de livros, conta e pedidos são conferidos com uma base temporária.
+Códigos esperados: GET 200, POST 201, PATCH 200, DELETE 200 e GET ausente 404.
+As validações do Vue exibem mensagens sem inventar códigos HTTP da API.
+O teste de CEP pode ser executado com node --test tests/cep.test.js.
 
-Foram executadas verificações automatizadas temporárias, fora do repositório,
-usando as funções dos componentes Vue e uma cópia de db.json:
-- Validação de livro válido, preço negativo, estoque negativo e páginas fracionadas.
-- Cadastro pela função da página: POST e consulta do ID/datas retornados.
-- Slug repetido: mensagem no formulário e ausência de segundo cadastro.
-- Edição pela função da página: PATCH e preservação da data de criação.
-- Cancelamento da confirmação sem requisição DELETE.
-- Livro com pedido: bloqueio da exclusão e inativação.
-- Livro sem pedido: remoção das avaliações, DELETE e GET posterior 404.
-- Preservação das regras CSS originais ao transferi-las para os componentes.
-- A base de dados da equipe permaneceu inalterada.
-
-Resultado dessas verificações: aprovado.
-Build e ESLint: aprovados.
-Conferência visual e navegação manual no navegador: ainda pendentes.
-
-npm run test:conta verifica o servidor de contas e a leitura pública das avaliações.
+Resultados após retirar o servidor próprio: build, ESLint e Oxlint aprovados;
+cinco testes de CEP aprovados; CRUDs de conta, livros e pedidos conferidos
+com dados temporários. O teste de navegador também passou em desktop e mobile
+para cadastro, login simulado, conta, edição, CEP, consulta de pedidos e saída.
 
 10. ORGANIZAÇÃO DA ENTREGA
 
 Como executar:
 1. Instalar Node.js compatível com o package.json.
 2. Executar npm install.
-3. Executar npm run api: JSON Server com as rotas de conta na porta 3000.
+3. Executar npm run api: JSON Server padrão na porta 3000, usando db.json.
 4. Em outro terminal, executar npm run dev: Vue na porta 5173.
 5. Alternativa: npm run dev:all inicia os dois.
 6. Abrir http://localhost:5173/admin/livros.
@@ -212,7 +202,8 @@ Estrutura:
 src/views/*.vue — páginas e operações HTTP.
 src/components/*.vue — formulários, confirmação, estados e catálogo.
 src/components/layout/*.vue — cabeçalhos, rodapé e área administrativa.
-Os estilos ficam em blocos style dentro dos componentes Vue.
+Os estilos de Livros ficam em blocos style dos componentes Vue.
+src/assets/conta.css e admin.css — estilos compartilhados de Conta e Pedidos.
 src/utils/api.js — URL, leitura das respostas e mensagens.
 src/utils/livrosUtils.js — gêneros, normalização de texto e slug.
 src/utils/cartUtils.js — estado e pequenas alterações do carrinho local.
@@ -220,7 +211,8 @@ src/utils/favoritos.js — favoritos locais.
 src/utils/produtosUtils.js — formatação de moeda.
 src/main.js, src/router/index.js e src/plugins/vuetify.js — configuração.
 db.json — usuarios, livros, pedidos e avaliacoes.
-server.cjs e src/services/ — rotas e serviços de conta. Veja README-conta.md.
+A API é iniciada pelo comando json-server do package.json, sem arquivo de servidor.
+src/services/ — chamadas compartilhadas de conta, CEP e pedidos.
 
 Dados fictícios atuais: 5 usuários, 16 livros, 4 pedidos e 5 avaliações.
 Sombra e Ossos tem pedido; Divergente tem avaliação e não tem pedido;
@@ -231,3 +223,36 @@ Igor Gabriel Decker — Livros.
 Vilmar Michels Filho — Usuários.
 Davi Augusto Ramos — Pedidos e seus itens.
 Vitor — Avaliações; confirmar o nome completo antes da entrega.
+
+11. COMO ENTENDER O CÓDIGO
+
+As telas usam variáveis com ref para guardar dados e mensagens.
+Quando o valor muda, o Vue atualiza a tela. No script, usamos nome.value;
+no template, usamos somente nome.
+
+computed calcula um valor a partir de outros dados, como o total do carrinho
+ou a lista filtrada. onMounted chama a função que carrega os dados ao abrir
+a tela. async e await permitem esperar a resposta da API.
+
+Fluxo do CRUD de livros:
+1. LivrosForm.vue recebe e confere os campos do formulário.
+2. AdminCadastrarLivroView.vue envia POST para cadastrar.
+3. AdminListarLivrosView.vue usa GET e filtra a lista na tela.
+4. AdminDetalhesLivroView.vue usa GET com o ID do livro.
+5. AdminEditarLivroView.vue envia PATCH para atualizar.
+6. ConfirmacaoExclusao.vue pede confirmação e envia DELETE se não há pedidos.
+
+Os cálculos usam for e as decisões usam if com chaves. Cada requisição tem
+try para a operação, catch para exibir o erro e finally para encerrar o
+carregamento. Há comentários nos pontos principais.
+
+Nas telas de livros, as operações HTTP ficam no próprio arquivo Vue.
+Nos pedidos e nas contas, os arquivos services reúnem as chamadas usadas
+por várias telas. O login é uma simulação no front: sessionStorage guarda
+somente o ID do usuário. Não há autenticação ou autorização na API.
+Os ícones usam Vuetify; os selects usam a seta padrão do navegador.
+
+Contas de demonstração: ana.lima@example.com (ADMIN) ou marina.costa@example.com
+(CLIENTE). Senha fictícia de todos os usuários iniciais: Teste123!
+O campo senha é texto no db.json apenas para esta simulação escolar.
+Use somente dados fictícios. As regras de conta, senha e vínculos ficam no front.

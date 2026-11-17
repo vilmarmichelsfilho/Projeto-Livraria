@@ -1,40 +1,40 @@
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
-import { RouterLink, useRouter } from "vue-router";
-import ConfirmacaoExclusaoPedido from "@/components/admin/ConfirmacaoExclusaoPedido.vue";
+import { computed, onMounted, ref, watch } from 'vue';
+import { RouterLink, useRouter } from 'vue-router';
+import ConfirmacaoExclusaoPedido from '@/components/admin/ConfirmacaoExclusaoPedido.vue';
 import pedidosService, {
   situacoesPedido,
   moeda,
   erroPedido,
-} from "@/services/pedidosService";
+} from '@/services/pedidosService';
 const router = useRouter();
-const pedidos = ref([]),
-  clientes = ref([]),
-  pesquisa = ref(""),
-  carregando = ref(true),
-  erro = ref(""),
-  sucesso = ref("");
-const selecionado = ref(null),
-  busy = ref(false),
-  erroExclusao = ref("");
-const filtroSituacao = ref(""),
-  pagina = ref(1);
+const pedidos = ref([]);
+const clientes = ref([]);
+const pesquisa = ref('');
+const carregando = ref(true);
+const erro = ref('');
+const sucesso = ref('');
+const selecionado = ref(null);
+const busy = ref(false);
+const erroExclusao = ref('');
+const filtroSituacao = ref('');
+const pagina = ref(1);
 const porPagina = 6;
 const nomeCliente = (pedido) =>
   clientes.value.find(
     (cliente) => String(cliente.id) === String(pedido.id_usuario),
-  )?.nome || "Cliente não encontrado";
+  )?.nome || 'Cliente não encontrado';
 const normalizar = (valor) =>
   String(valor)
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 const filtrados = computed(() =>
   pedidos.value.filter(
     (pedido) =>
       (!filtroSituacao.value || pedido.status === filtroSituacao.value) &&
       normalizar(`${pedido.id} ${nomeCliente(pedido)}`).includes(
-        normalizar(pesquisa.value.trim().replace(/^#/, "")),
+        normalizar(pesquisa.value.trim().replace(/^#/, '')),
       ),
   ),
 );
@@ -52,15 +52,13 @@ watch([pesquisa, filtroSituacao], () => {
   pagina.value = 1;
 });
 const dataPedido = (pedido) =>
-  new Date(pedido.criado_em).toLocaleDateString("pt-BR");
+  new Date(pedido.criado_em).toLocaleDateString('pt-BR');
 async function carregar() {
   carregando.value = true;
-  erro.value = "";
+  erro.value = '';
   try {
-    [pedidos.value, clientes.value] = await Promise.all([
-      pedidosService.listar(),
-      pedidosService.clientes(),
-    ]);
+    pedidos.value = await pedidosService.listar();
+    clientes.value = await pedidosService.clientes();
   } catch (error) {
     erro.value = erroPedido(error);
   } finally {
@@ -68,16 +66,18 @@ async function carregar() {
   }
 }
 async function excluir() {
-  if (busy.value) return;
+  if (busy.value) {
+    return;
+  }
   busy.value = true;
-  erroExclusao.value = "";
+  erroExclusao.value = '';
   try {
     await pedidosService.excluir(selecionado.value.id);
     pedidos.value = pedidos.value.filter(
       (pedido) => pedido.id !== selecionado.value.id,
     );
     selecionado.value = null;
-    sucesso.value = "Rascunho excluído com sucesso.";
+    sucesso.value = 'Rascunho excluído com sucesso.';
   } catch (error) {
     erroExclusao.value = erroPedido(error);
   } finally {
@@ -97,14 +97,22 @@ onMounted(carregar);
         Gerencie rascunhos e compras confirmadas.
       </p>
     </header>
-    <p v-if="sucesso" class="admin-feedback" role="status">{{ sucesso }}</p>
+    <p
+      v-if="sucesso"
+      class="admin-feedback"
+      role="status"
+    >
+      {{ sucesso }}
+    </p>
     <div class="admin-search-row admin-desktop-only">
       <input
         v-model="pesquisa"
         type="search"
         placeholder="Buscar por nome ou identificador..."
         aria-label="Buscar por nome do cliente ou identificador do pedido"
-      /><RouterLink class="admin-button" to="/admin/pedidos/novo"
+      /><RouterLink
+        class="admin-button"
+        to="/admin/pedidos/novo"
         >Criar pedido</RouterLink
       >
     </div>
@@ -129,20 +137,40 @@ onMounted(carregar);
           </option>
         </select></label
       >
-      <RouterLink class="admin-button" to="/admin/pedidos/novo"
+      <RouterLink
+        class="admin-button"
+        to="/admin/pedidos/novo"
         >Criar pedido em rascunho</RouterLink
       >
     </div>
-    <p v-if="carregando" role="status">Carregando pedidos…</p>
-    <div v-else-if="erro" class="admin-feedback error" role="alert">
+    <p
+      v-if="carregando"
+      role="status"
+    >
+      Carregando pedidos…
+    </p>
+    <div
+      v-else-if="erro"
+      class="admin-feedback error"
+      role="alert"
+    >
       {{ erro }}
-      <button class="admin-button-secondary" @click="carregar">
+      <button
+        class="admin-button-secondary"
+        @click="carregar"
+      >
         Tentar novamente
       </button>
     </div>
-    <div v-else class="admin-orders-results">
+    <div
+      v-else
+      class="admin-orders-results"
+    >
       <div class="admin-table-wrap admin-desktop-only">
-        <table class="admin-table" aria-label="Pedidos">
+        <table
+          class="admin-table"
+          aria-label="Pedidos"
+        >
           <thead>
             <tr>
               <th scope="col">Registro</th>
@@ -152,7 +180,10 @@ onMounted(carregar);
             </tr>
           </thead>
           <tbody>
-            <tr v-for="pedido in filtrados" :key="pedido.id">
+            <tr
+              v-for="pedido in filtrados"
+              :key="pedido.id"
+            >
               <td>
                 <RouterLink
                   class="admin-list-link"
@@ -186,8 +217,8 @@ onMounted(carregar);
               <td colspan="4">
                 {{
                   pesquisa
-                    ? "Nenhum pedido encontrado para esta busca."
-                    : "Nenhum pedido cadastrado."
+                    ? 'Nenhum pedido encontrado para esta busca.'
+                    : 'Nenhum pedido cadastrado.'
                 }}
               </td>
             </tr>
@@ -233,11 +264,14 @@ onMounted(carregar);
             </button>
           </div>
         </article>
-        <p v-if="!filtrados.length" class="admin-items-empty">
+        <p
+          v-if="!filtrados.length"
+          class="admin-items-empty"
+        >
           {{
             pesquisa || filtroSituacao
-              ? "Nenhum pedido encontrado para estes filtros."
-              : "Nenhum pedido cadastrado."
+              ? 'Nenhum pedido encontrado para estes filtros.'
+              : 'Nenhum pedido cadastrado.'
           }}
         </p>
         <nav

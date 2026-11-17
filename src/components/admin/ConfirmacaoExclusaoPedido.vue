@@ -1,12 +1,12 @@
 <script setup>
-import AdminModal from "./AdminModal.vue";
-import AdminIcon from "./AdminIcon.vue";
+import AdminModal from './AdminModal.vue';
+import AdminIcon from './AdminIcon.vue';
 defineProps({
   pedido: { type: Object, required: true },
   busy: Boolean,
-  erro: { type: String, default: "" },
+  erro: { type: String, default: '' },
 });
-const emit = defineEmits(["close", "confirm", "view"]);
+const emit = defineEmits(['close', 'confirm', 'view']);
 </script>
 <template>
   <AdminModal
@@ -26,9 +26,9 @@ const emit = defineEmits(["close", "confirm", "view"]);
     </div>
     <h2>
       {{
-        pedido.status === "RASCUNHO"
-          ? "Excluir rascunho?"
-          : "Pedido já confirmado"
+        pedido.status === 'RASCUNHO'
+          ? 'Excluir rascunho?'
+          : 'Pedido já confirmado'
       }}
     </h2>
     <template v-if="pedido.status === 'RASCUNHO'"
@@ -40,7 +40,7 @@ const emit = defineEmits(["close", "confirm", "view"]);
     <template v-else
       ><p>
         O pedido #{{ pedido.id }} está
-        {{ pedido.status === "CANCELADO" ? "cancelado" : "confirmado" }} e faz
+        {{ pedido.status === 'CANCELADO' ? 'cancelado' : 'confirmado' }} e faz
         parte do histórico.
       </p>
       <p class="admin-modal-explanation">
@@ -48,7 +48,13 @@ const emit = defineEmits(["close", "confirm", "view"]);
         cancelamento permitido.
       </p></template
     >
-    <p v-if="erro" class="admin-feedback error" role="alert">{{ erro }}</p>
+    <p
+      v-if="erro"
+      class="admin-feedback error"
+      role="alert"
+    >
+      {{ erro }}
+    </p>
     <div class="admin-modal-actions">
       <button
         class="admin-button-secondary"
@@ -62,8 +68,13 @@ const emit = defineEmits(["close", "confirm", "view"]);
         :disabled="busy"
         @click="emit('confirm')"
       >
-        {{ busy ? "Excluindo…" : "Excluir rascunho" }}</button
-      ><button v-else @click="emit('view')">Voltar ao pedido</button>
+        {{ busy ? 'Excluindo…' : 'Excluir rascunho' }}</button
+      ><button
+        v-else
+        @click="emit('view')"
+      >
+        Voltar ao pedido
+      </button>
     </div>
   </AdminModal>
 </template>

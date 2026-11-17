@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { computed, onMounted, onBeforeUnmount, ref } from 'vue';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 
 const props = defineProps({ livro: { type: Object, required: true } });
@@ -10,6 +10,7 @@ const avaliacoes = ref([]);
 const carregando = ref(true);
 const salvando = ref(false);
 const erro = ref('');
+const temPedidos = computed(() => vinculos.value && vinculos.value.pedidos > 0);
 let focoAnterior;
 
 // O JSON Server é padrão; a interface consulta os relacionamentos.
@@ -48,17 +49,23 @@ async function excluirLivro() {
     carregando.value ||
     erro.value ||
     !vinculos.value?.pode_excluir
-  )
+  ) {
     return;
+  }
   salvando.value = true;
   try {
     // Confere os pedidos novamente antes das exclusões.
-    if (!(await carregarVinculos()) || !vinculos.value.pode_excluir) return;
+    const conferido = await carregarVinculos();
+    if (!conferido || !vinculos.value.pode_excluir) {
+      return;
+    }
     for (const avaliacao of avaliacoes.value) {
       const resposta = await fetch(`${API_URL}/avaliacoes/${avaliacao.id}`, {
         method: 'DELETE',
       });
-      if (resposta.status !== 404) await lerResposta(resposta);
+      if (resposta.status !== 404) {
+        await lerResposta(resposta);
+      }
     }
     const resposta = await fetch(`${API_URL}/livros/${props.livro.id}`, {
       method: 'DELETE',
@@ -73,7 +80,9 @@ async function excluirLivro() {
 }
 
 async function inativarLivro() {
-  if (salvando.value || carregando.value || erro.value) return;
+  if (salvando.value || carregando.value || erro.value) {
+    return;
+  }
   salvando.value = true;
   try {
     const resposta = await fetch(`${API_URL}/livros/${props.livro.id}`, {
@@ -94,7 +103,9 @@ async function inativarLivro() {
 }
 
 function cancelar() {
-  if (!salvando.value) emit('cancelar');
+  if (!salvando.value) {
+    emit('cancelar');
+  }
 }
 
 onMounted(() => {
@@ -117,20 +128,14 @@ onBeforeUnmount(() => {
     @cancel.prevent="cancelar"
   >
     <v-icon
-      :icon="
-        vinculos && !vinculos.pode_excluir
-          ? 'mdi-lock-outline'
-          : 'mdi-delete-outline'
-      "
+      :icon="temPedidos ? 'mdi-lock-outline' : 'mdi-delete-outline'"
       class="icone-dialogo"
-      :color="vinculos && !vinculos.pode_excluir ? '#c9952f' : '#af4653'"
+      :color="temPedidos ? '#c9952f' : '#af4653'"
       size="26"
     />
     <h2 id="titulo-exclusao">
       <template v-if="carregando">Verificando vínculos…</template>
-      <template v-else-if="vinculos && !vinculos.pode_excluir"
-        >Este livro tem pedidos</template
-      >
+      <template v-else-if="temPedidos">Este livro tem pedidos</template>
       <template v-else>Excluir livro?</template>
     </h2>
 
@@ -139,7 +144,7 @@ onBeforeUnmount(() => {
       id="detalhe-exclusao"
       class="texto-suave"
     >
-      <template v-if="vinculos && !vinculos.pode_excluir">
+      <template v-if="temPedidos">
         Preserve o histórico. Você pode inativar o livro para impedir novas
         compras.
       </template>
@@ -175,7 +180,7 @@ onBeforeUnmount(() => {
         Tentar novamente
       </button>
       <button
-        v-else-if="vinculos && !vinculos.pode_excluir"
+        v-else-if="temPedidos"
         class="btn"
         :disabled="salvando || !livro.ativo"
         @click="inativarLivro"

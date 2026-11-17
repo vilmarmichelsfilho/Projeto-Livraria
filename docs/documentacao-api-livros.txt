@@ -8,7 +8,7 @@ Coleção: livros. PK: id (equivalente a id_livro do modelo conceitual).
 Responsável pelo CRUD completo: Igor Gabriel Decker.
 Páginas, chamadas fetch, validações e estilos estão em componentes Vue.
 As pequenas funções compartilhadas ficam em src/utils.
-A API usa JSON Server 0.17.4 com rotas de conta, iniciada por npm run api.
+A API usa JSON Server 0.17.4 padrão, iniciado por npm run api, sem servidor próprio.
 
 Operações: POST /livros, GET /livros, GET /livros/:id,
 PATCH /livros/:id e DELETE /livros/:id.
@@ -20,7 +20,7 @@ O servidor padrão não valida campos ou vínculos e não executa transações.
 2. USUÁRIOS — VILMAR MICHELS FILHO
 Finalidade: identificação de clientes e administradores.
 Coleção: usuarios.
-Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha_hash (texto, obrigatório, marcadores fictícios nesta base); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
+Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha (texto, obrigatória, fictícia para simulação no front); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
 Relacionamentos: 1:N Pedidos e 1:N Avaliações por id_usuario.
 O cadastro, o login e o gerenciamento da própria conta estão detalhados no README-conta.md.
 As telas administrativas de usuários seguem planejadas.
@@ -47,7 +47,7 @@ Endpoints planejados: POST /avaliacoes, GET /avaliacoes, GET /avaliacoes/:id, PA
 Atualização planejada: PATCH.
 Telas: avaliações nos detalhes, publicar, editar, confirmar exclusão; administração consulta/exclui para moderação.
 Regras a implementar por Vitor: somente autor edita/exclui a própria avaliação; administrador consulta/exclui para moderação; cliente deve estar autenticado e livro ativo.
-A leitura aparece na página do livro. GET /avaliacoes?id_livro=:id retorna o nome do leitor junto à avaliação, com o cadastro de usuários protegido pelas rotas de conta. As validações e a autorização do CRUD de Avaliações devem ser implementadas por Vitor nos respectivos fluxos.
+A leitura aparece na página do livro. A tela consulta GET /avaliacoes?id_livro=:id e GET /usuarios para apresentar o nome do leitor. As regras do CRUD de Avaliações devem ser implementadas por Vitor no front; a API padrão não tem autorização.
 Estados previstos: carregando, sucesso, erro, nenhuma avaliação e avaliação não encontrada.
 
 
@@ -58,7 +58,14 @@ validações de formulário, unicidade de slug na tela, confirmação sem DELETE
 ao cancelar, bloqueio de livro com pedido, inativação e exclusão das avaliações.
 Códigos observados: GET 200, POST 201, PATCH 200, DELETE 200 e GET posterior 404.
 Regras CSS preservadas nos componentes Vue, build e ESLint aprovados.
-A base da equipe permaneceu inalterada. Verificação visual/manual pendente.
+Os testes usam uma base temporária. Os usuários fictícios de db.json agora
+possuem o campo senha para a simulação de login. Também foram
+conferidos filtros, paginação, favoritos, carrinho e as situações dos pedidos.
+Os testes ligados ao servidor próprio foram removidos. O teste de CEP usa
+node --test tests/cep.test.js (cinco testes aprovados). Os fluxos de conta
+usam os endpoints padrão e foram conferidos em testes temporários e no
+navegador, em desktop e mobile. Build, ESLint e Oxlint aprovados.
+A demonstração manual do CRUD de Livros permanece pendente.
 
 6. EXECUÇÃO E DEMONSTRAÇÃO
 npm install
@@ -68,7 +75,8 @@ npm run dev:all — ambos.
 Acessar /admin/livros e demonstrar o fluxo completo descrito no README.txt.
 
 7. DECISÕES E LIMITES
-Os livros usam as rotas padrão do JSON Server e as contas usam server.cjs.
+Todas as coleções usam as rotas padrão do JSON Server, sem arquivo de servidor.
+O login é simulado no front com senhas fictícias em texto e ID em sessionStorage.
 Os ícones continuam no Vuetify com Material Design Icons.
 Os estilos foram movidos para blocos style nos componentes.
 Pesquisa e paginação são realizadas no Vue.

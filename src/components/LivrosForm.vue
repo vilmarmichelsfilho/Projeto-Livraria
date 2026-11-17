@@ -1,17 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import { generos, criarEndereco } from '@/utils/livrosUtils';
 
 const props = defineProps({
   inicial: Object,
   ocupado: Boolean,
-  errosApi: { type: Object, default: () => ({}) },
+  errosCampos: { type: Object, default: () => ({}) },
   cancelar: { type: String, default: '/admin/livros' },
 });
 const emit = defineEmits(['salvar']);
 
-// Os mesmos campos atendem ao cadastro e à edição.
+// O mesmo formulário é usado no cadastro e na edição.
 const livro = ref({
   titulo: '',
   autor: '',
@@ -27,54 +27,64 @@ const livro = ref({
   ...props.inicial,
 });
 const erros = ref({});
+const textoBotao = computed(() => {
+  if (props.ocupado) {
+    return 'Salvando…';
+  }
+  if (props.inicial) {
+    return 'Salvar alterações';
+  }
+  return 'Cadastrar livro';
+});
 
 function erroCampo(campo) {
-  return erros.value[campo] || props.errosApi[campo];
+  return erros.value[campo] || props.errosCampos[campo];
 }
 
 function salvarLivro() {
-  livro.value.endereco =
-    livro.value.endereco.trim() || criarEndereco(livro.value.titulo);
-  erros.value = validarLivro(livro.value);
-
-  if (Object.keys(erros.value).length > 0) {
-    const campo = Object.keys(erros.value)[0];
-    document.getElementById(`livro-${campo}`)?.focus();
+  if (props.ocupado) {
     return;
   }
-
+  if (!livro.value.endereco.trim()) {
+    livro.value.endereco = criarEndereco(livro.value.titulo);
+  }
+  erros.value = validarLivro(livro.value);
+  const camposComErro = Object.keys(erros.value);
+  if (camposComErro.length > 0) {
+    const campo = document.getElementById('livro-' + camposComErro[0]);
+    if (campo) {
+      campo.focus();
+    }
+    return;
+  }
   emit('salvar', { ...livro.value });
 }
+
+// required, min, max e step também ajudam na validação pelo navegador.
 function validarLivro(livro) {
   const erros = {};
-
-  function verificarTexto(campo, nome, limite) {
-    const texto = livro[campo];
-    if (typeof texto !== 'string' || texto.trim() === '') {
-      erros[campo] = `${nome} é obrigatório.`;
-    } else if (texto.trim().length > limite) {
-      erros[campo] = `Use até ${limite} caracteres.`;
-    }
+  if (!livro.titulo.trim() || livro.titulo.length > 180) {
+    erros.titulo = 'Informe um título com até 180 caracteres.';
   }
-
-  verificarTexto('titulo', 'Título', 180);
-  verificarTexto('autor', 'Autor', 120);
-  verificarTexto('genero', 'Gênero', 60);
-  verificarTexto('descricao', 'Descrição', 10000);
-
-  const preco = livro.preco;
-  const centavos = preco * 100;
-  const casasInvalidas = Math.abs(centavos - Math.round(centavos)) > 0.00001;
+  if (!livro.autor.trim() || livro.autor.length > 120) {
+    erros.autor = 'Informe o autor com até 120 caracteres.';
+  }
+  if (!livro.genero.trim() || livro.genero.length > 60) {
+    erros.genero = 'Selecione o gênero.';
+  }
+  if (!livro.descricao.trim() || livro.descricao.length > 10000) {
+    erros.descricao = 'Informe uma descrição com até 10000 caracteres.';
+  }
+  // Arredondar para centavos não pode mudar o preço informado.
   if (
-    !Number.isFinite(preco) ||
-    preco <= 0 ||
-    preco > 99999999.99 ||
-    casasInvalidas
+    !Number.isFinite(livro.preco) ||
+    livro.preco <= 0 ||
+    livro.preco > 99999999.99 ||
+    Math.round(livro.preco * 100) / 100 !== livro.preco
   ) {
     erros.preco =
       'Informe um preço maior que zero, com até duas casas decimais.';
   }
-
   if (!Number.isSafeInteger(livro.paginas) || livro.paginas < 1) {
     erros.paginas = 'Informe um número inteiro maior que zero.';
   }
@@ -87,26 +97,21 @@ function validarLivro(livro) {
   if (typeof livro.ativo !== 'boolean') {
     erros.ativo = 'Selecione se o livro está ativo.';
   }
-
-  const enderecoValido =
-    typeof livro.endereco === 'string' &&
-    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(livro.endereco) &&
-    livro.endereco.length <= 200;
-  if (!enderecoValido) {
+  // O endereço usa palavras separadas por hífens, como sombra-e-ossos.
+  if (
+    !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(livro.endereco) ||
+    livro.endereco.length > 200
+  ) {
     erros.endereco =
       'Use letras minúsculas, números e hífens no endereço do livro.';
   }
-
-  if (livro.capa_url) {
-    const capaValida =
-      typeof livro.capa_url === 'string' &&
-      livro.capa_url.length <= 500 &&
-      /^(\/images\/[\w.-]+|https?:\/\/[^\s]+)$/i.test(livro.capa_url);
-    if (!capaValida) {
-      erros.capa_url = 'Use /images/arquivo.jpg ou uma URL http/https válida.';
-    }
+  if (
+    livro.capa_url &&
+    (livro.capa_url.length > 500 ||
+      !/^(\/images\/[\w.-]+|https?:\/\/[^\s]+)$/i.test(livro.capa_url))
+  ) {
+    erros.capa_url = 'Use /images/arquivo.jpg ou uma URL http/https válida.';
   }
-
   return erros;
 }
 </script>
@@ -114,7 +119,6 @@ function validarLivro(livro) {
 <template>
   <form
     class="painel livro-form"
-    novalidate
     :aria-busy="ocupado"
     @submit.prevent="salvarLivro"
   >
@@ -125,7 +129,7 @@ function validarLivro(livro) {
           <label for="livro-titulo">Título *</label>
           <input
             id="livro-titulo"
-            v-model="livro.titulo"
+            v-model.trim="livro.titulo"
             type="text"
             maxlength="180"
             required
@@ -145,7 +149,7 @@ function validarLivro(livro) {
           <label for="livro-autor">Autor *</label>
           <input
             id="livro-autor"
-            v-model="livro.autor"
+            v-model.trim="livro.autor"
             type="text"
             maxlength="120"
             required
@@ -202,6 +206,7 @@ function validarLivro(livro) {
             v-model.number="livro.preco"
             type="number"
             min="0.01"
+            max="99999999.99"
             step="0.01"
             required
             :aria-invalid="!!erroCampo('preco')"
@@ -283,7 +288,7 @@ function validarLivro(livro) {
           <label for="livro-capa_url">Capa (opcional)</label>
           <input
             id="livro-capa_url"
-            v-model="livro.capa_url"
+            v-model.trim="livro.capa_url"
             type="text"
             maxlength="500"
             placeholder="/images/sombra-e-ossos.jpg"
@@ -303,7 +308,7 @@ function validarLivro(livro) {
           <label for="livro-descricao">Descrição *</label>
           <textarea
             id="livro-descricao"
-            v-model="livro.descricao"
+            v-model.trim="livro.descricao"
             rows="3"
             maxlength="10000"
             required
@@ -341,7 +346,7 @@ function validarLivro(livro) {
           <label for="livro-endereco">Endereço do livro (opcional)</label>
           <input
             id="livro-endereco"
-            v-model="livro.endereco"
+            v-model.trim="livro.endereco"
             type="text"
             maxlength="200"
             placeholder="Gerado a partir do título"
@@ -363,13 +368,7 @@ function validarLivro(livro) {
           class="btn"
           type="submit"
         >
-          {{
-            ocupado
-              ? 'Salvando…'
-              : inicial
-                ? 'Salvar alterações'
-                : 'Cadastrar livro'
-          }}
+          {{ textoBotao }}
         </button>
         <RouterLink
           :to="cancelar"

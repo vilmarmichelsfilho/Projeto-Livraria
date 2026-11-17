@@ -18,10 +18,12 @@ const voltar = String(route.query.voltar || '').startsWith('/admin/livros')
   ? String(route.query.voltar)
   : '/admin/livros';
 
-if (route.query.resultado === 'criado')
+if (route.query.resultado === 'criado') {
   sucesso.value = 'Livro cadastrado com sucesso.';
-if (route.query.resultado === 'atualizado')
+}
+if (route.query.resultado === 'atualizado') {
   sucesso.value = 'Livro atualizado com sucesso.';
+}
 
 async function carregarLivro() {
   carregando.value = true;

@@ -1,34 +1,34 @@
 <script setup>
-import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import ContaIcone from "@/components/ContaIcone.vue";
-import usuarios from "@/services/usuariosService";
-import api, { mensagemErro } from "@/services/api";
-import "@/assets/conta.css";
-import { buscarCep } from "@/services/cepService";
+import { computed, reactive, ref, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import ContaIcone from '@/components/ContaIcone.vue';
+import usuarios from '@/services/usuariosService';
+import api, { mensagemErro } from '@/services/api';
+import '@/assets/conta.css';
+import { buscarCep } from '@/services/cepService';
 const props = defineProps({ modo: { type: String, required: true } });
-const router = useRouter(),
-  route = useRoute();
+const router = useRouter();
+const route = useRoute();
 const dados = reactive({
-  nome: "",
-  email: "",
-  senha: "",
-  confirmar: "",
-  telefone: "",
-  endereco: "",
-  cidade: "",
-  uf: "",
-  cep: "",
-  senha_atual: "",
+  nome: '',
+  email: '',
+  senha: '',
+  confirmar: '',
+  telefone: '',
+  endereco: '',
+  cidade: '',
+  uf: '',
+  cep: '',
+  senha_atual: '',
 });
-const usuario = ref(null),
-  carregando = ref(false),
-  carregandoDados = ref(false),
-  erro = ref(""),
-  sucesso = ref(route.query.sucesso || ""),
-  confirmarExclusao = ref(false);
+const usuario = ref(null);
+const carregando = ref(false);
+const carregandoDados = ref(false);
+const erro = ref('');
+const sucesso = ref(route.query.sucesso || '');
+const confirmarExclusao = ref(false);
 const consultandoCep = ref(false);
-const avisoCep = ref("");
+const avisoCep = ref('');
 let controleCep;
 let versaoCep = 0;
 onBeforeUnmount(() => {
@@ -36,12 +36,14 @@ onBeforeUnmount(() => {
   controleCep?.abort();
 });
 async function atualizarCep() {
-  dados.cep = dados.cep.replace(/\D/g, "").slice(0, 8);
+  dados.cep = dados.cep.replace(/\D/g, '').slice(0, 8);
   const versao = ++versaoCep;
   controleCep?.abort();
   consultandoCep.value = false;
-  avisoCep.value = "";
-  if (dados.cep.length !== 8) return;
+  avisoCep.value = '';
+  if (dados.cep.length !== 8) {
+    return;
+  }
   controleCep = new AbortController();
   const controle = controleCep;
   const original = {
@@ -53,54 +55,64 @@ async function atualizarCep() {
   const timeout = setTimeout(() => controle.abort(), 8000);
   try {
     const resultado = await buscarCep(dados.cep, { signal: controle.signal });
-    if (versao !== versaoCep) return;
-    for (const campo of ["cidade", "uf", "endereco"]) {
-      if (dados[campo] === original[campo]) dados[campo] = resultado[campo];
+    if (versao !== versaoCep) {
+      return;
+    }
+    for (const campo of ['cidade', 'uf', 'endereco']) {
+      if (dados[campo] === original[campo]) {
+        dados[campo] = resultado[campo];
+      }
     }
     avisoCep.value =
-      "Endereço localizado. Confira os dados e acrescente número e complemento.";
+      'Endereço localizado. Confira os dados e acrescente número e complemento.';
   } catch (error) {
-    if (versao !== versaoCep) return;
+    if (versao !== versaoCep) {
+      return;
+    }
     avisoCep.value =
-      error.name === "AbortError"
-        ? "A consulta demorou demais. Preencha o endereço manualmente ou digite o CEP novamente."
-        : error.message === "Failed to fetch"
-          ? "Não foi possível consultar o CEP. Preencha o endereço manualmente."
+      error.name === 'AbortError'
+        ? 'A consulta demorou demais. Preencha o endereço manualmente ou digite o CEP novamente.'
+        : error.message === 'Failed to fetch'
+          ? 'Não foi possível consultar o CEP. Preencha o endereço manualmente.'
           : error.message;
   } finally {
     clearTimeout(timeout);
-    if (versao === versaoCep) consultandoCep.value = false;
+    if (versao === versaoCep) {
+      consultandoCep.value = false;
+    }
   }
 }
 const ufs =
-  "AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO".split(
-    " ",
+  'AC AL AP AM BA CE DF ES GO MA MT MS MG PA PB PR PE PI RJ RN RS RO RR SC SP SE TO'.split(
+    ' ',
   );
 const subtitulosMobile = {
-  login: "Acesse sua conta para continuar.",
-  cadastro: "Todos os campos com * são obrigatórios.",
-  conta: "Seus dados e suas leituras.",
-  editar: "Mantenha seu contato e endereço atualizados.",
-  senha: "Confirme sua senha atual e escolha a nova senha.",
+  login: 'Acesse sua conta para continuar.',
+  cadastro: 'Todos os campos com * são obrigatórios.',
+  conta: 'Seus dados e suas leituras.',
+  editar: 'Mantenha seu contato e endereço atualizados.',
+  senha: 'Confirme sua senha atual e escolha a nova senha.',
 };
-const destinoVoltar = computed(() =>
-  props.modo === "cadastro"
-    ? "/entrar"
-    : props.modo === "login"
-      ? "/"
-      : "/minha-conta",
-);
+const destinoVoltar = computed(() => {
+  if (props.modo === 'cadastro') {
+    return '/entrar';
+  }
+  if (props.modo === 'login') {
+    return '/';
+  }
+  return '/minha-conta';
+});
 const pedidosDialog = ref(null);
 const pedidos = ref([]);
 const buscandoPedidos = ref(false);
-const erroPedidos = ref("");
+const erroPedidos = ref('');
 async function abrirPedidos() {
   pedidosDialog.value.showModal();
   buscandoPedidos.value = true;
-  erroPedidos.value = "";
+  erroPedidos.value = '';
   try {
     pedidos.value = (
-      await api.get("/pedidos", { params: { id_usuario: usuario.value.id } })
+      await api.get('/pedidos', { params: { id_usuario: usuario.value.id } })
     ).data;
   } catch (error) {
     erroPedidos.value = mensagemErro(error);
@@ -109,118 +121,129 @@ async function abrirPedidos() {
   }
 }
 const titulos = {
-  login: "Entrar",
-  cadastro: "Criar conta",
-  conta: "Minha conta",
-  editar: "Editar meus dados",
-  senha: "Alterar senha",
+  login: 'Entrar',
+  cadastro: 'Criar conta',
+  conta: 'Minha conta',
+  editar: 'Editar meus dados',
+  senha: 'Alterar senha',
 };
 const titulo = computed(() => titulos[props.modo]);
 const campos = computed(() => {
   const campo = (
     key,
     label,
-    type = "text",
+    type = 'text',
     required = false,
     autocomplete = key,
   ) => ({ key, label, type, required, autocomplete });
-  const nome = campo("nome", "Nome completo", "text", true, "name"),
-    email = campo("email", "E-mail", "email", true, "email");
+  const nome = campo('nome', 'Nome completo', 'text', true, 'name');
+  const email = campo('email', 'E-mail', 'email', true, 'email');
   const senha = campo(
-    "senha",
-    props.modo === "senha" ? "Nova senha" : "Senha",
-    "password",
+    'senha',
+    props.modo === 'senha' ? 'Nova senha' : 'Senha',
+    'password',
     true,
-    props.modo === "login" ? "current-password" : "new-password",
+    props.modo === 'login' ? 'current-password' : 'new-password',
   );
   const confirmar = campo(
-    "confirmar",
-    props.modo === "senha" ? "Confirmar nova senha" : "Confirmar senha",
-    "password",
+    'confirmar',
+    props.modo === 'senha' ? 'Confirmar nova senha' : 'Confirmar senha',
+    'password',
     true,
-    "new-password",
+    'new-password',
   );
   const endereco = [
-    campo("endereco", "Endereço", "text", true, "street-address"),
-    campo("cidade", "Cidade", "text", true, "address-level2"),
-    campo("uf", "UF", "text", true, "address-level1"),
-    campo("cep", "CEP", "text", true, "postal-code"),
+    campo('endereco', 'Endereço', 'text', true, 'street-address'),
+    campo('cidade', 'Cidade', 'text', true, 'address-level2'),
+    campo('uf', 'UF', 'text', true, 'address-level1'),
+    campo('cep', 'CEP', 'text', true, 'postal-code'),
   ];
-  if (props.modo === "login") return [email, senha];
-  if (props.modo === "senha")
+  if (props.modo === 'login') {
+    return [email, senha];
+  }
+  if (props.modo === 'senha') {
     return [
-      campo("senha_atual", "Senha atual", "password", true, "current-password"),
+      campo('senha_atual', 'Senha atual', 'password', true, 'current-password'),
       senha,
       confirmar,
     ];
-  if (props.modo === "cadastro")
+  }
+  if (props.modo === 'cadastro') {
     return [
       nome,
       email,
-      campo("telefone", "Telefone", "tel", true, "tel"),
+      campo('telefone', 'Telefone', 'tel', true, 'tel'),
       senha,
       confirmar,
       endereco[0],
       ...endereco.slice(1),
     ];
+  }
   return [
     nome,
     email,
-    campo("telefone", "Telefone", "tel", true, "tel"),
+    campo('telefone', 'Telefone', 'tel', true, 'tel'),
     ...endereco,
   ];
 });
-const acao = computed(
-  () =>
-    ({
-      login: "Entrar na conta",
-      cadastro: "Criar minha conta",
-      editar: "Salvar alterações",
-      senha: "Salvar nova senha",
-    })[props.modo],
-);
+const textosBotao = {
+  login: 'Entrar na conta',
+  cadastro: 'Criar minha conta',
+  editar: 'Salvar alterações',
+  senha: 'Salvar nova senha',
+};
+const acao = computed(() => textosBotao[props.modo]);
 const protegido = computed(() =>
-  ["conta", "editar", "senha"].includes(props.modo),
+  ['conta', 'editar', 'senha'].includes(props.modo),
 );
 onMounted(carregar);
 async function carregar() {
-  if (!protegido.value) return;
+  if (!protegido.value) {
+    return;
+  }
   carregandoDados.value = true;
-  erro.value = "";
+  erro.value = '';
   try {
     usuario.value = await usuarios.atual();
     Object.assign(dados, usuario.value);
   } catch (error) {
-    if (error.response?.status === 401) {
-      sessionStorage.removeItem("iflibrary_token");
-      await router.replace("/entrar");
-    } else erro.value = mensagemErro(error);
+    if (
+      !sessionStorage.getItem('iflibrary_usuario') ||
+      error.response?.status === 404
+    ) {
+      sessionStorage.removeItem('iflibrary_usuario');
+      await router.replace('/entrar');
+    } else {
+      erro.value = mensagemErro(error);
+    }
   } finally {
     carregandoDados.value = false;
   }
 }
 async function enviar() {
-  if (consultandoCep.value) return;
-  erro.value = "";
-  sucesso.value = "";
-  if (["cadastro", "editar"].includes(props.modo) && !dados.nome.trim()) {
-    erro.value = "Informe seu nome completo.";
+  if (consultandoCep.value) {
+    return;
+  }
+  erro.value = '';
+  sucesso.value = '';
+  if (['cadastro', 'editar'].includes(props.modo) && !dados.nome.trim()) {
+    erro.value = 'Informe seu nome completo.';
     return;
   }
   if (
-    ["cadastro", "senha"].includes(props.modo) &&
+    ['cadastro', 'senha'].includes(props.modo) &&
     dados.senha !== dados.confirmar
   ) {
-    erro.value = "As senhas não coincidem.";
+    erro.value = 'As senhas não coincidem.';
     return;
   }
   carregando.value = true;
   try {
-    if (props.modo === "login") {
+    if (props.modo === 'login') {
       await usuarios.entrar({ email: dados.email, senha: dados.senha });
-      await router.push("/minha-conta");
+      await router.push('/minha-conta');
     }
-    if (props.modo === "cadastro") {
+    if (props.modo === 'cadastro') {
       const { nome, email, senha, telefone, endereco, cidade, uf, cep } = dados;
       await usuarios.cadastrar({
         nome,
@@ -233,13 +256,13 @@ async function enviar() {
         cep,
       });
       await router.push({
-        path: "/entrar",
+        path: '/entrar',
         query: {
-          sucesso: "Conta criada com sucesso! Entre com seu e-mail e senha.",
+          sucesso: 'Conta criada com sucesso! Entre com seu e-mail e senha.',
         },
       });
     }
-    if (props.modo === "editar") {
+    if (props.modo === 'editar') {
       const { nome, email, telefone, endereco, cidade, uf, cep } = dados;
       await usuarios.atualizar(usuario.value.id, {
         nome,
@@ -251,18 +274,18 @@ async function enviar() {
         cep,
       });
       await router.push({
-        path: "/minha-conta",
-        query: { sucesso: "Dados atualizados com sucesso." },
+        path: '/minha-conta',
+        query: { sucesso: 'Dados atualizados com sucesso.' },
       });
     }
-    if (props.modo === "senha") {
+    if (props.modo === 'senha') {
       await usuarios.alterarSenha(usuario.value.id, {
         senha_atual: dados.senha_atual,
         senha: dados.senha,
       });
       await router.push({
-        path: "/minha-conta",
-        query: { sucesso: "Senha alterada com sucesso." },
+        path: '/minha-conta',
+        query: { sucesso: 'Senha alterada com sucesso.' },
       });
     }
   } catch (error) {
@@ -275,21 +298,21 @@ async function sair() {
   carregando.value = true;
   try {
     await usuarios.sair();
-    await router.push("/entrar");
+    await router.push('/entrar');
   } catch (error) {
     erro.value = mensagemErro(error);
-    await router.push("/entrar");
+    await router.push('/entrar');
   } finally {
     carregando.value = false;
   }
 }
 async function excluir() {
   carregando.value = true;
-  erro.value = "";
+  erro.value = '';
   try {
     const result = await usuarios.excluir(usuario.value.id);
-    sessionStorage.removeItem("iflibrary_token");
-    await router.push({ path: "/entrar", query: { sucesso: result.message } });
+    sessionStorage.removeItem('iflibrary_usuario');
+    await router.push({ path: '/entrar', query: { sucesso: result.message } });
   } catch (error) {
     erro.value = mensagemErro(error);
   } finally {
@@ -298,7 +321,10 @@ async function excluir() {
 }
 </script>
 <template>
-  <main class="conta-pagina" :class="'conta-modo-' + modo">
+  <main
+    class="conta-pagina"
+    :class="'conta-modo-' + modo"
+  >
     <div class="conta-titulo-linha">
       <RouterLink
         v-if="modo !== 'conta'"
@@ -311,19 +337,42 @@ async function excluir() {
     </div>
     <p class="conta-subtitulo conta-desktop">
       {{
-        modo === "conta"
-          ? "Consulte seus dados e acompanhe suas compras"
-          : "Preencha seus dados para continuar na IFLibrary"
+        modo === 'conta'
+          ? 'Consulte seus dados e acompanhe suas compras'
+          : 'Preencha seus dados para continuar na IFLibrary'
       }}
     </p>
     <p class="conta-subtitulo conta-mobile">{{ subtitulosMobile[modo] }}</p>
-    <p v-if="erro" class="conta-aviso erro" role="alert">{{ erro }}</p>
-    <p v-if="sucesso" class="conta-aviso sucesso" role="status">
+    <p
+      v-if="erro"
+      class="conta-aviso erro"
+      role="alert"
+    >
+      {{ erro }}
+    </p>
+    <p
+      v-if="sucesso"
+      class="conta-aviso sucesso"
+      role="status"
+    >
       {{ sucesso }}
     </p>
-    <p v-if="carregandoDados" role="status">Carregando seus dados…</p>
-    <div v-else-if="protegido && !usuario" class="conta-aviso">
-      <button class="conta-botao" @click="carregar">Tentar novamente</button>
+    <p
+      v-if="carregandoDados"
+      role="status"
+    >
+      Carregando seus dados…
+    </p>
+    <div
+      v-else-if="protegido && !usuario"
+      class="conta-aviso"
+    >
+      <button
+        class="conta-botao"
+        @click="carregar"
+      >
+        Tentar novamente
+      </button>
     </div>
     <section
       v-else-if="modo === 'conta' && usuario"
@@ -331,7 +380,10 @@ async function excluir() {
       aria-label="Dados da conta"
     >
       <div class="conta-identidade">
-        <v-icon icon="mdi-account-circle" aria-hidden="true" />
+        <v-icon
+          icon="mdi-account-circle"
+          aria-hidden="true"
+        />
         <div>
           <h2>{{ usuario.nome }}</h2>
           <p>{{ usuario.email }}</p>
@@ -340,18 +392,18 @@ async function excluir() {
       <dl class="conta-detalhes">
         <div>
           <dt>Telefone</dt>
-          <dd>{{ usuario.telefone || "Não informado" }}</dd>
+          <dd>{{ usuario.telefone || 'Não informado' }}</dd>
         </div>
         <div>
           <dt>Endereço</dt>
-          <dd>{{ usuario.endereco || "Não informado" }}</dd>
+          <dd>{{ usuario.endereco || 'Não informado' }}</dd>
         </div>
         <div>
           <dt>Cidade e UF</dt>
           <dd>
             {{
-              [usuario.cidade, usuario.uf].filter(Boolean).join(" • ") ||
-              "Não informado"
+              [usuario.cidade, usuario.uf].filter(Boolean).join(' • ') ||
+              'Não informado'
             }}
           </dd>
         </div>
@@ -360,17 +412,21 @@ async function excluir() {
           <dd>
             {{
               usuario.cep
-                ? usuario.cep.replace(/^(\d{5})(\d{3})$/, "$1-$2")
-                : "Não informado"
+                ? usuario.cep.replace(/^(\d{5})(\d{3})$/, '$1-$2')
+                : 'Não informado'
             }}
           </dd>
         </div>
       </dl>
       <div class="conta-acoes">
-        <RouterLink class="conta-botao" to="/minha-conta/editar"
+        <RouterLink
+          class="conta-botao"
+          to="/minha-conta/editar"
           >Editar meus dados</RouterLink
         >
-        <RouterLink class="conta-botao secundario" to="/minha-conta/senha"
+        <RouterLink
+          class="conta-botao secundario"
+          to="/minha-conta/senha"
           >Alterar senha</RouterLink
         >
         <button
@@ -380,7 +436,11 @@ async function excluir() {
         >
           Excluir minha conta
         </button>
-        <button class="conta-sair" :disabled="carregando" @click="sair">
+        <button
+          class="conta-sair"
+          :disabled="carregando"
+          @click="sair"
+        >
           Sair da conta
         </button>
       </div>
@@ -397,8 +457,12 @@ async function excluir() {
           inativada para preservar o histórico.
         </p>
         <div class="conta-acoes">
-          <button class="conta-botao" :disabled="carregando" @click="excluir">
-            {{ carregando ? "Excluindo…" : "Confirmar exclusão" }}</button
+          <button
+            class="conta-botao"
+            :disabled="carregando"
+            @click="excluir"
+          >
+            {{ carregando ? 'Excluindo…' : 'Confirmar exclusão' }}</button
           ><button
             class="conta-botao secundario"
             :disabled="carregando"
@@ -421,22 +485,29 @@ async function excluir() {
         </div>
         <p class="conta-mobile-email">{{ usuario.email }}</p>
         <p class="conta-mobile-telefone">
-          {{ usuario.telefone || "Não informado" }}
+          {{ usuario.telefone || 'Não informado' }}
         </p>
         <address>
-          {{ usuario.endereco || "Endereço não informado" }}<br />{{
-            [usuario.cidade, usuario.uf].filter(Boolean).join(" • ")
-          }}<br />CEP {{ usuario.cep?.replace(/^(\d{5})(\d{3})$/, "$1-$2") }}
+          {{ usuario.endereco || 'Endereço não informado' }}<br />{{
+            [usuario.cidade, usuario.uf].filter(Boolean).join(' • ')
+          }}<br />CEP {{ usuario.cep?.replace(/^(\d{5})(\d{3})$/, '$1-$2') }}
         </address>
-        <RouterLink to="/minha-conta/editar" class="conta-botao secundario"
+        <RouterLink
+          to="/minha-conta/editar"
+          class="conta-botao secundario"
           >Editar meus dados</RouterLink
         >
       </div>
       <div class="conta-mobile-menu">
-        <RouterLink to="/minha-conta/senha" class="conta-botao secundario"
+        <RouterLink
+          to="/minha-conta/senha"
+          class="conta-botao secundario"
           >Alterar senha</RouterLink
         >
-        <button class="conta-botao secundario" @click="abrirPedidos">
+        <button
+          class="conta-botao secundario"
+          @click="abrirPedidos"
+        >
           Meus pedidos
         </button>
         <button
@@ -453,21 +524,37 @@ async function excluir() {
         aria-labelledby="titulo-pedidos"
       >
         <h2 id="titulo-pedidos">Meus pedidos</h2>
-        <p v-if="buscandoPedidos" role="status">Carregando pedidos…</p>
-        <p v-else-if="erroPedidos" role="alert">{{ erroPedidos }}</p>
+        <p
+          v-if="buscandoPedidos"
+          role="status"
+        >
+          Carregando pedidos…
+        </p>
+        <p
+          v-else-if="erroPedidos"
+          role="alert"
+        >
+          {{ erroPedidos }}
+        </p>
         <p v-else-if="!pedidos.length">Você ainda não tem pedidos.</p>
         <ul v-else>
-          <li v-for="pedido in pedidos" :key="pedido.id">
-            Pedido #{{ pedido.id }} — {{ pedido.status.replaceAll("_", " ") }} —
+          <li
+            v-for="pedido in pedidos"
+            :key="pedido.id"
+          >
+            Pedido #{{ pedido.id }} — {{ pedido.status.replaceAll('_', ' ') }} —
             {{
-              Number(pedido.total || 0).toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
+              Number(pedido.total || 0).toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
               })
             }}
           </li>
         </ul>
-        <button class="conta-botao secundario" @click="pedidosDialog.close()">
+        <button
+          class="conta-botao secundario"
+          @click="pedidosDialog.close()"
+        >
           Fechar
         </button>
       </dialog>
@@ -486,7 +573,7 @@ async function excluir() {
           :class="'conta-campo-' + campo.key"
         >
           <label :for="campo.key"
-            >{{ campo.label }}{{ campo.required ? " *" : "" }}</label
+            >{{ campo.label }}{{ campo.required ? ' *' : '' }}</label
           >
           <select
             v-if="campo.key === 'uf'"
@@ -497,8 +584,19 @@ async function excluir() {
             autocomplete="address-level1"
             :disabled="carregando"
           >
-            <option disabled value="">Selecione</option>
-            <option v-for="uf in ufs" :key="uf" :value="uf">{{ uf }}</option>
+            <option
+              disabled
+              value=""
+            >
+              Selecione
+            </option>
+            <option
+              v-for="uf in ufs"
+              :key="uf"
+              :value="uf"
+            >
+              {{ uf }}
+            </option>
           </select>
           <input
             v-else
@@ -535,7 +633,7 @@ async function excluir() {
         role="status"
         aria-live="polite"
       >
-        {{ consultandoCep ? "Consultando CEP…" : avisoCep }}
+        {{ consultandoCep ? 'Consultando CEP…' : avisoCep }}
       </p>
       <p
         v-if="modo === 'cadastro'"
@@ -543,10 +641,16 @@ async function excluir() {
       >
         * Campos obrigatórios. Informe telefone e endereço para criar sua conta.
       </p>
-      <p v-if="modo === 'login'" class="conta-mobile conta-mobile-ajuda">
+      <p
+        v-if="modo === 'login'"
+        class="conta-mobile conta-mobile-ajuda"
+      >
         Senha com pelo menos 8 caracteres.
       </p>
-      <p v-if="modo === 'cadastro'" class="conta-mobile conta-mobile-ajuda">
+      <p
+        v-if="modo === 'cadastro'"
+        class="conta-mobile conta-mobile-ajuda"
+      >
         Informe um telefone válido e o endereço completo. A senha deve ter ao
         menos 8 caracteres.
       </p>
@@ -557,9 +661,11 @@ async function excluir() {
           :disabled="carregando || consultandoCep"
         >
           <span :class="{ 'conta-desktop': modo === 'login' && !carregando }">{{
-            carregando ? "Aguarde…" : acao
+            carregando ? 'Aguarde…' : acao
           }}</span
-          ><span v-if="modo === 'login' && !carregando" class="conta-mobile"
+          ><span
+            v-if="modo === 'login' && !carregando"
+            class="conta-mobile"
             >Entrar</span
           >
         </button>
@@ -573,18 +679,23 @@ async function excluir() {
                 : '/minha-conta'
           "
           ><span :class="{ 'conta-desktop': modo === 'login' }">{{
-            modo === "login"
-              ? "Criar conta"
-              : modo === "cadastro"
-                ? "Voltar"
-                : "Cancelar"
+            modo === 'login'
+              ? 'Criar conta'
+              : modo === 'cadastro'
+                ? 'Voltar'
+                : 'Cancelar'
           }}</span
-          ><span v-if="modo === 'login'" class="conta-mobile"
+          ><span
+            v-if="modo === 'login'"
+            class="conta-mobile"
             >Criar uma conta</span
           ></RouterLink
         >
       </div>
-      <p v-if="modo === 'login'" class="conta-mobile conta-mobile-rodape-login">
+      <p
+        v-if="modo === 'login'"
+        class="conta-mobile conta-mobile-rodape-login"
+      >
         Seus pedidos, dados e avaliações em um só lugar.
       </p>
     </form>

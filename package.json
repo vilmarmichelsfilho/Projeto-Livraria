@@ -12,9 +12,8 @@
     "lint:oxlint": "oxlint . --fix",
     "lint:eslint": "eslint . --fix --cache",
     "format": "prettier --write --experimental-cli src/",
-    "api": "node server.cjs",
-    "dev:all": "run-p dev api",
-    "test:conta": "node --test tests/conta.test.cjs"
+    "api": "json-server --watch db.json --host localhost --port 3000",
+    "dev:all": "run-p dev api"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",

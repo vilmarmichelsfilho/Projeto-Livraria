@@ -1,18 +1,26 @@
 # Telas de conta — IFLibrary
 
-Execute npm install e npm run dev:all. Abra http://localhost:5173/entrar.
+Execute npm install e npm run dev:all. A API fica em localhost:3000 e o front em localhost:5173.
+O comando npm run api executa JSON Server direto no db.json. Não há arquivo de servidor próprio.
 
-Rotas: /entrar, /cadastro, /minha-conta, /minha-conta/editar, /minha-conta/senha.
-Crie uma conta para testar: os usuários originais de db.json têm hashes fictícios e não autenticam.
+Rotas das telas: /entrar, /cadastro, /minha-conta, /minha-conta/editar e /minha-conta/senha.
 
-A API usa JSON Server 0.17 e persiste no db.json. npm run api inicia server.cjs com POST /usuarios, POST /auth/login, GET /auth/me, POST /auth/logout, GET/PATCH/DELETE /usuarios/:id e PATCH /usuarios/:id/senha. PATCH altera parcialmente os dados; POST cadastra; DELETE exclui contas sem pedidos ou inativa contas com histórico. push é operação de arrays; os métodos HTTP são POST/PATCH/DELETE.
+O login é uma simulação escolar: a tela consulta GET /usuarios?email=..., confere a senha fictícia
+e guarda o ID em sessionStorage (iflibrary_usuario). Sair limpa esse ID.
+Não há tokens, autenticação ou autorização na API. Use somente dados fictícios.
 
-id é a chave do JSON Server; id_usuario é seu alias, gerado no servidor. Senhas são hashes scrypt com salt. Perfil, atividade e datas são controlados pelo servidor. E-mails são normalizados e únicos, CEP é texto com oito dígitos. Telefone, endereço, cidade, UF e CEP são obrigatórios no cadastro e na edição, com validação no formulário e no servidor.
+Contas iniciais: ana.lima@example.com (ADMIN) e marina.costa@example.com (CLIENTE).
+Senha fictícia dos usuários iniciais: Teste123! O campo senha fica em texto no db.json.
 
-Tokens de sessão duram 24h, ficam em sessionStorage e são invalidados ao sair, excluir a conta ou reiniciar a API. A área de pedidos usa uma sessão ADMIN para listar e consultar clientes. Cada usuário pode consultar e editar a própria conta. As respostas omitem hashes de senha. As rotas de catálogo e pedidos continuam com o comportamento de demonstração do JSON Server, sem autorização ou transações próprias.
+Cadastro: POST /usuarios, com ID gerado pelo JSON Server.
+Consulta: GET /usuarios/:id. Edição e troca de senha: PATCH /usuarios/:id.
+Exclusão sem pedidos: DELETE /usuarios/:id, depois de excluir as avaliações vinculadas.
+Com pedidos, a tela inativa a conta com PATCH para preservar o histórico.
+A tela também impede excluir o último administrador ativo.
 
-npm run test:conta executa testes em cópia temporária do banco. npm run build valida o build.
+Nome, e-mail, telefone, endereço, cidade, UF e CEP são obrigatórios.
+As validações, a conferência de e-mail repetido e as datas são feitas pelo front.
+O JSON Server padrão aceita requisições diretas sem aplicar essas regras.
 
-Validação opcional de navegador no Windows com Edge instalado: `node tests/browser-conta.cjs`. Usa banco temporário, portas locais e salva capturas em `.vite/conta-qa/`.
-
-CEP: ao digitar oito dígitos no cadastro ou edição, o ViaCEP (https://viacep.com.br/) preenche cidade, UF e endereço no formato bairro, logradouro. Sem logradouro, mantém bairro e vírgula. Os campos continuam editáveis para número/complemento e falhas de consulta. Consulta tem limite de 8 segundos; respostas de CEPs anteriores são descartadas. Testes: node --test tests/cep.test.mjs.
+CEP: oito dígitos consultam o ViaCEP para preencher cidade, UF e endereço.
+Os campos continuam editáveis. O teste é node --test tests/cep.test.js.

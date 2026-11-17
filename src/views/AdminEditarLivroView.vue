@@ -31,7 +31,9 @@ async function carregarLivro() {
 }
 
 async function atualizarLivro(dadosLivro) {
-  if (salvando.value) return;
+  if (salvando.value) {
+    return;
+  }
   salvando.value = true;
   erro.value = '';
   errosCampos.value = {};
@@ -97,7 +99,7 @@ onMounted(carregarLivro);
       <LivrosForm
         :inicial="livro"
         :ocupado="salvando"
-        :erros-api="errosCampos"
+        :erros-campos="errosCampos"
         :cancelar="voltar"
         @salvar="atualizarLivro"
       />

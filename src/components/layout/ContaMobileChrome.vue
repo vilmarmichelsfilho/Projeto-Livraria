@@ -1,20 +1,26 @@
 <script setup>
-import { computed } from "vue";
-import { carrinho } from "@/utils/cartUtils";
-import ContaIcone from "@/components/ContaIcone.vue";
-const quantidade = computed(() =>
-  carrinho.reduce((total, item) => total + item.quantidade, 0),
-);
+import { computed } from 'vue';
+import { carrinho } from '@/utils/cartUtils';
+import ContaIcone from '@/components/ContaIcone.vue';
+const quantidade = computed(() => {
+  let total = 0;
+  for (const item of carrinho) {
+    total += item.quantidade;
+  }
+  return total;
+});
 const links = [
-  { nome: "inicio", texto: "Início", to: "/" },
-  { nome: "livros", texto: "Livros", to: "/#livros" },
-  { nome: "favoritos", texto: "Favoritos", to: "/favoritos" },
-  { nome: "conta", texto: "Conta", to: "/minha-conta" },
+  { nome: 'inicio', texto: 'Início', to: '/' },
+  { nome: 'livros', texto: 'Livros', to: '/#livros' },
+  { nome: 'favoritos', texto: 'Favoritos', to: '/favoritos' },
+  { nome: 'conta', texto: 'Conta', to: '/minha-conta' },
 ];
 </script>
 <template>
   <header class="conta-mobile-cabecalho">
-    <RouterLink class="conta-mobile-marca" to="/"
+    <RouterLink
+      class="conta-mobile-marca"
+      to="/"
       ><ContaIcone nome="livros" /><span>IFLibrary</span></RouterLink
     >
     <div class="conta-mobile-atalhos">
@@ -26,12 +32,17 @@ const links = [
           class="conta-mobile-quantidade"
           >{{ quantidade }}</span
         ></RouterLink
-      ><RouterLink to="/minha-conta" aria-label="Minha conta"
+      ><RouterLink
+        to="/minha-conta"
+        aria-label="Minha conta"
         ><ContaIcone nome="conta"
       /></RouterLink>
     </div>
   </header>
-  <nav class="conta-mobile-nav" aria-label="Navegação principal">
+  <nav
+    class="conta-mobile-nav"
+    aria-label="Navegação principal"
+  >
     <RouterLink
       v-for="link in links"
       :key="link.nome"
@@ -73,7 +84,8 @@ const links = [
   .conta-mobile-nav a.selecionado span {
     font-weight: 700;
   }
-  .conta-mobile-marca svg {
+  .conta-mobile-marca .v-icon {
+    font-size: 21px;
     width: 21px;
     height: 24px;
   }
@@ -90,7 +102,8 @@ const links = [
     height: 44px;
     color: #476b7b;
   }
-  .conta-mobile-atalhos svg {
+  .conta-mobile-atalhos .v-icon {
+    font-size: 24px;
     width: 24px;
     height: 24px;
   }
@@ -138,7 +151,8 @@ const links = [
     color: #476b7b;
     font-weight: 700;
   }
-  .conta-mobile-nav svg {
+  .conta-mobile-nav .v-icon {
+    font-size: 21px;
     height: 21px;
     width: 21px;
   }
