@@ -97,20 +97,25 @@ async function sair() {
         <RouterLink
           to="/admin/livros"
           class="admin-nav-item"
-          :class="{ active: secaoLivros }"
-          :aria-current="secaoLivros ? 'true' : undefined"
+          :class="{ active: route.path.startsWith('/admin/livros') }"
+          :aria-current="
+            route.path.startsWith('/admin/livros') ? 'page' : undefined
+          "
           ><AdminIcon name="book" />Livros</RouterLink
         >
-        <span
+        <RouterLink
+          to="/admin/usuarios"
           class="admin-nav-item"
-          aria-disabled="true"
-          ><AdminIcon name="users" />Usuários</span
+          :class="{ active: route.path.startsWith('/admin/usuarios') }"
+          ><AdminIcon name="users" />Usuários</RouterLink
         >
         <RouterLink
           to="/admin/pedidos"
           class="admin-nav-item"
-          :class="{ active: !secaoLivros }"
-          :aria-current="!secaoLivros ? 'true' : undefined"
+          :class="{ active: route.path.startsWith('/admin/pedidos') }"
+          :aria-current="
+            route.path.startsWith('/admin/pedidos') ? 'page' : undefined
+          "
           ><AdminIcon name="orders" />Pedidos</RouterLink
         >
         <span
@@ -136,23 +141,3 @@ async function sair() {
     </main>
   </div>
 </template>
-
-<style scoped>
-.admin-livros :deep(h1) {
-  font-size: 30px;
-  line-height: 1.3;
-  font-weight: 700;
-}
-.admin-livros :deep(h2) {
-  font-size: 28px;
-  font-weight: 700;
-}
-@media (max-width: 760px) {
-  .admin-livros :deep(h1) {
-    font-size: 27px;
-  }
-  .admin-livros :deep(h2) {
-    font-size: 23px;
-  }
-}
-</style>

@@ -9,7 +9,7 @@ O login é uma simulação escolar: a tela consulta GET /usuarios?email=..., con
 e guarda o ID em sessionStorage (iflibrary_usuario). Sair limpa esse ID.
 Não há tokens, autenticação ou autorização na API. Use somente dados fictícios.
 
-Contas iniciais: ana.lima@example.com (ADMIN) e marina.costa@example.com (CLIENTE).
+Contas iniciais: admin@example.test (ADMIN) e ana@example.test (CLIENTE).
 Senha fictícia dos usuários iniciais: Teste123! O campo senha fica em texto no db.json.
 
 Cadastro: POST /usuarios, com ID gerado pelo JSON Server.
@@ -17,6 +17,11 @@ Consulta: GET /usuarios/:id. Edição e troca de senha: PATCH /usuarios/:id.
 Exclusão sem pedidos: DELETE /usuarios/:id, depois de excluir as avaliações vinculadas.
 Com pedidos, a tela inativa a conta com PATCH para preservar o histórico.
 A tela também impede excluir o último administrador ativo.
+
+As telas administrativas de Usuários ficam em /admin/usuarios e usam esses
+mesmos endpoints padrão. Perfil e situação são alterados pelo formulário
+administrativo. O cadastro comum sempre cria um cliente ativo.
+O acesso administrativo verifica o perfil no front e redireciona clientes.
 
 Nome, e-mail, telefone, endereço, cidade, UF e CEP são obrigatórios.
 As validações, a conferência de e-mail repetido e as datas são feitas pelo front.

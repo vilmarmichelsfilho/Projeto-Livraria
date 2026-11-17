@@ -23,7 +23,9 @@ Coleção: usuarios.
 Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha (texto, obrigatória, fictícia para simulação no front); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
 Relacionamentos: 1:N Pedidos e 1:N Avaliações por id_usuario.
 O cadastro, o login e o gerenciamento da própria conta estão detalhados no README-conta.md.
-As telas administrativas de usuários seguem planejadas.
+As telas administrativas de usuários permitem listar, consultar por ID,
+cadastrar, editar perfil/situação, inativar, reativar e excluir com confirmação.
+Elas usam os endpoints padrão de /usuarios e preservam o último admin ativo.
 
 3. PEDIDOS — DAVI AUGUSTO RAMOS (PLANEJADO)
 Finalidade: carrinho em rascunho e histórico de compras simuladas.

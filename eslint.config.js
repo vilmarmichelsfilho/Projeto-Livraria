@@ -10,7 +10,12 @@ export default defineConfig([
     files: ['**/*.{vue,js}'],
   },
 
-  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+  globalIgnores([
+    '**/dist/**',
+    '**/dist-ssr/**',
+    '**/coverage/**',
+    '**/.vite/**',
+  ]),
 
   {
     languageOptions: {

@@ -214,7 +214,7 @@ db.json — usuarios, livros, pedidos e avaliacoes.
 A API é iniciada pelo comando json-server do package.json, sem arquivo de servidor.
 src/services/ — chamadas compartilhadas de conta, CEP e pedidos.
 
-Dados fictícios atuais: 5 usuários, 16 livros, 4 pedidos e 5 avaliações.
+Dados de demonstração atuais: 6 usuários, 16 livros, 6 pedidos e 5 avaliações.
 Sombra e Ossos tem pedido; Divergente tem avaliação e não tem pedido;
 Jogos Vorazes está sem estoque; Cidade dos ossos está inativo.
 
@@ -252,7 +252,12 @@ por várias telas. O login é uma simulação no front: sessionStorage guarda
 somente o ID do usuário. Não há autenticação ou autorização na API.
 Os ícones usam Vuetify; os selects usam a seta padrão do navegador.
 
-Contas de demonstração: ana.lima@example.com (ADMIN) ou marina.costa@example.com
+Contas de demonstração: admin@example.test (ADMIN) ou ana@example.test
 (CLIENTE). Senha fictícia de todos os usuários iniciais: Teste123!
 O campo senha é texto no db.json apenas para esta simulação escolar.
 Use somente dados fictícios. As regras de conta, senha e vínculos ficam no front.
+
+Administração de usuários: /admin/usuarios, /admin/usuarios/novo,
+/admin/usuarios/:id e /admin/usuarios/:id/editar. Os formulários usam
+GET, POST, PATCH e DELETE em /usuarios, sem endpoint personalizado.
+O front preserva o último administrador ativo e o histórico dos pedidos.

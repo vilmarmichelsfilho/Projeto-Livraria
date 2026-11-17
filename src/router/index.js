@@ -4,6 +4,7 @@ import FavoritosView from '@/views/FavoritosView.vue';
 import DetalhesLivros from '@/views/DetalhesLivros.vue';
 import LivrosPorGenero from '@/views/LivrosPorGenero.vue';
 import CarrinhoView from '@/views/CarrinhoView.vue';
+import usuariosService from '@/services/usuariosService';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,22 @@ const router = createRouter({
       component: () => import('@/components/layout/AdminLayout.vue'),
       meta: { admin: true },
       children: [
+        {
+          path: 'usuarios',
+          component: () => import('@/views/AdminListarUsuariosView.vue'),
+        },
+        {
+          path: 'usuarios/novo',
+          component: () => import('@/views/AdminCadastrarUsuarioView.vue'),
+        },
+        {
+          path: 'usuarios/:id/editar',
+          component: () => import('@/views/AdminEditarUsuarioView.vue'),
+        },
+        {
+          path: 'usuarios/:id',
+          component: () => import('@/views/AdminDetalhesUsuarioView.vue'),
+        },
         { path: '', redirect: '/admin/pedidos' },
         {
           path: 'livros',
@@ -132,9 +149,22 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to) => {
-  if (to.meta.requerLogin && !sessionStorage.getItem('iflibrary_usuario')) {
-    return '/entrar';
+router.beforeEach(async (to) => {
+  if (!to.meta.requerLogin && !to.meta.admin) return;
+  const entrar = { path: '/entrar', query: { redirecionar: to.fullPath } };
+  if (!sessionStorage.getItem('iflibrary_usuario')) return entrar;
+  try {
+    const usuario = await usuariosService.atual();
+    if (to.meta.admin && usuario.perfil !== 'ADMIN') return '/minha-conta';
+  } catch (error) {
+    if (
+      !sessionStorage.getItem('iflibrary_usuario') ||
+      error.response?.status === 404
+    ) {
+      sessionStorage.removeItem('iflibrary_usuario');
+      return entrar;
+    }
+    // Falhas temporárias da API são apresentadas pela página, sem apagar o login.
   }
 });
 export default router;

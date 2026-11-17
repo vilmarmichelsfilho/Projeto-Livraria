@@ -3,6 +3,7 @@ import { onMounted, onBeforeUnmount, ref } from 'vue';
 const props = defineProps({
   label: { type: String, required: true },
   busy: Boolean,
+  modalClass: { type: String, default: "" },
 });
 const emit = defineEmits(['close']);
 const dialog = ref(null);
@@ -52,6 +53,7 @@ onBeforeUnmount(() => {
       <section
         ref="dialog"
         class="admin-modal"
+        :class="modalClass"
         role="dialog"
         aria-modal="true"
         :aria-label="label"

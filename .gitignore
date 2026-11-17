@@ -1,5 +1,12 @@
 node_modules
+.eslintcache
+*.sessions.json
+*.sessions.json.tmp
 .vercel
 
 .vite/conta-qa/
 .vite/build-check/
+
+.vite/
+
+dist/

@@ -43,7 +43,70 @@ async function validarDados(dados, id) {
   }
 }
 
+function validarPerfil(perfil, ativo) {
+  if (!['CLIENTE', 'ADMIN'].includes(perfil) || typeof ativo !== 'boolean') {
+    throw new Error('Selecione um perfil e uma situação válidos.');
+  }
+}
+
+async function cadastrarUsuario(dados, perfil, ativo) {
+  const campos = camposUsuario(dados);
+  await validarDados(campos);
+  validarPerfil(perfil, ativo);
+  if (dados.senha.length < 8) {
+    throw new Error('A senha deve ter pelo menos 8 caracteres.');
+  }
+  const agora = new Date().toISOString();
+  const resposta = await api.post('/usuarios', {
+    ...campos,
+    senha: dados.senha,
+    perfil,
+    ativo,
+    criado_em: agora,
+    atualizado_em: agora,
+  });
+  return resposta.data;
+}
+
 export default {
+  async listar() {
+    return (await api.get('/usuarios')).data;
+  },
+  async obter(id) {
+    return (await api.get(`/usuarios/${id}`)).data;
+  },
+  async cadastrarAdmin(dados) {
+    return cadastrarUsuario(dados, dados.perfil, dados.ativo);
+  },
+  async atualizarAdmin(id, dados) {
+    const respostaAtual = await api.get('/usuarios/' + id);
+    const anterior = respostaAtual.data;
+    const preenchido = { ...anterior, ...dados };
+    const campos = camposUsuario(preenchido);
+    await validarDados(campos, id);
+    validarPerfil(preenchido.perfil, preenchido.ativo);
+
+    // Não permite remover o acesso do último administrador ativo.
+    if (
+      anterior.perfil === 'ADMIN' &&
+      anterior.ativo &&
+      (preenchido.perfil !== 'ADMIN' || !preenchido.ativo)
+    ) {
+      const administradores = await api.get('/usuarios', {
+        params: { perfil: 'ADMIN', ativo: true },
+      });
+      if (administradores.data.length <= 1) {
+        throw new Error('O último administrador ativo deve ser preservado.');
+      }
+    }
+    const resposta = await api.patch('/usuarios/' + id, {
+      ...campos,
+      perfil: preenchido.perfil,
+      ativo: preenchido.ativo,
+      atualizado_em: new Date().toISOString(),
+    });
+    return resposta.data;
+  },
   async entrar(dados) {
     const email = dados.email.trim().toLowerCase();
     const resposta = await api.get('/usuarios', { params: { email } });
@@ -72,21 +135,7 @@ export default {
     return usuario;
   },
   async cadastrar(dados) {
-    const campos = camposUsuario(dados);
-    await validarDados(campos);
-    if (dados.senha.length < 8) {
-      throw new Error('A senha deve ter pelo menos 8 caracteres.');
-    }
-    const agora = new Date().toISOString();
-    const resposta = await api.post('/usuarios', {
-      ...campos,
-      senha: dados.senha,
-      perfil: 'CLIENTE',
-      ativo: true,
-      criado_em: agora,
-      atualizado_em: agora,
-    });
-    return resposta.data;
+    return cadastrarUsuario(dados, 'CLIENTE', true);
   },
   async atualizar(id, dados) {
     const campos = camposUsuario(dados);
@@ -112,7 +161,7 @@ export default {
   },
   async excluir(id) {
     const resposta = await api.get('/usuarios/' + id);
-    if (resposta.data.perfil === 'ADMIN') {
+    if (resposta.data.perfil === 'ADMIN' && resposta.data.ativo) {
       const administradores = await api.get('/usuarios', {
         params: { perfil: 'ADMIN', ativo: true },
       });

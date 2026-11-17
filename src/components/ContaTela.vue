@@ -241,7 +241,14 @@ async function enviar() {
   try {
     if (props.modo === 'login') {
       await usuarios.entrar({ email: dados.email, senha: dados.senha });
-      await router.push('/minha-conta');
+      const destino = route.query.redirecionar;
+      await router.push(
+        typeof destino === 'string' &&
+          destino.startsWith('/') &&
+          !destino.startsWith('//')
+          ? destino
+          : '/minha-conta',
+      );
     }
     if (props.modo === 'cadastro') {
       const { nome, email, senha, telefone, endereco, cidade, uf, cep } = dados;

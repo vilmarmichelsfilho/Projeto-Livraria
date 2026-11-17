@@ -72,7 +72,10 @@ async function salvar(id, dados, itens) {
     throw new Error('Selecione um cliente.');
   }
   const respostaCliente = await api.get('/usuarios/' + dados.id_usuario);
-  if (!respostaCliente.data.ativo) {
+  if (
+    !respostaCliente.data.ativo ||
+    respostaCliente.data.perfil !== 'CLIENTE'
+  ) {
     throw new Error('Selecione um cliente ativo.');
   }
 
@@ -139,6 +142,14 @@ async function mudarSituacao(id, status) {
   }
 
   const livrosAlterados = [];
+  if (confirmar) {
+    const resposta = await api.get('/usuarios/' + pedido.id_usuario);
+    if (!resposta.data.ativo || resposta.data.perfil !== 'CLIENTE') {
+      throw new Error(
+        'Selecione um cliente ativo antes de confirmar o pedido.',
+      );
+    }
+  }
   try {
     if (confirmar || cancelar) {
       // Confere todos os livros antes de alterar qualquer estoque.

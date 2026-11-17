@@ -1,1 +1,0 @@
-import{C as e,h as t}from"./index-BD0rzCbm.js";import{t as n}from"./ContaTela-B1E3nyEv.js";var r={__name:`AlterarSenhaView`,setup(r){return(r,i)=>(e(),t(n,{modo:`senha`}))}};export{r as default};
