@@ -1,14 +1,15 @@
 <script setup>
-import { RouterView } from 'vue-router'
-import appFooter from './components/layout/appFooter.vue';
-import AppHeader from './components/layout/appHeader.vue';
+import { RouterView, useRoute } from "vue-router";
+import appFooter from "./components/layout/appFooter.vue";
+import AppHeader from "./components/layout/appHeader.vue";
+const route = useRoute();
 </script>
 
 <template>
   <div class="app-container">
-    <AppHeader></AppHeader>
-     <RouterView class="content-wrap"/>
-     <appFooter></appFooter>
+    <AppHeader v-if="!route.meta.admin"></AppHeader>
+    <RouterView class="content-wrap" />
+    <appFooter v-if="!route.meta.admin"></appFooter>
   </div>
 </template>
 <style scoped>
