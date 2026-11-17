@@ -1,5 +1,5 @@
 DOCUMENTAÇÃO TÉCNICA — OLYMPUSLIBRARY
-Atualização: 16/11/2026
+Atualização: 17/11/2026
 A documentação completa e atual do CRUD de Livros está no README.txt, com
 as dez seções do modelo da atividade.
 
@@ -20,37 +20,38 @@ O servidor padrão não valida campos ou vínculos e não executa transações.
 2. USUÁRIOS — VILMAR MICHELS FILHO
 Finalidade: identificação de clientes e administradores.
 Coleção: usuarios.
-Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha (texto, obrigatória, fictícia para simulação no front); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
+Campos: id (inteiro, PK automático); nome (texto, obrigatório); email (texto, obrigatório e único na validação do front); senha (texto fictício, mínimo 8 caracteres no cadastro); telefone, endereco e cidade (textos obrigatórios); uf (sigla válida, obrigatória); cep (texto de 8 dígitos, obrigatório); perfil (CLIENTE/ADMIN); ativo (booleano); criado_em e atualizado_em (datas ISO em texto, preenchidas pelo front).
 Relacionamentos: 1:N Pedidos e 1:N Avaliações por id_usuario.
 O cadastro, o login e o gerenciamento da própria conta estão detalhados no README-conta.md.
 As telas administrativas de usuários permitem listar, consultar por ID,
 cadastrar, editar perfil/situação, inativar, reativar e excluir com confirmação.
 Elas usam os endpoints padrão de /usuarios e preservam o último admin ativo.
 
-3. PEDIDOS — DAVI AUGUSTO RAMOS (PLANEJADO)
-Finalidade: carrinho em rascunho e histórico de compras simuladas.
+3. PEDIDOS — DAVI AUGUSTO RAMOS
+Finalidade: gestão administrativa de rascunhos e pedidos simulados.
 Coleção: pedidos; sem coleção itens_pedido.
 Campos: id (inteiro, PK obrigatório); id_usuario (inteiro, FK obrigatório); status (texto de domínio, obrigatório); total (número monetário, obrigatório); itens (lista JSON, obrigatória, aceita vazia apenas em rascunho); destinatario e endereco_entrega (textos exigidos na confirmação); criado_em e atualizado_em (datas ISO em texto, obrigatórios); confirmado_em e cancelado_em (datas ISO ou null, opcionais); motivo_cancelamento (texto ou null, opcional).
 Cada item: id_livro (inteiro, referência a livros, obrigatório); quantidade (inteiro positivo, obrigatório); preco_unitario (texto decimal, duas casas, obrigatório); titulo_livro (texto, obrigatório). Cada livro aparece uma vez por pedido.
 Relacionamentos: N:1 Usuários; N:N Livros pelos objetos itens.
-Endpoints planejados: POST /pedidos, GET /pedidos, GET /pedidos/:id, PATCH /pedidos/:id, DELETE /pedidos/:id somente em RASCUNHO.
-Atualização planejada: PATCH, inclusive alteração da lista itens.
-Telas: carrinho, revisão, confirmação, histórico/detalhes e administração de pedidos.
-Regras de pedidos a implementar por Davi: rascunho não reserva estoque; confirmar exige itens, usuário e endereço válidos; registrar preços e títulos históricos; transição de status e baixa/reposição de estoque transacionais; cancelar uma única vez; preservar pedidos confirmados.
-Essas validações devem ser implementadas nas telas Vue de Pedidos; o JSON Server padrão não as aplica automaticamente.
-Estados previstos: carregando, sucesso, erro, carrinho/histórico vazio e pedido não encontrado.
+Endpoints: POST /pedidos, GET /pedidos, GET /pedidos/:id, PATCH /pedidos/:id e DELETE /pedidos/:id somente em RASCUNHO pela interface.
+Atualização: PATCH, inclusive alteração da lista itens.
+Telas: /admin/pedidos, /admin/pedidos/novo, /admin/pedidos/:id e edição de rascunho.
+Regras no front: rascunho não reserva estoque; confirmar exige itens, cliente ativo e endereço; preservar itens confirmados, validar transições e impedir cancelamento repetido no fluxo.
+Baixa, reposição e atualização do pedido usam requisições separadas, com tentativa de restaurar o estoque se houver falha. Não há transação ou garantia de concorrência.
+O carrinho público é temporário em memória. Checkout, histórico detalhado do cliente e painel permanecem planejados. A conta oferece uma lista simples dos próprios pedidos.
+Estados: carregando, sucesso, erro, lista vazia e pedido não encontrado.
 
-4. AVALIAÇÕES — VITOR (PLANEJADO)
+4. AVALIAÇÕES — VITOR AVANZI LIPINSKI
 Finalidade: notas e comentários dos leitores.
 Coleção: avaliacoes.
-Campos: id (inteiro, PK obrigatório); id_usuario (inteiro, FK obrigatório); id_livro (inteiro, FK obrigatório); nota (inteiro de 1 a 5, obrigatório); comentario (texto, opcional); criado_em e atualizado_em (datas ISO em texto, obrigatórios no planejamento).
+Campos: id (inteiro, PK automático); id_usuario (inteiro, FK obrigatório para usuarios.id); id_livro (inteiro, FK obrigatório para livros.id); nota (inteiro de 1 a 5); comentario (texto opcional, até 2000 caracteres); criado_em e atualizado_em (datas ISO em texto, preenchidas pelo front).
 Relacionamentos: N:1 Usuários e N:1 Livros.
-Endpoints planejados: POST /avaliacoes, GET /avaliacoes, GET /avaliacoes/:id, PATCH /avaliacoes/:id, DELETE /avaliacoes/:id.
-Atualização planejada: PATCH.
+Endpoints: POST /avaliacoes, GET /avaliacoes, GET /avaliacoes/:id, PATCH /avaliacoes/:id e DELETE /avaliacoes/:id.
+Atualização: PATCH.
 Telas: avaliações nos detalhes, publicar, editar, confirmar exclusão; administração consulta/exclui para moderação.
-Regras a implementar por Vitor: somente autor edita/exclui a própria avaliação; administrador consulta/exclui para moderação; cliente deve estar autenticado e livro ativo.
-A leitura aparece na página do livro. A tela consulta GET /avaliacoes?id_livro=:id e GET /usuarios para apresentar o nome do leitor. As regras do CRUD de Avaliações devem ser implementadas por Vitor no front; a API padrão não tem autorização.
-Estados previstos: carregando, sucesso, erro, nenhuma avaliação e avaliação não encontrada.
+Regras no front: cliente ativo publica e edita a própria avaliação de livro ativo; administrador consulta e exclui para moderação; nota inteira de 1 a 5, comentário de até 2000 caracteres e uma avaliação por par usuário/livro.
+A leitura combina avaliações, livros e nomes dos usuários. /admin/avaliacoes/:id envia GET /avaliacoes/:id e mostra o estado de não encontrado em 404. A API padrão não aplica autorização.
+Estados: carregando, sucesso, erro, nenhuma avaliação e avaliação não encontrada.
 
 
 5. VERIFICAÇÕES ATUAIS
@@ -69,6 +70,10 @@ usam os endpoints padrão e foram conferidos em testes temporários e no
 navegador, em desktop e mobile. Build, ESLint e Oxlint aprovados.
 A demonstração manual do CRUD de Livros permanece pendente.
 
+Revisão de 17/11/2026: seis testes do repositório aprovados (CEP e Avaliações),
+verificações temporárias de CRUD de Livros, Usuários e Pedidos aprovadas;
+consulta por ID de avaliação e estado 404 aprovados. Build e lint aprovados.
+
 6. EXECUÇÃO E DEMONSTRAÇÃO
 npm install
 npm run api — API em http://localhost:3000.
@@ -80,9 +85,12 @@ Acessar /admin/livros e demonstrar o fluxo completo descrito no README.txt.
 Todas as coleções usam as rotas padrão do JSON Server, sem arquivo de servidor.
 O login é simulado no front com senhas fictícias em texto e ID em sessionStorage.
 Os ícones continuam no Vuetify com Material Design Icons.
-Os estilos foram movidos para blocos style nos componentes.
+Livros usa estilos nos componentes; outras áreas também usam CSS compartilhado em src/assets.
 Pesquisa e paginação são realizadas no Vue.
 As regras do front podem ser contornadas por requisições diretas à API.
 A exclusão de livro e avaliações não é atômica; falhas precisam de nova tentativa.
 Cada integrante deve atualizar a documentação e registrar seus próprios testes
 quando concluir sua parte.
+
+Documentação técnica consolidada:
+https://docs.google.com/document/d/1oVKP_sXycYOjsPQ1udo6uIYEdW3_ha6ldeap08c74gg/edit

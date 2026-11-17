@@ -71,13 +71,24 @@ async function alterarQuantidade(id, delta) {
         </ul>
         <div class="rodape-carrinho">
           <h3>Total: {{ formataPreco(total) }}</h3>
-          <button class="finalizar">
+          <button
+            class="finalizar"
+            disabled
+            aria-describedby="aviso-checkout"
+          >
             <v-icon
               icon="mdi-shopping"
               size="15"
             />
             Finalizar compra
           </button>
+          <p
+            id="aviso-checkout"
+            class="texto-suave"
+          >
+            A compra pelo carrinho está planejada. Nesta etapa, os pedidos são
+            gerenciados na administração.
+          </p>
         </div>
       </template>
     </section>
@@ -103,7 +114,7 @@ async function alterarQuantidade(id, delta) {
   transition: 0.3s;
   cursor: pointer;
 }
-.rodape-carrinho button:hover {
+.rodape-carrinho button:not(:disabled):hover {
   transform: scale(1.1);
   color: black;
 }

@@ -1,25 +1,52 @@
 <script setup>
-import { onMounted, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import api, { mensagemErro } from '@/services/api';
 import LayoutAdminAvaliacoes from '@/components/Avaliacoes/LayoutAdminAvaliacoes.vue';
 import EstrelasAvaliacao from '@/components/Avaliacoes/EstrelasAvaliacao.vue';
 import ExcluirAvaliacao from '@/components/Avaliacoes/ExcluirAvaliacao.vue';
-import {
-  avaliacoesComLivros,
-  dataAvaliacao,
-  erroPainel,
-  carregandoPainel,
-  carregarPainel,
-} from '@/utils/avaliacoesAdmin';
+import { dataAvaliacao } from '@/utils/avaliacoesAdmin';
 import { formataPreco } from '@/utils/produtosUtils';
 
 const route = useRoute();
 const router = useRouter();
-const avaliacao = computed(() =>
-  avaliacoesComLivros.value.find(
-    (item) => String(item.id) === String(route.params.id),
-  ),
-);
+const avaliacao = ref(null);
+const carregandoPainel = ref(true);
+const erroPainel = ref('');
+
+async function carregarPainel() {
+  carregandoPainel.value = true;
+  erroPainel.value = '';
+  avaliacao.value = null;
+  try {
+    // Consulta o registro pelo ID, como solicitado na atividade de CRUD.
+    const resposta = await api.get('/avaliacoes/' + route.params.id);
+    const registro = resposta.data;
+    const livros = await api.get('/livros', {
+      params: { id: registro.id_livro },
+    });
+    const usuarios = await api.get('/usuarios', {
+      params: { id: registro.id_usuario },
+    });
+    avaliacao.value = {
+      ...registro,
+      autor: usuarios.data[0]?.nome || 'Leitor',
+      livro: livros.data[0] || {
+        titulo: 'Livro indisponível',
+        autor: '',
+        capa_url: '',
+        preco: null,
+      },
+    };
+  } catch (erro) {
+    // Em 404, o template apresenta o estado de registro não encontrado.
+    if (erro.response?.status !== 404) {
+      erroPainel.value = mensagemErro(erro);
+    }
+  } finally {
+    carregandoPainel.value = false;
+  }
+}
 onMounted(carregarPainel);
 </script>
 
@@ -39,7 +66,7 @@ onMounted(carregarPainel);
       v-if="carregandoPainel"
       role="status"
     >
-      Carregando avaliações…
+      Carregando avaliação…
     </p>
     <div
       v-else-if="erroPainel"

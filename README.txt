@@ -5,10 +5,10 @@ Projeto do Hackathon | Vue e JSON Server
 
 Projeto: OlympusLibrary (IFLibrary na interface).
 Turma: não informada; preencher antes da entrega.
-Equipe: Igor Gabriel Decker, Vilmar Michels Filho, Davi Augusto Ramos e Vitor.
+Equipe: Igor Gabriel Decker, Vilmar Michels Filho, Davi Augusto Ramos e Vitor Avanzi Lipinski.
 Entidade: Livros.
 Responsável pelo CRUD completo: Igor Gabriel Decker.
-Versão do documento: 1.5 — 16/11/2026.
+Versão do documento: 1.6 — 17/11/2026.
 Repositório: https://github.com/vilmarmichelsfilho/Projeto-Livraria
 API: http://localhost:3000 — JSON Server 0.17.4.
 Aplicação: http://localhost:5173
@@ -222,7 +222,7 @@ Divisão dos CRUDs completos:
 Igor Gabriel Decker — Livros.
 Vilmar Michels Filho — Usuários.
 Davi Augusto Ramos — Pedidos e seus itens.
-Vitor — Avaliações; confirmar o nome completo antes da entrega.
+Vitor Avanzi Lipinski — Avaliações.
 
 11. COMO ENTENDER O CÓDIGO
 
@@ -256,6 +256,16 @@ Contas de demonstração: admin@example.test (ADMIN) ou ana@example.test
 (CLIENTE). Senha fictícia de todos os usuários iniciais: Teste123!
 O campo senha é texto no db.json apenas para esta simulação escolar.
 Use somente dados fictícios. As regras de conta, senha e vínculos ficam no front.
+
+ESCOPO ATUAL — 17/11/2026
+Os quatro CRUDs estão disponíveis com JSON Server, usando PATCH na atualização.
+Avaliações: cadastro e edição pelo cliente em /livro/:endereco/avaliar;
+consulta GET /avaliacoes/:id e moderação em /admin/avaliacoes.
+O carrinho público é temporário em memória. Ele não cria pedidos na API.
+Checkout, histórico detalhado do cliente e painel continuam planejados.
+O botão de finalizar compra permanece indisponível nessa etapa.
+As garantias de senha protegida, autorização no servidor e transações não
+fazem parte desta demonstração escolar.
 
 Administração de usuários: /admin/usuarios, /admin/usuarios/novo,
 /admin/usuarios/:id e /admin/usuarios/:id/editar. Os formulários usam
