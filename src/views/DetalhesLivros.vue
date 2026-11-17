@@ -1,10 +1,11 @@
 <script setup>
-import { computed, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
 import { API_URL, lerResposta, mensagemErro } from '@/utils/api';
 import { formataPreco } from '@/utils/produtosUtils';
 import { adicionarAoCarrinho } from '@/utils/cartUtils';
 import { estaFavoritado, alternarFavorito } from '@/utils/favoritos';
+import AvaliacoesLivro from '@/components/Avaliacoes/AvaliacoesLivro.vue';
 import CapaLivro from '@/components/CapaLivro.vue';
 import EstadoRequisicao from '@/components/EstadoRequisicao.vue';
 const route = useRoute();
@@ -13,66 +14,13 @@ const carregando = ref(false);
 const erro = ref('');
 const aviso = ref('');
 const adicionando = ref(false);
-const avaliacoes = ref([]);
-const erroAvaliacoes = ref('');
-const carregandoAvaliacoes = ref(false);
-const media = computed(() => {
-  if (avaliacoes.value.length === 0) {
-    return '—';
-  }
-  let soma = 0;
-  for (const avaliacao of avaliacoes.value) {
-    soma += avaliacao.nota;
-  }
-  const resultado = soma / avaliacoes.value.length;
-  return resultado.toLocaleString('pt-BR', { maximumFractionDigits: 1 });
-});
-function iconeMedia(estrela) {
-  const nota = Number(media.value.replace(',', '.'));
-  if (nota >= estrela) {
-    return 'mdi-star';
-  }
-  if (nota >= estrela - 0.5) {
-    return 'mdi-star-half-full';
-  }
-  return 'mdi-star-outline';
-}
 let consulta = 0;
-// Evita mostrar dados antigos se o usuário trocar de livro durante a consulta.
-async function carregarAvaliacoes(id = livro.value?.id) {
-  const numero = consulta;
-  carregandoAvaliacoes.value = true;
-  erroAvaliacoes.value = '';
-  try {
-    const resposta = await fetch(`${API_URL}/avaliacoes?id_livro=${id}`);
-    const dados = await lerResposta(resposta);
-    const respostaUsuarios = await fetch(`${API_URL}/usuarios`);
-    const usuarios = await lerResposta(respostaUsuarios);
-    // O JSON Server retorna cada coleção separada; a tela junta os nomes.
-    for (const avaliacao of dados) {
-      const usuario = usuarios.find((item) => item.id === avaliacao.id_usuario);
-      avaliacao.nome = usuario ? usuario.nome : 'Leitor';
-    }
-    if (numero === consulta) {
-      avaliacoes.value = dados;
-    }
-  } catch (e) {
-    if (numero === consulta) {
-      erroAvaliacoes.value = mensagemErro(e);
-    }
-  } finally {
-    if (numero === consulta) {
-      carregandoAvaliacoes.value = false;
-    }
-  }
-}
 async function carregar() {
   const numero = ++consulta;
   carregando.value = true;
   erro.value = '';
   aviso.value = '';
   livro.value = null;
-  avaliacoes.value = [];
   try {
     const endereco = encodeURIComponent(route.params.endereco);
     const resposta = await fetch(
@@ -88,7 +36,12 @@ async function carregar() {
       return;
     }
     livro.value = encontrados[0];
-    carregarAvaliacoes(livro.value.id);
+    carregando.value = false;
+    if (route.hash === '#avaliacoes') {
+      await nextTick();
+      if (numero === consulta)
+        document.getElementById('avaliacoes')?.scrollIntoView();
+    }
   } catch (e) {
     if (numero === consulta) {
       erro.value = mensagemErro(e);
@@ -193,61 +146,10 @@ watch(() => route.params.endereco, carregar, { immediate: true });
           </dl>
         </div>
       </article>
-      <section class="avaliacoes-leitores">
-        <h2>Avaliações dos leitores</h2>
-        <EstadoRequisicao
-          v-if="carregandoAvaliacoes"
-          tipo="carregando"
-          mensagem="Carregando avaliações…"
-        /><EstadoRequisicao
-          v-else-if="erroAvaliacoes"
-          tipo="erro"
-          :mensagem="erroAvaliacoes"
-          tentar-novamente
-          @tentar="carregarAvaliacoes()"
-        /><template v-else
-          ><p class="resumo-notas">
-            <strong>{{ media }}</strong
-            ><span
-              class="estrelas"
-              aria-hidden="true"
-              ><v-icon
-                v-for="estrela in 5"
-                :key="estrela"
-                :icon="iconeMedia(estrela)"
-                size="22" /></span
-            >{{ avaliacoes.length }} avaliações publicadas
-          </p>
-          <p
-            v-if="!avaliacoes.length"
-            class="texto-suave"
-          >
-            Este livro ainda não tem avaliações.
-          </p>
-          <article
-            v-for="item in avaliacoes"
-            :key="item.id"
-            class="avaliacao"
-          >
-            <h3>{{ item.nome || 'Leitor' }}</h3>
-            <time :datetime="item.criado_em">{{
-              new Date(item.criado_em).toLocaleDateString('pt-BR')
-            }}</time>
-            <p
-              class="estrelas"
-              :aria-label="`${item.nota} de 5 estrelas`"
-            >
-              <v-icon
-                v-for="estrela in 5"
-                :key="estrela"
-                :icon="estrela <= item.nota ? 'mdi-star' : 'mdi-star-outline'"
-                size="22"
-              />
-            </p>
-            <p>{{ item.comentario || 'Avaliação sem comentário.' }}</p>
-          </article></template
-        >
-      </section>
+      <AvaliacoesLivro
+        :key="livro.id"
+        :livro="livro"
+      />
     </template>
   </main>
 </template>
@@ -281,50 +183,6 @@ watch(() => route.params.endereco, carregar, { immediate: true });
   font-size: 32px;
   font-weight: 700;
 }
-.avaliacoes-leitores {
-  margin-top: 70px;
-}
-.avaliacoes-leitores h2 {
-  font-size: 30px;
-  font-weight: 700;
-}
-.resumo-notas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  align-items: center;
-  margin: 12px 0 30px;
-  color: #53636a;
-}
-.resumo-notas strong {
-  font-size: 36px;
-  font-weight: 700;
-  color: #263e49;
-}
-.estrelas {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  color: #c9952f;
-}
-.avaliacao {
-  padding: 24px;
-  margin: 24px 0;
-  border: 1px solid var(--livraria-borda);
-  border-radius: 8px;
-  background: white;
-}
-.avaliacao h3 {
-  font-size: 18px;
-  font-weight: 700;
-}
-.avaliacao time {
-  color: #53636a;
-  font-size: 13px;
-}
-.avaliacao .estrelas {
-  margin: 16px 0;
-}
 @media (max-width: 700px) {
   .detalhes-loja {
     padding: 28px 20px;
@@ -346,15 +204,6 @@ watch(() => route.params.endereco, carregar, { immediate: true });
   }
   .dados-editoriais dt {
     font-size: 23px;
-  }
-  .avaliacoes-leitores {
-    margin-top: 50px;
-  }
-  .avaliacoes-leitores h2 {
-    font-size: 25px;
-  }
-  .avaliacao {
-    padding: 20px;
   }
 }
 </style>

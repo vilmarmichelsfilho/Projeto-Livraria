@@ -34,6 +34,16 @@ const router = createRouter({
       meta: { admin: true },
       children: [
         {
+          path: 'avaliacoes',
+          name: 'Admin Avaliações',
+          component: () => import('@/views/AdminAvaliacoesView.vue'),
+        },
+        {
+          path: 'avaliacoes/:id',
+          name: 'Admin Consultar Avaliação',
+          component: () => import('@/views/AdminConsultarAvaliacaoView.vue'),
+        },
+        {
           path: 'usuarios',
           component: () => import('@/views/AdminListarUsuariosView.vue'),
         },
@@ -135,6 +145,12 @@ const router = createRouter({
       path: '/livro/:endereco',
       name: 'Detalhes Livro',
       component: DetalhesLivros,
+    },
+    {
+      path: '/livro/:endereco/avaliar',
+      name: 'Avaliar Livro',
+      component: () => import('@/views/AvaliarLivroView.vue'),
+      meta: { requerLogin: true },
     },
     {
       path: '/carrinho',

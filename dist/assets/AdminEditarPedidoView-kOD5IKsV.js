@@ -1,1 +1,0 @@
-import{A as e,h as t}from"./api-DEOthef8.js";import{t as n}from"./AdminPedidoPagina-CKYBrffR.js";var r={__name:`AdminEditarPedidoView`,setup(r){return(r,i)=>(e(),t(n,{key:r.$route.params.id,modo:`editar`}))}};export{r as default};

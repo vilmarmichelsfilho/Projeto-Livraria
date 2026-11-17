@@ -118,10 +118,14 @@ async function sair() {
           "
           ><AdminIcon name="orders" />Pedidos</RouterLink
         >
-        <span
+        <RouterLink
+          to="/admin/avaliacoes"
           class="admin-nav-item"
-          aria-disabled="true"
-          ><AdminIcon name="star" />Avaliações</span
+          :class="{ active: route.path.startsWith('/admin/avaliacoes') }"
+          :aria-current="
+            route.path.startsWith('/admin/avaliacoes') ? 'page' : undefined
+          "
+          ><AdminIcon name="star" />Avaliações</RouterLink
         >
       </nav>
       <div class="admin-sidebar-footer">

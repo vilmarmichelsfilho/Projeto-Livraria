@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import { carrinho } from '@/utils/cartUtils';
 import ContaIcone from '@/components/ContaIcone.vue';
+defineProps({ secao: { type: String, default: 'conta' } });
 const quantidade = computed(() => {
   let total = 0;
   for (const item of carrinho) {
@@ -47,8 +48,8 @@ const links = [
       v-for="link in links"
       :key="link.nome"
       :to="link.to"
-      :class="{ selecionado: link.nome === 'conta' }"
-      :aria-current="link.nome === 'conta' ? 'page' : undefined"
+      :class="{ selecionado: link.nome === secao }"
+      :aria-current="link.nome === secao ? 'page' : undefined"
       ><ContaIcone :nome="link.nome" /><span>{{ link.texto }}</span></RouterLink
     >
   </nav>

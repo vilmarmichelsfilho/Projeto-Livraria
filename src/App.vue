@@ -5,14 +5,16 @@ import ContaMobileChrome from './components/layout/ContaMobileChrome.vue';
 import appFooter from './components/layout/appFooter.vue';
 import AppHeader from './components/layout/appHeader.vue';
 const route = useRoute();
-const contaMobile = computed(() =>
-  [
-    '/entrar',
-    '/cadastro',
-    '/minha-conta',
-    '/minha-conta/editar',
-    '/minha-conta/senha',
-  ].includes(route.path),
+const contaMobile = computed(
+  () =>
+    route.name === 'Avaliar Livro' ||
+    [
+      '/entrar',
+      '/cadastro',
+      '/minha-conta',
+      '/minha-conta/editar',
+      '/minha-conta/senha',
+    ].includes(route.path),
 );
 </script>
 
@@ -21,7 +23,10 @@ const contaMobile = computed(() =>
     class="app-container"
     :class="{ 'conta-shell': contaMobile }"
   >
-    <ContaMobileChrome v-if="contaMobile" />
+    <ContaMobileChrome
+      v-if="contaMobile"
+      :secao="route.name === 'Avaliar Livro' ? 'livros' : 'conta'"
+    />
     <AppHeader
       v-if="!route.meta.admin"
       class="conta-desktop-header"

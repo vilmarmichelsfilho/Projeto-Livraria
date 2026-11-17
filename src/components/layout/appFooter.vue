@@ -15,7 +15,10 @@ import { RouterLink } from 'vue-router';
       </div>
       <div>
         <h2>Desenvolvido por</h2>
-        <p>Vilmar Michels Filho • Igor Gabriel Decker • Davi Augusto Ramos</p>
+        <p>
+          Vilmar Michels Filho • Igor Gabriel Decker • Davi Augusto Ramos •
+          Vitor Avanzi Lipinski
+        </p>
       </div>
     </div>
     <p class="rodape-direitos">© Alguns direitos reservados. IFLibrary 2026.</p>

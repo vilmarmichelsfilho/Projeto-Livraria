@@ -1,1 +1,0 @@
-.detalhes-admin{grid-template-columns:260px minmax(0,1fr);gap:44px;padding:32px;display:grid}.dados-livro>p{margin-top:16px}@media (width<=1050px){.detalhes-admin{grid-template-columns:190px minmax(0,1fr);gap:24px;padding:24px}}@media (width<=700px){.detalhes-admin{flex-direction:column;padding:22px;display:flex}.detalhes-admin>.capa-livro{align-self:center;width:190px}}
