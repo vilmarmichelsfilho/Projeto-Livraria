@@ -1,5 +1,15 @@
-// ROTEIRO DE IMPLEMENTAÇÃO — arquivo sem código funcional.
-// Configurar futuramente uma instância do Axios usando a URL http://localhost:3000.
-// Centralizar Content-Type application/json e o tratamento de falhas de conexão.
-// Distinguir resposta HTTP de erro de rede; não afirmar sucesso antes da resposta.
-// Exportar o cliente somente quando a integração começar. Este arquivo ainda não contém implementação.
+import axios from 'axios'
+
+const api = axios.create({
+  baseURL: import.meta.env?.VITE_API_URL || 'http://localhost:3000',
+  timeout: 10000,
+  headers: { 'Content-Type': 'application/json' },
+})
+
+export function mensagemErroApi(erro, acao) {
+  return erro.response
+    ? `Não foi possível ${acao} (HTTP ${erro.response.status}). Tente novamente.`
+    : `Não foi possível ${acao}. Verifique se o JSON Server está em execução e tente novamente.`
+}
+
+export default api

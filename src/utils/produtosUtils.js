@@ -1,20 +1,9 @@
-import { moedaPais, idioma } from "./globalUtils";
+﻿import { moedaPais, idioma } from './globalUtils'
+import { alternarFavorito } from '../services/lojaService.js'
 function formataPreco(preco) {
-    return preco.toLocaleString(idioma, {
-        style: 'currency',
-        currency: moedaPais,
-    })
+  return Number(preco ?? 0).toLocaleString(idioma, { style: 'currency', currency: moedaPais })
 }
-function favoritar(lista, iddoproduto,){
- const id = lista.findIndex(p => p.id == iddoproduto);
- if(id !== -1) {
-  if(lista[id].favorito == false){
-  lista[id].favorito = true
- }
- else{
-  lista[id].favorito = false
- }
- return lista
-}}
-export { formataPreco, favoritar}
-  
+function favoritar(lista, idDoProduto) {
+  return alternarFavorito(idDoProduto)
+}
+export { formataPreco, favoritar }

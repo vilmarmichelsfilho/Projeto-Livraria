@@ -1,4 +1,3 @@
-<!-- ETAPA API: consultar /livros?genero=... usando livrosService, preservar a rota de gênero e tratar carregamento, lista vazia e falha. -->
 <script setup>
 import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';
@@ -48,9 +47,7 @@ let livrosPorGenero = computed(() => {
       </produtoCard>
     </ul>
   </div>
-    <div class="catalogo">
-    <ProdutoCard v-for="produto in produtosFiltrados" :key="produto.id" :produto="produto" />
-  </div>
+
   </section>
   </main>
 </template>

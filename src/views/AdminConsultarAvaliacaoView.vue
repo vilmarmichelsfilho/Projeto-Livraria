@@ -1,23 +1,25 @@
 <script setup>
-import { computed } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ChevronLeftIcon from '@iconify-vue/mdi/chevron-left'
 import LayoutAdminAvaliacoes from '@/components/Avaliacoes/LayoutAdminAvaliacoes.vue'
 import EstrelasAvaliacao from '@/components/Avaliacoes/EstrelasAvaliacao.vue'
 import ExcluirAvaliacao from '@/components/Avaliacoes/ExcluirAvaliacao.vue'
 import { avaliacoesComLivros, dataAvaliacao } from '@/utils/avaliacoesAdmin'
-import { erroAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
+import { erroAvaliacoes, carregandoAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
 import { formataPreco } from '@/utils/produtosUtils'
 
 const route = useRoute()
 const router = useRouter()
 const avaliacao = computed(() => avaliacoesComLivros.value.find(item => String(item.livroId) === route.params.id))
+onMounted(carregarAvaliacoes)
 </script>
 
 <template>
   <LayoutAdminAvaliacoes>
     <div class="admin-titulo"><RouterLink to="/admin/avaliacoes" aria-label="Voltar à lista"><ChevronLeftIcon aria-hidden="true" /></RouterLink><h1>Consultar avaliação</h1></div>
-    <div v-if="erroAvaliacoes" class="av-erro" role="alert">{{ erroAvaliacoes }}<button class="av-botao" @click="carregarAvaliacoes">Tentar novamente</button></div>
+    <p v-if="carregandoAvaliacoes" role="status">Carregando avaliações…</p>
+    <div v-else-if="erroAvaliacoes" class="av-erro" role="alert">{{ erroAvaliacoes }}<button class="av-botao" @click="carregarAvaliacoes">Tentar novamente</button></div>
     <template v-else-if="avaliacao">
       <p class="admin-subtitulo">Avaliação #{{ avaliacao.livroId }}</p>
       <div class="admin-cartao admin-livro">
@@ -39,7 +41,7 @@ const avaliacao = computed(() => avaliacoesComLivros.value.find(item => String(i
       <p class="admin-aviso">A nota e o comentário são editados apenas pelo autor.</p>
     </template>
     <div v-else class="admin-cartao admin-vazio">
-      <h2>Avaliação não encontrada</h2><p>Ela pode ter sido excluída ou não estar salva neste navegador.</p><RouterLink class="av-botao" to="/admin/avaliacoes">Voltar à lista</RouterLink>
+      <h2>Avaliação não encontrada</h2><p>Ela pode ter sido excluída ou não estar disponível no servidor.</p><RouterLink class="av-botao" to="/admin/avaliacoes">Voltar à lista</RouterLink>
     </div>
   </LayoutAdminAvaliacoes>
 </template>

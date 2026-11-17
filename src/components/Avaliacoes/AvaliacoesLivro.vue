@@ -1,6 +1,6 @@
 <script setup>
-import { computed, ref } from 'vue'
-import { avaliacoes, erroAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
+import { onMounted, computed, ref } from 'vue'
+import { avaliacoes, erroAvaliacoes, carregandoAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
 import EstrelasAvaliacao from './EstrelasAvaliacao.vue'
 import ExcluirAvaliacao from './ExcluirAvaliacao.vue'
 import '@/assets/avaliacoes.css'
@@ -9,6 +9,7 @@ const props = defineProps({ livro: { type: Object, required: true } })
 const minha = computed(() => avaliacoes.value.find(item => item.livroId === props.livro.id))
 const mensagem = ref('')
 const data = valor => new Date(valor).toLocaleDateString('pt-BR')
+onMounted(carregarAvaliacoes)
 </script>
 
 <template>
@@ -26,7 +27,8 @@ const data = valor => new Date(valor).toLocaleDateString('pt-BR')
         {{ minha ? 'Editar minha avaliação' : 'Avaliar livro' }}
       </RouterLink>
     </header>
-    <div v-if="erroAvaliacoes" role="alert" class="av-erro">
+    <p v-if="carregandoAvaliacoes" role="status">Carregando avaliações…</p>
+    <div v-else-if="erroAvaliacoes" role="alert" class="av-erro">
       {{ erroAvaliacoes }} <button class="av-botao" @click="carregarAvaliacoes">Tentar novamente</button>
     </div>
     <p role="status">{{ mensagem }}</p>
@@ -42,12 +44,12 @@ const data = valor => new Date(valor).toLocaleDateString('pt-BR')
       <p v-if="minha.comentario" class="comentario">{{ minha.comentario }}</p>
       <p v-else class="av-suave">Sem comentário.</p>
     </article>
-    <div v-else-if="!erroAvaliacoes" class="av-cartao vazio">
+    <div v-else-if="!erroAvaliacoes && !carregandoAvaliacoes" class="av-cartao vazio">
       <h3>Seja a primeira pessoa a avaliar este livro</h3>
       <p>Conte como foi sua leitura e compartilhe sua opinião.</p>
     </div>
     <p class="av-suave rodape-avaliacoes">Você pode publicar uma avaliação por livro e editar ou excluir a sua quando quiser.</p>
-    <p class="av-suave aviso-local">As avaliações são salvas apenas neste navegador.</p>
+    <p class="av-suave aviso-local">Modo demonstrativo: uma avaliação compartilhada por livro.</p>
   </section>
 </template>
 

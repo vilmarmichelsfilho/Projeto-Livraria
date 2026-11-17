@@ -1,4 +1,10 @@
-// ROTEIRO DE IMPLEMENTAÇÃO — arquivo sem código funcional.
-// Usar api.js para GET /livros, GET /livros/:id, POST /livros, PATCH /livros/:id e DELETE /livros/:id.
-// Preservar os campos endereco, resenha e capa usados pelo catálogo atual.
-// Preparar pesquisa, filtro de gênero e disponibilidade; conferir vínculos em /itens_pedido?id_livro=:id antes de excluir.
+﻿import { criarServico } from './crudService.js'
+import api from './api.js'
+const servico = criarServico('livros')
+export const { listar, buscarPorId, cadastrar, atualizar } = servico
+export async function excluir(id) {
+  const { data } = await api.get('/itens_pedido', { params: { id_livro: id } })
+  if (data.length) throw new Error('Livro vinculado a pedidos. Desative o livro para preservar o historico.')
+  await servico.excluir(id)
+}
+export default { listar, buscarPorId, cadastrar, atualizar, excluir }

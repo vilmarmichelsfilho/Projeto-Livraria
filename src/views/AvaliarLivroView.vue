@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { produtos } from '@/data/produtos'
-import { avaliacoes, erroAvaliacoes, salvarAvaliacao } from '@/services/avaliacoesService'
+import { avaliacoes, erroAvaliacoes, carregandoAvaliacoes, carregarAvaliacoes, salvarAvaliacao } from '@/services/avaliacoesService'
 import EstrelasAvaliacao from '@/components/Avaliacoes/EstrelasAvaliacao.vue'
 import ExcluirAvaliacao from '@/components/Avaliacoes/ExcluirAvaliacao.vue'
 import '@/assets/avaliacoes.css'
@@ -17,10 +17,18 @@ const nota = ref(0)
 const comentario = ref('')
 const erro = ref('')
 const salvando = ref(false)
+const preenchido = ref(false)
+async function carregarFormulario() {
+  if (await carregarAvaliacoes() && !preenchido.value) {
+    nota.value = minha.value?.nota ?? 0
+    comentario.value = minha.value?.comentario ?? ''
+    preenchido.value = true
+  }
+}
 watch(() => route.params.endereco, () => {
-  nota.value = minha.value?.nota ?? 0
-  comentario.value = minha.value?.comentario ?? ''
+  preenchido.value = false
   erro.value = ''
+  carregarFormulario()
 }, { immediate: true })
 const voltar = computed(() => ({ path: `/livro/${livro.value?.endereco}`, hash: '#avaliacoes' }))
 async function salvar() {
@@ -29,10 +37,10 @@ async function salvar() {
   if (!nota.value) { erro.value = 'Selecione uma nota de 1 a 5 estrelas.'; return }
   salvando.value = true
   try {
-    salvarAvaliacao(livro.value.id, nota.value, comentario.value)
+    await salvarAvaliacao(livro.value.id, nota.value, comentario.value)
     await router.push(voltar.value)
-  } catch {
-    erro.value = 'Não foi possível salvar sua avaliação. Verifique o armazenamento do navegador e tente novamente.'
+  } catch (falha) {
+    erro.value = falha.message
   } finally { salvando.value = false }
 }
 </script>
@@ -45,7 +53,9 @@ async function salvar() {
         <h1><span class="av-desktop">{{ minha ? 'Editar minha avaliação' : 'Avaliar livro' }}</span><span class="av-mobile">{{ minha ? 'Editar avaliação' : 'Avaliar livro' }}</span></h1>
       </div>
       <p class="av-suave subtitulo"><span class="av-desktop">Conte como foi sua leitura de {{ livro.titulo }}.</span><span class="av-mobile">Compartilhe sua experiência de leitura.</span></p>
-      <form class="av-formulario" @submit.prevent="salvar">
+      <p v-if="carregandoAvaliacoes" role="status">Carregando avaliações…</p>
+      <div v-else-if="erroAvaliacoes" class="av-erro" role="alert">{{ erroAvaliacoes }} <button type="button" class="av-botao" @click="carregarFormulario">Tentar novamente</button></div>
+      <form v-else class="av-formulario" @submit.prevent="salvar">
         <div class="livro-resumo">
           <img class="av-mobile capa" :src="`/${livro.capa}`" :alt="`Capa de ${livro.titulo}`">
           <div>

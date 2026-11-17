@@ -1,10 +1,10 @@
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import LayoutAdminAvaliacoes from '@/components/Avaliacoes/LayoutAdminAvaliacoes.vue'
 import EstrelasAvaliacao from '@/components/Avaliacoes/EstrelasAvaliacao.vue'
 import ExcluirAvaliacao from '@/components/Avaliacoes/ExcluirAvaliacao.vue'
 import { avaliacoesComLivros, dataAvaliacao, normalizarBusca } from '@/utils/avaliacoesAdmin'
-import { erroAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
+import { erroAvaliacoes, carregandoAvaliacoes, carregarAvaliacoes } from '@/services/avaliacoesService'
 
 const busca = ref('')
 const nota = ref('')
@@ -21,6 +21,7 @@ const visiveis = computed(() => filtradas.value.slice((pagina.value - 1) * porPa
 watch([busca, nota], () => { pagina.value = 1 })
 watch(totalPaginas, total => { pagina.value = Math.min(pagina.value, total) })
 function limparFiltros() { busca.value = ''; nota.value = '' }
+onMounted(carregarAvaliacoes)
 </script>
 
 <template>
@@ -31,7 +32,8 @@ function limparFiltros() { busca.value = ''; nota.value = '' }
       <div><label for="busca-avaliacao">Buscar avaliação</label><input id="busca-avaliacao" v-model="busca" type="search" placeholder="Livro ou cliente"></div>
       <div><label for="nota-avaliacao">Nota</label><select id="nota-avaliacao" v-model="nota"><option value="">Todas as notas</option><option v-for="valor in 5" :key="valor" :value="valor">{{ valor }} {{ valor === 1 ? 'estrela' : 'estrelas' }}</option></select></div>
     </form>
-    <div v-if="erroAvaliacoes" class="av-erro" role="alert">{{ erroAvaliacoes }}<button class="av-botao" @click="carregarAvaliacoes">Tentar novamente</button></div>
+    <p v-if="carregandoAvaliacoes" role="status">Carregando avaliações…</p>
+    <div v-else-if="erroAvaliacoes" class="av-erro" role="alert">{{ erroAvaliacoes }}<button class="av-botao" @click="carregarAvaliacoes">Tentar novamente</button></div>
     <template v-else>
       <p class="admin-contagem" role="status">{{ filtradas.length }} {{ filtradas.length === 1 ? 'avaliação publicada' : 'avaliações publicadas' }}</p>
       <p v-if="mensagem" role="status" class="admin-sucesso">{{ mensagem }}</p>
@@ -59,6 +61,6 @@ function limparFiltros() { busca.value = ''; nota.value = '' }
         <button :disabled="pagina >= totalPaginas" aria-label="Próxima página" @click="pagina++">›</button>
       </nav>
     </template>
-    <p class="admin-nota-local">Modo demonstrativo: avaliações salvas neste navegador.</p>
+    <p class="admin-nota-local">Modo demonstrativo: uma avaliação compartilhada por livro.</p>
   </LayoutAdminAvaliacoes>
 </template>

@@ -1,4 +1,3 @@
-<!-- ETAPA API: consultar o livro pelo slug em /livros?endereco=... e consultar seu id em /livros/:id. Tratar ausência, disponibilidade e falha antes de permitir adicionar ao carrinho. -->
 <script setup>
 import { useRoute } from 'vue-router';
 import { produtos } from '@/data/produtos';
@@ -37,6 +36,7 @@ const livro = computed(() => produtos.find(p => p.endereco === rota.params.ender
         </div>
         <AvaliacoesLivro :key="livro.id" :livro="livro" />
     </div>
+    <p v-else role="status">Livro não encontrado ou indisponível.</p>
 </template>
 
 <style scoped>

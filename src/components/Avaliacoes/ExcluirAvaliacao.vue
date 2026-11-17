@@ -8,13 +8,18 @@ const id = useId()
 const emit = defineEmits(['excluida'])
 const dialogo = ref(null)
 const erro = ref('')
+const excluindo = ref(false)
 function abrir() { erro.value = ''; dialogo.value.showModal() }
-function excluir() {
+async function excluir() {
+  if (excluindo.value) return
+  excluindo.value = true
+  erro.value = ''
   try {
-    excluirAvaliacao(props.livro.id)
+    await excluirAvaliacao(props.livro.id)
     dialogo.value.close()
     emit('excluida')
-  } catch { erro.value = 'Não foi possível excluir a avaliação. Tente novamente.' }
+  } catch (falha) { erro.value = falha.message }
+  finally { excluindo.value = false }
 }
 </script>
 
@@ -31,7 +36,7 @@ function excluir() {
     <p v-if="erro" role="alert" class="av-erro">{{ erro }}</p>
     <div class="av-acoes">
       <button type="button" class="av-botao manter" autofocus @click="dialogo.close()"><template v-if="moderacao">Manter avaliação</template><template v-else><span class="av-desktop">Cancelar</span><span class="av-mobile">Manter avaliação</span></template></button>
-      <button type="button" class="av-botao perigo" @click="excluir">Excluir avaliação</button>
+      <button type="button" class="av-botao perigo" :disabled="excluindo" @click="excluir">{{ excluindo ? 'Excluindo…' : 'Excluir avaliação' }}</button>
     </div>
   </dialog>
 </template>
