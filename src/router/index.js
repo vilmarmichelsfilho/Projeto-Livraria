@@ -1,4 +1,3 @@
-// ETAPA API: conferir a rota planejada no comentário de cada tela. Os novos arquivos Vue têm somente comentários; implementar seus blocos antes de importar ou registrar as rotas. Preservar as rotas existentes e revisar o caminho genérico /:genero ao adicionar páginas.
 import { createRouter, createWebHistory } from "vue-router";
 import HomeView from "@/views/HomeView.vue";
 import FavoritosView from "@/views/FavoritosView.vue";
@@ -23,6 +22,34 @@ const router = createRouter({
       return { top: 0 };
   },
   routes: [
+    {
+      path: "/admin",
+      component: () => import("@/components/layout/AdminLayout.vue"),
+      meta: { admin: true },
+      children: [
+        { path: "", redirect: "/admin/pedidos" },
+        {
+          path: "pedidos",
+          name: "admin-pedidos",
+          component: () => import("@/views/AdminListarPedidosView.vue"),
+        },
+        {
+          path: "pedidos/novo",
+          name: "admin-criar-pedido",
+          component: () => import("@/views/AdminCriarPedidoView.vue"),
+        },
+        {
+          path: "pedidos/:id/editar",
+          name: "admin-editar-pedido",
+          component: () => import("@/views/AdminEditarPedidoView.vue"),
+        },
+        {
+          path: "pedidos/:id",
+          name: "admin-detalhes-pedido",
+          component: () => import("@/views/AdminDetalhesPedidoView.vue"),
+        },
+      ],
+    },
     {
       path: "/entrar",
       name: "entrar",

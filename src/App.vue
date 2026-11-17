@@ -1,5 +1,15 @@
 <script setup>
 import { RouterView, useRoute } from "vue-router";
+import appFooter from "./components/layout/appFooter.vue";
+import AppHeader from "./components/layout/appHeader.vue";
+const route = useRoute();
+</script>
+
+<template>
+  <div class="app-container">
+    <AppHeader v-if="!route.meta.admin"></AppHeader>
+    <RouterView class="content-wrap" />
+    <appFooter v-if="!route.meta.admin"></appFooter>
 import { computed } from "vue";
 import ContaMobileChrome from "./components/layout/ContaMobileChrome.vue";
 const route = useRoute();
