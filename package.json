@@ -17,17 +17,14 @@
     "test:conta": "node --test tests/conta.test.cjs"
   },
   "dependencies": {
-    "@iconify-vue/icon-park-solid": "^1.0.3",
-    "@iconify-vue/material-symbols": "^1.0.38",
-    "@iconify-vue/mdi": "^1.0.3",
-    "@iconify/vue": "^5.0.1",
+    "@mdi/font": "^7.4.47",
     "axios": "^1.21.1",
     "vue": "^3.5.32",
-    "vue-router": "^5.0.4"
+    "vue-router": "^5.0.4",
+    "vuetify": "^4.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@iconify-json/mdi": "^1.2.3",
     "@vitejs/plugin-vue": "^6.0.6",
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",

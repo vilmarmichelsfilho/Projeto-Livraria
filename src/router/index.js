@@ -29,6 +29,26 @@ const router = createRouter({
       children: [
         { path: "", redirect: "/admin/pedidos" },
         {
+          path: "livros",
+          name: "admin-livros",
+          component: () => import("@/views/AdminListarLivrosView.vue"),
+        },
+        {
+          path: "livros/novo",
+          name: "admin-livro-novo",
+          component: () => import("@/views/AdminCadastrarLivroView.vue"),
+        },
+        {
+          path: "livros/:id/editar",
+          name: "admin-livro-editar",
+          component: () => import("@/views/AdminEditarLivroView.vue"),
+        },
+        {
+          path: "livros/:id",
+          name: "admin-livro",
+          component: () => import("@/views/AdminDetalhesLivroView.vue"),
+        },
+        {
           path: "pedidos",
           name: "admin-pedidos",
           component: () => import("@/views/AdminListarPedidosView.vue"),
@@ -95,14 +115,14 @@ const router = createRouter({
       component: DetalhesLivros,
     },
     {
-      path: "/:genero",
-      name: "Livros Por Genero",
-      component: LivrosPorGenero,
-    },
-    {
       path: "/carrinho",
       name: "carrinho",
       component: CarrinhoView,
+    },
+    {
+      path: "/:genero",
+      name: "Livros Por Genero",
+      component: LivrosPorGenero,
     },
   ],
 });

@@ -1,12 +1,14 @@
 <script setup>
-import { onMounted, ref } from "vue";
-import { RouterLink, useRouter } from "vue-router";
+import { computed, onMounted, ref } from "vue";
+import { RouterLink, RouterView, useRoute, useRouter } from "vue-router";
 import usuariosService from "@/services/usuariosService";
 import AdminIcon from "@/components/admin/AdminIcon.vue";
 import "@/assets/admin.css";
 const usuario = ref(null);
 const menuAberto = ref(false);
 const router = useRouter();
+const route = useRoute();
+const secaoLivros = computed(() => route.path.startsWith("/admin/livros"));
 onMounted(async () => {
   if (!sessionStorage.getItem("iflibrary_token")) return;
   try {
@@ -27,7 +29,7 @@ async function sair() {
 <template>
   <div class="admin-shell">
     <header class="admin-header" @keydown.esc="menuAberto = false">
-      <RouterLink to="/admin/pedidos" class="admin-brand"
+      <RouterLink to="/admin" class="admin-brand"
         ><AdminIcon name="book" /><span>IFLibrary</span></RouterLink
       >
       <span class="admin-heading">Administração</span>
@@ -74,16 +76,21 @@ async function sair() {
         <span class="admin-nav-item" aria-disabled="true"
           ><AdminIcon name="dashboard" />Painel</span
         >
-        <span class="admin-nav-item" aria-disabled="true"
-          ><AdminIcon name="book" />Livros</span
+        <RouterLink
+          to="/admin/livros"
+          class="admin-nav-item"
+          :class="{ active: secaoLivros }"
+          :aria-current="secaoLivros ? 'true' : undefined"
+          ><AdminIcon name="book" />Livros</RouterLink
         >
         <span class="admin-nav-item" aria-disabled="true"
           ><AdminIcon name="users" />Usuários</span
         >
         <RouterLink
           to="/admin/pedidos"
-          class="admin-nav-item active"
-          aria-current="page"
+          class="admin-nav-item"
+          :class="{ active: !secaoLivros }"
+          :aria-current="!secaoLivros ? 'true' : undefined"
           ><AdminIcon name="orders" />Pedidos</RouterLink
         >
         <span class="admin-nav-item" aria-disabled="true"
@@ -95,6 +102,28 @@ async function sair() {
         ><a href="/entrar" @click.prevent="sair">Sair da conta</a>
       </div>
     </aside>
-    <main class="admin-main"><RouterView /></main>
+    <main class="admin-main" :class="{ 'admin-livros': secaoLivros }">
+      <RouterView :key="route.path" />
+    </main>
   </div>
 </template>
+
+<style scoped>
+.admin-livros :deep(h1) {
+  font-size: 30px;
+  line-height: 1.3;
+  font-weight: 700;
+}
+.admin-livros :deep(h2) {
+  font-size: 28px;
+  font-weight: 700;
+}
+@media (max-width: 760px) {
+  .admin-livros :deep(h1) {
+    font-size: 27px;
+  }
+  .admin-livros :deep(h2) {
+    font-size: 23px;
+  }
+}
+</style>

@@ -2,7 +2,6 @@
 import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ContaIcone from "@/components/ContaIcone.vue";
-import AccountCircle from "@iconify-vue/mdi/account-circle";
 import usuarios from "@/services/usuariosService";
 import api, { mensagemErro } from "@/services/api";
 import "@/assets/conta.css";
@@ -332,7 +331,7 @@ async function excluir() {
       aria-label="Dados da conta"
     >
       <div class="conta-identidade">
-        <AccountCircle aria-hidden="true" />
+        <v-icon icon="mdi-account-circle" aria-hidden="true" />
         <div>
           <h2>{{ usuario.nome }}</h2>
           <p>{{ usuario.email }}</p>

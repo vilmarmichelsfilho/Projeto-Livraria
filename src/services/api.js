@@ -1,6 +1,8 @@
 import axios from "axios";
+import { API_URL } from "@/utils/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
+  baseURL: API_URL,
 });
 api.interceptors.request.use((config) => {
   const token = sessionStorage.getItem("iflibrary_token");

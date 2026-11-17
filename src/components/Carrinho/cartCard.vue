@@ -1,13 +1,25 @@
 <script setup>
-import { formataPreco } from '@/utils/produtosUtils'
-import { RouterLink } from 'vue-router'
-const props = defineProps(['id', 'titulo', 'endereco', 'autor', 'preco', 'capa', 'quantidade', 'precoTotal'])
-const emit = defineEmits(['remover', 'alterarQuantidade'])
+import { formataPreco } from '@/utils/produtosUtils';
+import { RouterLink } from 'vue-router';
+const props = defineProps([
+  'id',
+  'titulo',
+  'endereco',
+  'autor',
+  'preco',
+  'capa',
+  'quantidade',
+  'precoTotal',
+]);
+const emit = defineEmits(['remover', 'alterarQuantidade']);
 </script>
 <template>
   <li class="item-carrinho">
-    <RouterLink :to="'livro/' + props.endereco">
-      <img :src="props.capa" :alt="'Capa do livro ' + props.titulo" />
+    <RouterLink :to="'/livro/' + props.endereco">
+      <img
+        :src="props.capa"
+        :alt="'Capa do livro ' + props.titulo"
+      />
     </RouterLink>
 
     <div class="contain">
@@ -18,12 +30,35 @@ const emit = defineEmits(['remover', 'alterarQuantidade'])
       </div>
       <div class="controles">
         <div class="quantidade">
-          <button @click="emit('alterarQuantidade', props.id, -1)">−</button>
-          <span style="margin: 0 5px 0 5px;">{{ props.quantidade }}</span>
-          <button @click="emit('alterarQuantidade', props.id, 1)">+</button>
+          <button
+            type="button"
+            aria-label="Diminuir quantidade"
+            @click="emit('alterarQuantidade', props.id, -1)"
+          >
+            <v-icon
+              icon="mdi-minus"
+              size="16"
+            />
+          </button>
+          <span style="margin: 0 5px 0 5px">{{ props.quantidade }}</span>
+          <button
+            type="button"
+            aria-label="Aumentar quantidade"
+            @click="emit('alterarQuantidade', props.id, 1)"
+          >
+            <v-icon
+              icon="mdi-plus"
+              size="16"
+            />
+          </button>
         </div>
         <p class="preco-total">{{ formataPreco(props.precoTotal) }}</p>
-        <button class="remover" @click="emit('remover', props.id)">Remover</button>
+        <button
+          class="remover"
+          @click="emit('remover', props.id)"
+        >
+          Remover
+        </button>
       </div>
     </div>
   </li>
@@ -82,7 +117,7 @@ const emit = defineEmits(['remover', 'alterarQuantidade'])
   display: flex;
   gap: 30px;
   margin: 1rem 0;
-  background: #A0CDE0;
+  background: #a0cde0;
   padding: 1rem;
   border-radius: 1rem;
   list-style: none;

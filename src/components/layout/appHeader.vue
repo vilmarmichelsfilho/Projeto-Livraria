@@ -1,236 +1,222 @@
 <script setup>
-import BookOpenVariantIcon from "@iconify-vue/mdi/book-open-variant";
-import CartIcon from "@iconify-vue/mdi/cart";
-import AccountIcon from "@iconify-vue/mdi/account";
-import StarIcon from "@iconify-vue/mdi/star";
-import SearchIcon from "@iconify-vue/mdi/search";
-import { ref, watch, computed } from "vue";
-import { RouterLink, useRoute, useRouter } from "vue-router";
-import { produtos } from "@/data/produtos";
-import { carrinho } from "@/utils/cartUtils";
-
-let quantidadefavoritos = computed(() => {
-  return produtos.filter((item) => item.favorito).length;
-});
+import { ref, watch, computed } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
+import { favoritos } from '@/utils/favoritos';
+import { carrinho } from '@/utils/cartUtils';
+const route = useRoute(),
+  router = useRouter();
+const pesquisa = ref(String(route.query.q || ''));
 const quantidadeCarrinho = computed(() =>
   carrinho.reduce((total, item) => total + item.quantidade, 0),
 );
-const route = useRoute();
-const router = useRouter();
-
-const pesquisa = ref(route.query.q ?? "");
-
-watch(pesquisa, (valor) => {
-  router.push({
-    path: "/",
-    query: valor ? { q: valor } : {},
-  });
-});
-
 watch(
   () => route.query.q,
   (valor) => {
-    pesquisa.value = valor ?? "";
+    pesquisa.value = String(valor || '');
   },
 );
+function pesquisar() {
+  router.push({
+    path: '/',
+    query: pesquisa.value.trim() ? { q: pesquisa.value.trim() } : {},
+  });
+}
 </script>
-
 <template>
-  <div class="container">
-    <div class="logo">
-      <RouterLink to="/">
-        <BookOpenVariantIcon style="width: 46px" />
-        <h2>IFLibrary</h2>
-      </RouterLink>
-    </div>
-    <div class="barra-pesquisa">
-      <input
+  <header class="loja-header">
+    <RouterLink
+      to="/"
+      class="loja-marca"
+      ><v-icon icon="mdi-book-open-page-variant" /><span
+        >IFLibrary</span
+      ></RouterLink
+    >
+    <form
+      class="busca-loja"
+      role="search"
+      @submit.prevent="pesquisar"
+    >
+      <label
+        class="sr-only"
+        for="busca-catalogo"
+        >Buscar livros por título ou autor</label
+      ><input
+        id="busca-catalogo"
         v-model="pesquisa"
         type="search"
-        placeholder="Buscar produto..."
-        class="busca"
-        aria-label="Buscar produto"
-      />
-      <SearchIcon style="width: 46px" />
-    </div>
-    <div class="nav">
-      <nav>
-        <ul>
-          <li>
-            <RouterLink to="/carrinho">
-              <CartIcon style="width: 46px" />
-            </RouterLink>
-          </li>
-          <span class="carrinho" v-show="quantidadeCarrinho != 0">{{
-            quantidadeCarrinho
-          }}</span>
-          <li>
-            <RouterLink to="/favoritos">
-              <StarIcon style="width: 46px" />
-            </RouterLink>
-          </li>
-          <span class="favoritos" v-show="quantidadefavoritos != 0">{{
-            quantidadefavoritos
-          }}</span>
-          <li>
-            <RouterLink to="/minha-conta" aria-label="Minha conta">
-              <AccountIcon style="width: 46px" />
-            </RouterLink>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </div>
+        placeholder="Buscar livro ou autor…"
+      /><button
+        type="submit"
+        aria-label="Buscar livros"
+      >
+        <v-icon
+          icon="mdi-magnify"
+          size="34"
+        />
+      </button>
+    </form>
+    <nav aria-label="Navegação da loja">
+      <RouterLink
+        to="/carrinho"
+        aria-label="Carrinho"
+        ><v-icon icon="mdi-cart" /><span
+          v-if="quantidadeCarrinho"
+          class="contador"
+          >{{ quantidadeCarrinho }}</span
+        ></RouterLink
+      ><RouterLink
+        to="/favoritos"
+        aria-label="Favoritos"
+        ><v-icon icon="mdi-star" /><span
+          v-if="favoritos.length"
+          class="contador"
+          >{{ favoritos.length }}</span
+        ></RouterLink>
+      <RouterLink
+        to="/minha-conta"
+        aria-label="Minha conta"
+      >
+        <v-icon icon="mdi-account" />
+      </RouterLink>
+      <RouterLink
+        class="link-admin"
+        to="/admin/livros"
+        >Administrar livros</RouterLink
+      >
+    </nav>
+  </header>
 </template>
 
-<style scoped>
-.favoritos {
-  font-size: 1rem;
-  font-weight: bold;
-  width: 1.5rem;
-  height: 1.5rem;
-  text-align: center;
-  right: 6rem;
-  position: absolute;
-  border-radius: 100rem;
-  background: red;
-}
+<style>
+/* Estilos da tela, mantidos no componente. */
 
-.carrinho {
-  font-size: 1rem;
-  font-weight: bold;
-  width: 1.5rem;
-  height: 1.5rem;
-  text-align: center;
-  right: 10.5rem;
-  position: absolute;
-  border-radius: 100rem;
-  background: red;
-}
-
-a:hover {
-  transform: scale(1.1);
-  text-shadow: 3px 3px 5px black;
-}
-
-li:hover {
-  transform: scale(1.1);
-}
-
-li {
-  transition: 0.4s;
-}
-
-.container {
-  padding: 1rem 2rem;
-  background: #a0cde0;
+.loja-header {
   display: flex;
+  align-items: center;
   justify-content: space-between;
+  gap: 28px;
+  min-height: 84px;
+  padding: 16px 32px;
+  background: var(--livraria-azul);
 }
-
-.logo {
+.loja-marca {
   display: flex;
   align-items: center;
+  gap: 6px;
+  font-size: 23px;
   color: black;
-  font-family: "Afacad", sans-serif;
-  font-weight: bold;
-  gap: 5px;
 }
-
-.logo a {
+.loja-marca .v-icon {
+  font-size: 46px;
+  width: 46px;
+  height: 46px;
+  min-width: 46px;
+}
+.loja-marca span {
+  font-weight: 700;
+}
+.busca-loja {
+  flex: 1;
+  max-width: 650px;
   display: flex;
-  align-items: center;
-  color: black;
-  font-family: "Afacad", sans-serif;
-  font-weight: bold;
-  gap: 5px;
-}
-
-.logo h2 {
-  font-family: "Afacad", sans-serif;
-  font-weight: bold;
-}
-
-.nav ul {
-  display: flex;
-  list-style: none;
-  gap: 22px;
-}
-
-.nav ul li a {
-  color: black;
-}
-
-.barra-pesquisa {
-  color: black;
-  display: flex;
-  cursor: pointer;
+  padding: 4px 16px;
   background: #7db6cf;
   border-radius: 50px;
-  padding: 0 1rem;
 }
-
-.barra-pesquisa input {
-  width: 600px;
-  text-decoration: none;
-  border: none;
-  background-color: rgba(255, 255, 255, 0);
-  font-family: "Afacad", sans-serif;
-  font-weight: bold;
-  font-size: 1rem;
-}
-
-.container {
-  align-items: center;
-  gap: 24px;
-  min-height: 84px;
-}
-.barra-pesquisa {
-  flex: 0 1 650px;
-  min-width: 0;
-  height: 52px;
-  align-items: center;
-}
-.barra-pesquisa input {
+.busca-loja input {
   width: 100%;
   min-width: 0;
-  outline-offset: 4px;
+  min-height: 42px;
+  background: transparent;
+  border: 0;
+  color: black;
 }
-.barra-pesquisa svg {
-  width: 30px !important;
-  flex-shrink: 0;
+.busca-loja button {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
-.nav ul {
-  padding: 0;
+.loja-header nav {
+  display: flex;
+  align-items: center;
+  gap: 22px;
 }
-.nav ul li a svg {
-  width: 36px !important;
+.loja-header nav a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: black;
 }
-@media (max-width: 680px) {
-  .container {
-    flex-wrap: wrap;
-    gap: 12px;
-    padding: 14px 16px;
+.loja-header nav .v-icon {
+  font-size: 32px;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+}
+.loja-header .link-admin {
+  font-size: 13px;
+  font-weight: 700;
+}
+.contador {
+  position: absolute;
+  top: -7px;
+  right: -8px;
+  color: white;
+  background: #af4653;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+  font-size: 12px;
+}
+@media (max-width: 1050px) {
+  .loja-header {
+    gap: 18px;
   }
-  .barra-pesquisa {
-    order: 3;
-    flex-basis: 100%;
+  .loja-marca span {
+    font-size: 20px;
   }
-  .nav ul {
-    gap: 12px;
+  .loja-header .link-admin {
+    max-width: 90px;
   }
-  .logo h2 {
-    font-size: 21px;
+  .loja-header nav {
+    gap: 14px;
   }
 }
-@media (min-width: 1100px) {
-  .container {
+@media (max-width: 700px) {
+  .loja-header {
     display: grid;
-    grid-template-columns: 276px minmax(0, 650px) minmax(174px, 1fr);
+    grid-template-columns: 1fr auto;
+    padding: 12px 20px;
+    gap: 12px;
   }
-  .nav {
-    justify-self: end;
-    margin-right: 76px;
+  .loja-marca .v-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+  }
+  .loja-marca span {
+    font-size: 20px;
+  }
+  .loja-header nav {
+    grid-column: 2;
+    grid-row: 1;
+    gap: 14px;
+  }
+  .loja-header nav .v-icon {
+    font-size: 25px;
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+  }
+  .loja-header .link-admin {
+    font-size: 11px;
+    max-width: 66px;
+  }
+  .busca-loja {
+    grid-row: 2;
+    grid-column: 1 / -1;
+    width: 100%;
   }
 }
 </style>

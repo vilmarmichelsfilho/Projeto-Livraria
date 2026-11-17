@@ -14,10 +14,12 @@ function createServer(database = path.join(__dirname, "db.json")) {
       return res.status(403).json({ message: "Consulta não permitida." });
     next();
   });
-  const safe = ({ senha_hash, senha, ...u }) => ({
-    ...u,
-    id_usuario: u.id_usuario ?? u.id,
-  });
+  const safe = (u) => {
+    const usuario = { ...u, id_usuario: u.id_usuario ?? u.id };
+    delete usuario.senha_hash;
+    delete usuario.senha;
+    return usuario;
+  };
   const hash = (password) => {
     const salt = randomBytes(16).toString("hex");
     return (
@@ -228,6 +230,23 @@ function createServer(database = path.join(__dirname, "db.json")) {
   });
   app.use("/usuarios", (req, res) => fail(res, 403, "Operação não permitida."));
   app.use("/auth", (req, res) => fail(res, 404, "Rota não encontrada."));
+  const render = router.render;
+  router.render = (req, res) => {
+    if (
+      req.method === "GET" &&
+      /^\/avaliacoes\/?$/.test(req.path) &&
+      Array.isArray(res.locals.data)
+    ) {
+      const nomes = new Map(
+        db.get("usuarios").value().map((u) => [String(u.id), u.nome]),
+      );
+      res.locals.data = res.locals.data.map((avaliacao) => ({
+        ...avaliacao,
+        nome: nomes.get(String(avaliacao.id_usuario)) || "Leitor",
+      }));
+    }
+    render(req, res);
+  };
   app.use(router);
   return app;
 }
