@@ -27,7 +27,7 @@ const router = createRouter({
       component: () => import("@/components/layout/AdminLayout.vue"),
       meta: { admin: true },
       children: [
-        { path: "", redirect: "/admin/livros" },
+        { path: "", redirect: "/admin/pedidos" },
         {
           path: "livros",
           name: "admin-livros",
@@ -47,6 +47,26 @@ const router = createRouter({
           path: "livros/:id",
           name: "admin-livro",
           component: () => import("@/views/AdminDetalhesLivroView.vue"),
+        },
+        {
+          path: "pedidos",
+          name: "admin-pedidos",
+          component: () => import("@/views/AdminListarPedidosView.vue"),
+        },
+        {
+          path: "pedidos/novo",
+          name: "admin-criar-pedido",
+          component: () => import("@/views/AdminCriarPedidoView.vue"),
+        },
+        {
+          path: "pedidos/:id/editar",
+          name: "admin-editar-pedido",
+          component: () => import("@/views/AdminEditarPedidoView.vue"),
+        },
+        {
+          path: "pedidos/:id",
+          name: "admin-detalhes-pedido",
+          component: () => import("@/views/AdminDetalhesPedidoView.vue"),
         },
       ],
     },

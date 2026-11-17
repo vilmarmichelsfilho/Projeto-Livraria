@@ -135,12 +135,31 @@ function createServer(database = path.join(__dirname, "db.json")) {
     sessions.delete(req.token);
     res.sendStatus(204);
   });
+  app.get("/usuarios", (req, res) => {
+    if (req.user.perfil !== "ADMIN")
+      return fail(
+        res,
+        403,
+        "Somente administradores podem consultar clientes.",
+      );
+    res.json(db.get("usuarios").value().map(safe));
+  });
   app.use("/usuarios/:id", (req, res, next) => {
-    if (String(req.user.id) !== req.params.id)
+    if (
+      String(req.user.id) !== req.params.id &&
+      !(req.method === "GET" && req.user.perfil === "ADMIN")
+    )
       return fail(res, 403, "Você só pode acessar a própria conta.");
     next();
   });
-  app.get("/usuarios/:id", (req, res) => res.json(safe(req.user)));
+  app.get("/usuarios/:id", (req, res) => {
+    const usuario = db
+      .get("usuarios")
+      .find((u) => String(u.id) === req.params.id)
+      .value();
+    if (!usuario) return fail(res, 404, "Cliente não encontrado.");
+    res.json(safe(usuario));
+  });
   app.patch("/usuarios/:id", (req, res) => {
     const data = fields({ ...req.user, ...req.body }),
       error = validate(data, req.user.id);

@@ -2,7 +2,6 @@
 import { computed, reactive, ref, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import ContaIcone from "@/components/ContaIcone.vue";
-import AccountCircle from "@iconify-vue/mdi/account-circle";
 import usuarios from "@/services/usuariosService";
 import api, { mensagemErro } from "@/services/api";
 import "@/assets/conta.css";

@@ -9,7 +9,7 @@ A API usa JSON Server 0.17 e persiste no db.json. npm run api inicia server.cjs 
 
 id é a chave do JSON Server; id_usuario é seu alias, gerado no servidor. Senhas são hashes scrypt com salt. Perfil, atividade e datas são controlados pelo servidor. E-mails são normalizados e únicos, CEP é texto com oito dígitos. Telefone, endereço, cidade, UF e CEP são obrigatórios no cadastro e na edição, com validação no formulário e no servidor.
 
-Tokens de sessão duram 24h, ficam em sessionStorage e são invalidados ao sair, excluir a conta ou reiniciar a API. Rotas de usuários restringem acesso ao próprio usuário e não retornam hashes. As demais entidades continuam com as rotas originais de demonstração do JSON Server; este trabalho não implementa autorização nem transações de catálogo/pedidos.
+Tokens de sessão duram 24h, ficam em sessionStorage e são invalidados ao sair, excluir a conta ou reiniciar a API. A área de pedidos usa uma sessão ADMIN para listar e consultar clientes. Cada usuário pode consultar e editar a própria conta. As respostas omitem hashes de senha. As rotas de catálogo e pedidos continuam com o comportamento de demonstração do JSON Server, sem autorização ou transações próprias.
 
 npm run test:conta executa testes em cópia temporária do banco. npm run build valida o build.
 
