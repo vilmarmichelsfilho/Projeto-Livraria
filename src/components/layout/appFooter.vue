@@ -1,27 +1,43 @@
 <script setup>
-import { RouterLink } from 'vue-router'
-import InstagramIcon from '@iconify-vue/mdi/instagram'
-import FacebookIcon from '@iconify-vue/mdi/facebook'
-import TwitterIcon from '@iconify-vue/mdi/twitter'
-import PhoneIcon from '@iconify-vue/mdi/phone'
-import ClockIcon from '@iconify-vue/mdi/clock'
-import EmailIcon from '@iconify-vue/mdi/email'
+import { RouterLink } from 'vue-router';
 </script>
 
 <template>
   <footer>
     <div class="container">
       <div class="container-esquerda">
-        <RouterLink class="logo" to="/">IFLibrary</RouterLink>
+        <RouterLink
+          class="logo"
+          to="/"
+          >IFLibrary</RouterLink
+        >
         <div class="redes-sociais">
-          <a href="https://www.instagram.com">
-            <InstagramIcon height="1em" />
+          <a
+            href="https://www.instagram.com"
+            aria-label="Instagram"
+          >
+            <v-icon
+              icon="mdi-instagram"
+              size="1em"
+            />
           </a>
-          <a href="https://www.facebook.com">
-            <FacebookIcon height="1em" />
+          <a
+            href="https://www.facebook.com"
+            aria-label="Facebook"
+          >
+            <v-icon
+              icon="mdi-facebook"
+              size="1em"
+            />
           </a>
-          <a href="https://x.com">
-            <TwitterIcon height="1em" />
+          <a
+            href="https://x.com"
+            aria-label="Twitter"
+          >
+            <v-icon
+              icon="mdi-twitter"
+              size="1em"
+            />
           </a>
         </div>
       </div>
@@ -38,15 +54,24 @@ import EmailIcon from '@iconify-vue/mdi/email'
           <h3>Contato</h3>
           <ul>
             <li>
-              <PhoneIcon height="1em"/>
+              <v-icon
+                icon="mdi-phone"
+                size="1em"
+              />
               <span>+55 47 40045263</span>
             </li>
             <li>
-              <ClockIcon height="1em"/>
+              <v-icon
+                icon="mdi-clock-outline"
+                size="1em"
+              />
               <span>8h às 23h - Seg a Sex</span>
             </li>
             <li>
-              <EmailIcon height="1em"/>
+              <v-icon
+                icon="mdi-email"
+                size="1em"
+              />
               <span>contato@iflibrary.com</span>
             </li>
           </ul>
@@ -65,7 +90,7 @@ a {
   color: black;
 }
 footer {
-  background-color: #A0CDE0;
+  background-color: #a0cde0;
   padding: 1.5vw 0 1.5vw 0;
   font-size: 1.2rem;
 }
@@ -146,5 +171,26 @@ h3 {
 .desenvolvedores h2 {
   font-weight: bolder;
   font-size: 1.5rem;
+}
+</style>
+
+<style>
+/* Estilos da tela, mantidos no componente. */
+
+@media (max-width: 700px) {
+  footer .container {
+    flex-wrap: wrap;
+    gap: 28px;
+    padding: 20px 0;
+  }
+  footer .desenvolvedores h2 {
+    font-size: 20px;
+  }
+  footer .desenvolvedores ul li {
+    font-size: 15px;
+  }
+  footer .direitos p {
+    font-size: 13px;
+  }
 }
 </style>

@@ -1,101 +1,141 @@
 <script setup>
-const props = defineProps(['titulo', 'endereco', 'autor', 'preco', 'capa', 'id', 'favorito'])
-defineEmits(['adicionarcarrinho', 'favoritar'])
-import { formataPreco} from '@/utils/produtosUtils';
+import { formataPreco } from '@/utils/produtosUtils';
 import { RouterLink } from 'vue-router';
-import StarIcon from '@iconify-vue/mdi/star';
-import CartIcon from '@iconify-vue/mdi/cart';
-import StarOutlineIcon from '@iconify-vue/mdi/star-outline';
-
+import CapaLivro from '@/components/CapaLivro.vue';
+defineProps({
+  titulo: String,
+  endereco: String,
+  autor: String,
+  preco: Number,
+  capa: String,
+  id: Number,
+  favorito: Boolean,
+  estoque: { type: Number, default: 0 },
+  ativo: { type: Boolean, default: true },
+  ocupado: Boolean,
+});
+const emit = defineEmits(['adicionarcarrinho', 'favoritar']);
 </script>
 <template>
-  <li>
-    <div class="conteudocard">
-       <RouterLink :to="'livro/'+props.endereco"><img :src="props.capa" :alt="'Capa do livro ' + props.titulo"></RouterLink>
-    <h3>{{props.titulo }}</h3>
-    <p class="autor">{{props.autor }}</p>
-    <div class="conteiner">
-      <p class="preco">{{ formataPreco(props.preco)}}</p>
-    <button @click.prevent="$emit('favoritar', props.id)" class="favoritar"><StarIcon height="1.5rem" color="#476978" v-if="props.favorito == true"></StarIcon> <StarOutlineIcon color="#476978" height="1.5rem" v-else></StarOutlineIcon> </button>
+  <li class="produto-card">
+    <RouterLink :to="`/livro/${endereco}`"
+      ><CapaLivro
+        :src="capa"
+        :titulo="titulo"
+    /></RouterLink>
+    <h2>
+      <RouterLink :to="`/livro/${endereco}`">{{ titulo }}</RouterLink>
+    </h2>
+    <p class="autor">{{ autor }}</p>
+    <div class="preco-favorito">
+      <p>{{ formataPreco(preco) }}</p>
+      <button
+        type="button"
+        class="favoritar"
+        :aria-label="`${favorito ? 'Remover' : 'Adicionar'} ${titulo} ${favorito ? 'dos' : 'aos'} favoritos`"
+        :aria-pressed="favorito"
+        @click="emit('favoritar', id)"
+      >
+        <v-icon
+          icon="mdi-star"
+          size="24"
+          v-if="favorito"
+        /><v-icon
+          icon="mdi-star-outline"
+          size="24"
+          v-else
+        />
+      </button>
     </div>
-    </div>
-   <div class="button"><button @click.prevent="$emit('adicionarcarrinho', props.id, 1)"><CartIcon height="1.2em"></CartIcon>Adicionar ao carrinho</button></div>
+    <button
+      class="btn adicionar-carrinho"
+      :disabled="estoque <= 0 || !ativo || ocupado"
+      @click="emit('adicionarcarrinho', id, 1)"
+    >
+      <v-icon
+        icon="mdi-cart"
+        size="19"
+      />{{
+        ocupado
+          ? 'Adicionando…'
+          : estoque <= 0 || !ativo
+            ? 'Indisponível'
+            : 'Adicionar ao carrinho'
+      }}
+    </button>
   </li>
 </template>
 
-<style scoped>
-li {
-  background: #A0CDE0;
-  border-radius: 1vw;
-  padding: 1vw 1vw 1vw 1vw;
+<style>
+/* Estilos da tela, mantidos no componente. */
+
+.produto-card {
   display: flex;
   flex-direction: column;
-  max-width: 320px;
-  margin-bottom: 3vh;
+  width: 310px;
+  padding: 14px;
+  border-radius: 14px;
+  background: var(--livraria-azul);
 }
-
-div.conteiner {
+.produto-card .capa-livro {
+  height: 415px;
+  border-radius: 7px;
+  object-fit: contain;
+}
+.produto-card h2 {
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-top: 5px;
+}
+.produto-card h2 a {
+  color: black;
+  font-weight: inherit;
+}
+.produto-card .autor {
+  font-size: 14px;
+  color: #4d4c4c;
+  font-weight: 700;
+}
+.preco-favorito {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+.preco-favorito p {
+  font-weight: 700;
+}
+.favoritar {
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
-}
-div.conteudocard button{
-  background-color: transparent;
-  border: none;
-  padding: none;
+  justify-content: flex-end;
+  background: transparent;
+  border: 0;
   cursor: pointer;
+  color: var(--livraria-acao);
 }
-img {
-  width: 100%;
-  height: auto;
-  display: block;
-  margin: 0 auto 5px auto;
-  height: 415px;
-  border-radius: 0.5vw;
-  background: black;
-  transition: 0.3s;
-  cursor: pointer;
+.adicionar-carrinho {
+  margin: 12px 8px 0;
+  padding: 15px 10px;
+  font-size: 15px;
 }
-div.button{
-  margin-top: 1vw;
-  display: flex;
-  justify-content: center;
-}
-div.button button {
-  display: flex;
-  justify-content: center;
-  background-color: #476978;
-  font-size: 1rem;
-  padding: 16px 32px;
-  border: none;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.3s;
-}
-
-div.button button:hover {
-  transform: scale(1.05);
-  color: black;
-}
-
-img:hover {
-  opacity: 0.8;
-}
-
-h3 {
-  font-size: 1.2rem;
-  font-weight: bold;
-}
-
-p {
-  font-weight: bolder;
-}
-
-p.autor {
-  font-size: 0.9rem;
-  color: #4D4C4C;
+@media (max-width: 700px) {
+  .produto-card {
+    width: 100%;
+    max-width: 350px;
+    padding: 16px;
+  }
+  .produto-card .capa-livro {
+    height: 390px;
+  }
+  .produto-card h2 {
+    font-size: 19px;
+  }
+  .adicionar-carrinho {
+    margin: 12px 0 0;
+  }
 }
 </style>

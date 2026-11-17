@@ -1,41 +1,32 @@
-// ETAPA API: substituir futuramente o estado local pelos serviços de pedidos e itens_pedido. O carrinho será RASCUNHO; consultar e validar relações antes de criar, editar ou excluir itens e recalcular o total após cada resposta.
-import { produtos } from '@/data/produtos'
-import { reactive, computed } from 'vue'
-const carrinho = reactive([])
-function adicionaraoarrinho(idLivro, quantidade){
-  const livro = produtos.find((p) => p.id === idLivro)
-  if (livro) {
-    const itemExistente = carrinho.find((item) => item.id === idLivro)
-    if (itemExistente) {
-      itemExistente.quantidade += quantidade
-      itemExistente.precoTotal = itemExistente.quantidade * livro.preco
-    } else {
-      carrinho.push({
-        ...livro,
-        quantidade,
-        precoTotal: quantidade * livro.preco,
-      })
-    }
+// Estado compartilhado do carrinho; as consultas da API ficam nas telas Vue.
+import { reactive, computed } from 'vue';
+
+export const carrinho = reactive([]);
+export const total = computed(
+  () =>
+    carrinho.reduce(
+      (soma, item) => soma + Math.round(item.precoTotal * 100),
+      0,
+    ) / 100,
+);
+
+export function adicionaraoarrinho(livro, quantidade) {
+  const item = carrinho.find((registro) => registro.id === livro.id);
+  const novaQuantidade = (item ? item.quantidade : 0) + quantidade;
+  if (!livro.ativo || novaQuantidade > livro.estoque || novaQuantidade < 1) {
+    throw new Error('A quantidade solicitada não está disponível no estoque.');
   }
-}
-const total = computed(() =>
-  carrinho.reduce((soma, item) => soma + item.precoTotal, 0)
-)
-
-function removerItem(id) {
-  const index = carrinho.findIndex(item => item.id === id)
-  if (index !== -1) carrinho.splice(index, 1)
-}
-
-function alterarQuantidade(id, delta) {
-  const item = carrinho.find(item => item.id === id)
-  if (!item) return
-  const novaQtd = item.quantidade + delta
-  if (novaQtd <= 0) {
-    removerItem(id)
-  } else {
-    adicionaraoarrinho(id, delta)
-  }
+  const dados = {
+    ...livro,
+    capa: livro.capa_url,
+    quantidade: novaQuantidade,
+    precoTotal: Math.round(novaQuantidade * livro.preco * 100) / 100,
+  };
+  if (item) Object.assign(item, dados);
+  else carrinho.push(dados);
 }
 
-export{adicionaraoarrinho, carrinho, total, removerItem, alterarQuantidade }
+export function removerItem(id) {
+  const indice = carrinho.findIndex((item) => item.id === id);
+  if (indice !== -1) carrinho.splice(indice, 1);
+}
