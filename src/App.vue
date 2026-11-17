@@ -1,17 +1,9 @@
 <script setup>
+import { computed } from "vue";
 import { RouterView, useRoute } from "vue-router";
+import ContaMobileChrome from "./components/layout/ContaMobileChrome.vue";
 import appFooter from "./components/layout/appFooter.vue";
 import AppHeader from "./components/layout/appHeader.vue";
-const route = useRoute();
-</script>
-
-<template>
-  <div class="app-container">
-    <AppHeader v-if="!route.meta.admin"></AppHeader>
-    <RouterView class="content-wrap" />
-    <appFooter v-if="!route.meta.admin"></appFooter>
-import { computed } from "vue";
-import ContaMobileChrome from "./components/layout/ContaMobileChrome.vue";
 const route = useRoute();
 const contaMobile = computed(() =>
   [
@@ -22,16 +14,14 @@ const contaMobile = computed(() =>
     "/minha-conta/senha",
   ].includes(route.path),
 );
-import appFooter from "./components/layout/appFooter.vue";
-import AppHeader from "./components/layout/appHeader.vue";
 </script>
 
 <template>
   <div class="app-container" :class="{ 'conta-shell': contaMobile }">
     <ContaMobileChrome v-if="contaMobile" />
-    <AppHeader class="conta-desktop-header"></AppHeader>
+    <AppHeader v-if="!route.meta.admin" class="conta-desktop-header" />
     <RouterView class="content-wrap" />
-    <appFooter class="conta-desktop-footer"></appFooter>
+    <appFooter v-if="!route.meta.admin" class="conta-desktop-footer" />
   </div>
 </template>
 <style scoped>
