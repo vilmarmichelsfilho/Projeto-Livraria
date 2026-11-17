@@ -1,0 +1,1 @@
+import{A as e,h as t}from"./api-DEOthef8.js";import{t as n}from"./ContaTela-BPJilIC2.js";var r={__name:`LoginView`,setup(r){return(r,i)=>(e(),t(n,{modo:`login`}))}};export{r as default};

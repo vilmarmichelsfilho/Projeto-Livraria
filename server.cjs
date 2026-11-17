@@ -1,11 +1,14 @@
 const jsonServer = require("json-server");
 const { randomBytes, scryptSync, timingSafeEqual } = require("node:crypto");
 const path = require("node:path");
+const { createSessionStore } = require("./session-store.cjs");
 function createServer(database = path.join(__dirname, "db.json")) {
   const app = jsonServer.create(),
     router = jsonServer.router(database),
     db = router.db,
-    sessions = new Map();
+    sessions = createSessionStore(
+      typeof database === "string" ? database + ".sessions.json" : null,
+    );
   app.use(jsonServer.defaults({ logger: false }));
   app.use(jsonServer.bodyParser);
   // Não expor o banco inteiro nem relações que possam incluir credenciais.
@@ -75,6 +78,8 @@ function createServer(database = path.join(__dirname, "db.json")) {
     if (d.cep && d.cep.length !== 8) return "O CEP deve conter 8 dígitos.";
   };
   app.post("/auth/login", (req, res) => {
+    // Recarregar contas de teste alteradas no arquivo enquanto a API está aberta.
+    if (typeof database === "string") db.read();
     const email = String(req.body.email ?? "")
         .trim()
         .toLowerCase(),
@@ -89,7 +94,7 @@ function createServer(database = path.join(__dirname, "db.json")) {
     sessions.set(token, { id: u.id, expires: Date.now() + 86400000 });
     res.json({ token, usuario: safe(u) });
   });
-  app.post("/usuarios", (req, res) => {
+  const cadastrarUsuario = (req, res) => {
     const data = fields(req.body),
       error = validate(data);
     if (error) return fail(res, 422, error);
@@ -109,16 +114,20 @@ function createServer(database = path.join(__dirname, "db.json")) {
       id,
       id_usuario: id,
       senha_hash: hash(req.body.senha),
-      perfil: "CLIENTE",
-      ativo: true,
+      perfil:
+        req.user?.perfil === "ADMIN" && req.body.perfil === "ADMIN"
+          ? "ADMIN"
+          : "CLIENTE",
+      ativo: req.user?.perfil === "ADMIN" ? req.body.ativo !== false : true,
       criado_em: now,
       atualizado_em: now,
     };
     db.get("usuarios").push(u).write();
     res.status(201).json(safe(u));
-  });
+  };
+  app.post("/usuarios", cadastrarUsuario);
   app.use((req, res, next) => {
-    if (!/^\/(usuarios|auth)(\/|$)/.test(req.path)) return next();
+    if (!/^\/(usuarios|auth|admin)(\/|$)/.test(req.path)) return next();
     const token = (req.headers.authorization || "").replace(/^Bearer /, ""),
       session = sessions.get(token),
       u = session && db.get("usuarios").find({ id: session.id }).value();
@@ -129,6 +138,16 @@ function createServer(database = path.join(__dirname, "db.json")) {
     req.user = u;
     req.token = token;
     next();
+  });
+  app.post("/admin/usuarios", (req, res) => {
+    if (req.user.perfil !== "ADMIN")
+      return fail(res, 403, "Acesso restrito a administradores.");
+    if (
+      !["ADMIN", "CLIENTE"].includes(req.body.perfil) ||
+      typeof req.body.ativo !== "boolean"
+    )
+      return fail(res, 422, "Informe perfil e situação válidos.");
+    cadastrarUsuario(req, res);
   });
   app.get("/auth/me", (req, res) => res.json(safe(req.user)));
   app.post("/auth/logout", (req, res) => {
@@ -147,7 +166,7 @@ function createServer(database = path.join(__dirname, "db.json")) {
   app.use("/usuarios/:id", (req, res, next) => {
     if (
       String(req.user.id) !== req.params.id &&
-      !(req.method === "GET" && req.user.perfil === "ADMIN")
+      !(req.user.perfil === "ADMIN" && !req.path.endsWith("/senha"))
     )
       return fail(res, 403, "Você só pode acessar a própria conta.");
     next();
@@ -161,15 +180,43 @@ function createServer(database = path.join(__dirname, "db.json")) {
     res.json(safe(usuario));
   });
   app.patch("/usuarios/:id", (req, res) => {
-    const data = fields({ ...req.user, ...req.body }),
-      error = validate(data, req.user.id);
+    const alvo = db
+      .get("usuarios")
+      .find((u) => String(u.id) === req.params.id)
+      .value();
+    if (!alvo) return fail(res, 404, "Cadastro inexistente.");
+    const admin = req.user.perfil === "ADMIN";
+    const perfil = admin ? (req.body.perfil ?? alvo.perfil) : alvo.perfil;
+    const ativo = admin ? (req.body.ativo ?? alvo.ativo) : alvo.ativo;
+    if (!["ADMIN", "CLIENTE"].includes(perfil) || typeof ativo !== "boolean")
+      return fail(res, 422, "Informe perfil e status validos.");
+    if (admin && !ativo && alvo.id === req.user.id)
+      return fail(res, 409, "A conta em uso deve ser preservada.");
+    if (
+      alvo.perfil === "ADMIN" &&
+      alvo.ativo &&
+      (perfil !== "ADMIN" || !ativo) &&
+      db
+        .get("usuarios")
+        .filter({ perfil: "ADMIN", ativo: true })
+        .size()
+        .value() <= 1
+    )
+      return fail(res, 409, "Preserve o ultimo administrador ativo.");
+    const data = fields({ ...alvo, ...req.body }),
+      error = validate(data, alvo.id);
     if (error) return fail(res, 422, error);
     res.json(
       safe(
         db
           .get("usuarios")
-          .find({ id: req.user.id })
-          .assign({ ...data, atualizado_em: new Date().toISOString() })
+          .find({ id: alvo.id })
+          .assign({
+            ...data,
+            perfil,
+            ativo,
+            atualizado_em: new Date().toISOString(),
+          })
           .write(),
       ),
     );
@@ -186,13 +233,19 @@ function createServer(database = path.join(__dirname, "db.json")) {
         atualizado_em: new Date().toISOString(),
       })
       .write();
-    for (const [token, s] of sessions)
-      if (s.id === req.user.id && token !== req.token) sessions.delete(token);
+    sessions.revokeUser(req.user.id, req.token);
     res.sendStatus(204);
   });
   app.delete("/usuarios/:id", (req, res) => {
+    const alvo = db
+      .get("usuarios")
+      .find((u) => String(u.id) === req.params.id)
+      .value();
+    if (!alvo) return fail(res, 404, "Usuário não encontrado.");
+    const admin = req.user.perfil === "ADMIN";
     if (
-      req.user.perfil === "ADMIN" &&
+      alvo.perfil === "ADMIN" &&
+      alvo.ativo &&
       db
         .get("usuarios")
         .filter({ perfil: "ADMIN", ativo: true })
@@ -204,24 +257,31 @@ function createServer(database = path.join(__dirname, "db.json")) {
         409,
         "O último administrador ativo não pode ser excluído.",
       );
+    if (admin && alvo.id === req.user.id)
+      return fail(res, 409, "A conta em uso não pode ser excluída.");
     const orders = db
       .get("pedidos")
       .value()
-      .some((p) => String(p.id_usuario) === String(req.user.id));
+      .some((p) => String(p.id_usuario) === String(alvo.id));
+    if (orders && admin)
+      return fail(
+        res,
+        409,
+        "Este usuário tem pedidos. Inative o cadastro para preservar o histórico.",
+      );
     if (orders)
       db.get("usuarios")
-        .find({ id: req.user.id })
+        .find({ id: alvo.id })
         .assign({ ativo: false, atualizado_em: new Date().toISOString() })
         .write();
     else {
       if (db.has("avaliacoes").value())
         db.get("avaliacoes")
-          .remove((a) => String(a.id_usuario) === String(req.user.id))
+          .remove((a) => String(a.id_usuario) === String(alvo.id))
           .write();
-      db.get("usuarios").remove({ id: req.user.id }).write();
+      db.get("usuarios").remove({ id: alvo.id }).write();
     }
-    for (const [token, s] of sessions)
-      if (s.id === req.user.id) sessions.delete(token);
+    sessions.revokeUser(alvo.id);
     res.json({
       message: orders
         ? "Conta inativada. O histórico de pedidos foi preservado."

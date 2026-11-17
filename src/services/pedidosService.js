@@ -55,7 +55,8 @@ export default {
   async salvar(id, dados, itens) {
     if (!dados.id_usuario) throw new Error("Selecione um cliente.");
     const cliente = (await api.get(`/usuarios/${dados.id_usuario}`)).data;
-    if (!cliente.ativo) throw new Error("Selecione um cliente ativo.");
+    if (!cliente.ativo || cliente.perfil !== "CLIENTE")
+      throw new Error("Selecione um cliente ativo.");
     const agora = new Date().toISOString();
     const campos = {
       ...dados,
@@ -112,6 +113,13 @@ export default {
       throw new Error(
         "Preencha o destinatário, o endereço e adicione pelo menos um livro antes de confirmar.",
       );
+    if (confirmar) {
+      const cliente = (await api.get("/usuarios/" + pedido.id_usuario)).data;
+      if (!cliente.ativo || cliente.perfil !== "CLIENTE")
+        throw new Error(
+          "Selecione um cliente ativo antes de confirmar o pedido.",
+        );
+    }
     const alterados = [];
     try {
       if (confirmar || cancelar) {

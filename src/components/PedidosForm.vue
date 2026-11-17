@@ -39,8 +39,12 @@ function selecionar() {
           :disabled="!cliente.ativo"
         >
           {{ cliente.nome }}{{ cliente.ativo ? "" : " (inativo)" }}
-        </option>
-      </select></label
+        </option></select
+      ><small
+        >Cadastre os clientes em
+        <RouterLink to="/admin/usuarios">Usuários</RouterLink>. Somente clientes
+        ativos podem receber novos pedidos.</small
+      ></label
     >
     <label v-if="novo" class="admin-field admin-desktop-only"
       ><span>Situação</span

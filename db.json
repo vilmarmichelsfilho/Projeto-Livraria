@@ -4,8 +4,8 @@
       "id": 1,
       "nome": "Ana Lima",
       "email": "admin@example.test",
-      "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
-      "telefone": "(47) 99999-0001",
+      "senha_hash": "scrypt:c6a4cb0fcad9927e67fb2fe885c51d07:a76dc10e0cde84a9d99cafc6ffac902f74bd6038c4ff65e5e1f046740976ad4994ed5e178cd101104208eb09dd9b221dd675962d3e0d2206435caf018e31d59c",
+      "telefone": "(47) 99999-0000",
       "endereco": "Rua das Flores, 120",
       "cidade": "Joinville",
       "uf": "SC",
@@ -13,7 +13,7 @@
       "perfil": "ADMIN",
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
-      "atualizado_em": "2026-11-16T12:00:00.000Z"
+      "atualizado_em": "2026-11-17T01:17:10.569Z"
     },
     {
       "id": 2,
@@ -61,7 +61,23 @@
       "atualizado_em": "2026-11-16T12:00:00.000Z"
     },
     {
+      "nome": "Vilmar Michels Filho",
+      "email": "vilmarmichelsfilho@gmail.com",
+      "telefone": "+5547991106430",
+      "endereco": "Itinga, Rua das Carpas, 594",
+      "cidade": "Araquari",
+      "uf": "SC",
+      "cep": "89245000",
       "id": 5,
+      "id_usuario": 5,
+      "senha_hash": "scrypt:191d28295a50e5ab6671e9a17596b306:df357c67b6e65aa1e7b4e6ead28a7f6b0d3fdfae70424365cc3231da23b46d20c60ca9c5e77e9fd69666ddfe71cb9115314f7248c5940f7aaa2a57667fd767ed",
+      "perfil": "CLIENTE",
+      "ativo": true,
+      "criado_em": "2026-11-17T01:14:31.161Z",
+      "atualizado_em": "2026-11-17T01:22:52.212Z"
+    },
+    {
+      "id": 6,
       "nome": "Pedro Lima",
       "email": "pedro@example.test",
       "senha_hash": "MARCADOR_FICTICIO_NAO_AUTENTICA",
@@ -101,7 +117,7 @@
       "preco": 51.29,
       "genero": "Romance",
       "paginas": 480,
-      "estoque": 2,
+      "estoque": 1,
       "estoque_minimo": 5,
       "ativo": true,
       "criado_em": "2026-11-09T10:00:00-03:00",
@@ -350,15 +366,15 @@
       "itens": [
         {
           "id_livro": 1,
+          "titulo_livro": "Sombra e Ossos",
           "quantidade": 2,
-          "preco_unitario": "44.90",
-          "titulo_livro": "Sombra e Ossos"
+          "preco_unitario": "44.90"
         },
         {
           "id_livro": 5,
+          "titulo_livro": "Coraline",
           "quantidade": 1,
-          "preco_unitario": "52.72",
-          "titulo_livro": "Coraline"
+          "preco_unitario": "52.72"
         }
       ]
     },
@@ -377,9 +393,9 @@
       "itens": [
         {
           "id_livro": 2,
+          "titulo_livro": "Cinquenta tons de cinza",
           "quantidade": 1,
-          "preco_unitario": "51.29",
-          "titulo_livro": "Cinquenta tons de cinza"
+          "preco_unitario": "51.29"
         }
       ]
     },
@@ -398,9 +414,9 @@
       "itens": [
         {
           "id_livro": 4,
+          "titulo_livro": "Harry Potter e a pedra filosofal",
           "quantidade": 1,
-          "preco_unitario": "54.90",
-          "titulo_livro": "Harry Potter e a pedra filosofal"
+          "preco_unitario": "54.90"
         }
       ]
     },
@@ -419,9 +435,51 @@
       "itens": [
         {
           "id_livro": 3,
+          "titulo_livro": "A empregada",
           "quantidade": 1,
-          "preco_unitario": "42.65",
-          "titulo_livro": "A empregada"
+          "preco_unitario": "42.65"
+        }
+      ]
+    },
+    {
+      "id_usuario": 5,
+      "destinatario": "Vilmar Michels Filho",
+      "endereco_entrega": "Itinga, Rua das Carpas, 594 • Araquari • SC • 89245000",
+      "status": "RASCUNHO",
+      "total": 42.65,
+      "criado_em": "2026-11-17T01:21:47.597Z",
+      "atualizado_em": "2026-11-17T01:21:56.878Z",
+      "confirmado_em": null,
+      "cancelado_em": null,
+      "motivo_cancelamento": null,
+      "id": 5,
+      "itens": [
+        {
+          "id_livro": 3,
+          "titulo_livro": "A empregada",
+          "quantidade": 1,
+          "preco_unitario": "42.65"
+        }
+      ]
+    },
+    {
+      "id_usuario": 3,
+      "destinatario": "Bruno Exemplo",
+      "endereco_entrega": "Rua Exemplo, 100 • Cidade Exemplo • SC • 89000000",
+      "status": "ENTREGUE",
+      "total": 51.29,
+      "criado_em": "2026-11-17T01:22:10.129Z",
+      "atualizado_em": "2026-11-17T01:22:18.743Z",
+      "confirmado_em": "2026-11-17T01:22:11.264Z",
+      "cancelado_em": null,
+      "motivo_cancelamento": null,
+      "id": 6,
+      "itens": [
+        {
+          "id_livro": 2,
+          "titulo_livro": "Cinquenta tons de cinza",
+          "quantidade": 1,
+          "preco_unitario": "51.29"
         }
       ]
     }
@@ -465,7 +523,7 @@
     },
     {
       "id": 5,
-      "id_usuario": 5,
+      "id_usuario": 6,
       "id_livro": 6,
       "nota": 4,
       "comentario": "",

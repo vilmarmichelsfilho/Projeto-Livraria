@@ -1,0 +1,1 @@
+.livro-form{padding:28px 32px 48px}.livro-form fieldset{border:0;padding:0}.form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px 30px;display:grid}@media (width<=700px){.form-grid{grid-template-columns:1fr;gap:20px}.livro-form{padding:22px 18px 28px}}
