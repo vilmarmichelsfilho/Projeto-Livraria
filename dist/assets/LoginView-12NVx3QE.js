@@ -1,1 +1,0 @@
-import{D as e,m as t}from"./api-kjJbmoOY.js";import{t as n}from"./ContaTela-9NGP1bzv.js";var r={__name:`LoginView`,setup(r){return(r,i)=>(e(),t(n,{modo:`login`}))}};export{r as default};

@@ -4,7 +4,7 @@ import { useRoute, useRouter, RouterLink } from "vue-router";
 import PedidosForm from "@/components/PedidosForm.vue";
 import ItensPedidoForm from "@/components/ItensPedidoForm.vue";
 import ItemPedidoDetalhes from "@/components/ItemPedidoDetalhes.vue";
-import ConfirmacaoExclusao from "@/components/ConfirmacaoExclusao.vue";
+import ConfirmacaoExclusaoPedido from "./ConfirmacaoExclusaoPedido.vue";
 import PedidoItensTabela from "./PedidoItensTabela.vue";
 import AdminModal from "./AdminModal.vue";
 import AdminIcon from "./AdminIcon.vue";
@@ -16,7 +16,6 @@ import pedidosService, {
   etapasPedido,
   erroPedido,
 } from "@/services/pedidosService";
-import itensService from "@/services/itensPedidoService";
 
 const props = defineProps({ modo: { type: String, required: true } });
 const route = useRoute(),
@@ -69,18 +68,13 @@ async function carregar() {
     const resultados = await Promise.all([
       pedidosService.clientes(),
       pedidosService.livros(),
-      ...(novo.value
-        ? []
-        : [
-            pedidosService.obter(route.params.id),
-            itensService.listar(route.params.id),
-          ]),
+      ...(novo.value ? [] : [pedidosService.obter(route.params.id)]),
     ]);
     clientes.value = resultados[0];
     livros.value = resultados[1];
     if (!novo.value) {
       pedido.value = resultados[2];
-      itens.value = resultados[3];
+      itens.value = pedido.value.itens ?? [];
       idSalvo.value = pedido.value.id;
       dados.value = {
         id_usuario: pedido.value.id_usuario,
@@ -118,9 +112,6 @@ async function salvar(confirmar = false) {
       idSalvo.value,
       dados.value,
       itens.value,
-      (id) => {
-        idSalvo.value = id;
-      },
     );
     idSalvo.value = salvo.id;
     pedido.value = salvo;
@@ -439,7 +430,7 @@ onMounted(carregar);
       :item="itemDetalhes"
       @close="itemDetalhes = null"
     />
-    <ConfirmacaoExclusao
+    <ConfirmacaoExclusaoPedido
       v-if="exclusao"
       :pedido="pedido"
       :busy="busy"

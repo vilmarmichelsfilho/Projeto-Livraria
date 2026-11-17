@@ -122,6 +122,38 @@ test("dados exigem sessão e bloqueiam outro usuário e exposição do banco", a
   assert.equal((await request("/pedidos?_expand=usuario")).status, 403);
   assert.equal((await request("/auth/me")).data.email, "marina@example.com");
 });
+test("avaliações públicas exibem o nome do leitor sem abrir a lista de usuários", async () => {
+  const vinculos = [
+    [1, String(id)],
+    [1, 999],
+    [2, id],
+  ];
+  for (const [livro, usuario] of vinculos) {
+    const avaliacao = await request(
+      "/avaliacoes",
+      "POST",
+      { id_livro: livro, id_usuario: usuario, nota: 5 },
+      null,
+    );
+    assert.equal(avaliacao.status, 201);
+  }
+
+  const r = await request("/avaliacoes?id_livro=1", "GET", undefined, null);
+  assert.equal(r.status, 200);
+  assert.deepEqual(r.data.map((avaliacao) => avaliacao.nome), [
+    "Marina Costa",
+    "Leitor",
+  ]);
+  for (const avaliacao of r.data) {
+    assert.equal(avaliacao.email, undefined);
+    assert.equal(avaliacao.senha_hash, undefined);
+    assert.equal(avaliacao.endereco, undefined);
+  }
+  assert.equal(
+    (await request("/usuarios", "GET", undefined, null)).status,
+    401,
+  );
+});
 test("PATCH persiste dados, preserva CEP e impede promoção de perfil", async () => {
   const r = await request("/usuarios/" + id, "PATCH", {
     nome: "Marina Atualizada",

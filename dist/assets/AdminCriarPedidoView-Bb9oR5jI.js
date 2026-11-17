@@ -1,0 +1,1 @@
+import{A as e,h as t}from"./api-DEOthef8.js";import{t as n}from"./AdminPedidoPagina-CKYBrffR.js";var r={__name:`AdminCriarPedidoView`,setup(r){return(r,i)=>(e(),t(n,{modo:`novo`}))}};export{r as default};

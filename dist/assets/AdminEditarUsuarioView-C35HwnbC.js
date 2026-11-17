@@ -1,0 +1,1 @@
+import{A as e,h as t}from"./api-DEOthef8.js";import{t as n}from"./AdminUsuarioFormulario-BlBb3vfy.js";var r={__name:`AdminEditarUsuarioView`,setup(r){return(r,i)=>(e(),t(n,{editar:``}))}};export{r as default};

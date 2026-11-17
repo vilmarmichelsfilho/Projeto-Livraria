@@ -1,1 +1,0 @@
-import{D as e,m as t}from"./api-kjJbmoOY.js";import{t as n}from"./AdminUsuarioFormulario-caXiNMZw.js";var r={__name:`AdminCadastrarUsuarioView`,setup(r){return(r,i)=>(e(),t(n))}};export{r as default};

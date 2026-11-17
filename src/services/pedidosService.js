@@ -1,5 +1,4 @@
 import api from "./api";
-import itensService from "./itensPedidoService";
 
 export const situacoesPedido = {
   RASCUNHO: "Rascunho",
@@ -53,66 +52,45 @@ export default {
   async livros() {
     return (await api.get("/livros")).data.filter((livro) => livro.ativo);
   },
-  async salvar(id, dados, itens, aoCriar) {
+  async salvar(id, dados, itens) {
     if (!dados.id_usuario) throw new Error("Selecione um cliente.");
     const cliente = (await api.get(`/usuarios/${dados.id_usuario}`)).data;
     if (!cliente.ativo || cliente.perfil !== "CLIENTE")
       throw new Error("Selecione um cliente ativo.");
     const agora = new Date().toISOString();
-    const pedido = id
-      ? await rascunho(id)
-      : (
-          await api.post("/pedidos", {
-            ...dados,
-            status: "RASCUNHO",
-            total: 0,
-            criado_em: agora,
-            atualizado_em: agora,
-            confirmado_em: null,
-            cancelado_em: null,
-            motivo_cancelamento: null,
-          })
-        ).data;
-    if (!id) aoCriar?.(pedido.id);
-    const anteriores = await itensService.listar(pedido.id);
-    for (const item of anteriores) {
-      if (
-        !itens.some((novo) => String(novo.id_livro) === String(item.id_livro))
-      )
-        await itensService.excluir(item.id);
-    }
-    for (const item of itens) {
-      const anterior = anteriores.find(
-        (existente) => String(existente.id_livro) === String(item.id_livro),
-      );
-      const campos = {
-        id_pedido: pedido.id,
+    const campos = {
+      ...dados,
+      itens: itens.map((item) => ({
         id_livro: item.id_livro,
         titulo_livro: item.titulo_livro,
         quantidade: item.quantidade,
-        preco_unitario: item.preco_unitario,
-        atualizado_em: agora,
-      };
-      if (anterior) await itensService.atualizar(anterior.id, campos);
-      else await itensService.criar({ ...campos, criado_em: agora });
+        preco_unitario: Number(item.preco_unitario).toFixed(2),
+      })),
+      total: totalItens(itens),
+      atualizado_em: agora,
+    };
+    if (id) {
+      await rascunho(id);
+      return (await api.patch(`/pedidos/${id}`, campos)).data;
     }
     return (
-      await api.patch(`/pedidos/${pedido.id}`, {
-        ...dados,
-        total: totalItens(itens),
-        atualizado_em: agora,
+      await api.post("/pedidos", {
+        ...campos,
+        status: "RASCUNHO",
+        criado_em: agora,
+        confirmado_em: null,
+        cancelado_em: null,
+        motivo_cancelamento: null,
       })
     ).data;
   },
   async excluir(id) {
     await rascunho(id);
-    for (const item of await itensService.listar(id))
-      await itensService.excluir(item.id);
     await api.delete(`/pedidos/${id}`);
   },
   async mudarSituacao(id, status) {
     const pedido = await obter(id);
-    const itens = await itensService.listar(id);
+    const itens = pedido.itens ?? [];
     const confirmar = pedido.status === "RASCUNHO" && status === "RECEBIDO";
     const cancelar =
       ["RECEBIDO", "EM_SEPARACAO"].includes(pedido.status) &&

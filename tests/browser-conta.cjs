@@ -51,7 +51,9 @@ const { createServer } = require("../server.cjs");
           await (await fetch("http://127.0.0.1:" + debugPort + "/json")).json()
         ).find((p) => p.type === "page");
         if (page) break;
-      } catch {}
+      } catch {
+        // O navegador ainda está iniciando.
+      }
       await new Promise((r) => setTimeout(r, 250));
     }
     assert.ok(page, "Edge iniciou");
@@ -70,7 +72,8 @@ const { createServer } = require("../server.cjs");
         const p = pending.get(m.id);
         if (!p) return;
         pending.delete(m.id);
-        m.error ? p.reject(new Error(m.error.message)) : p.resolve(m.result);
+        if (m.error) p.reject(new Error(m.error.message));
+        else p.resolve(m.result);
       }
     });
     const send = (method, params = {}) =>

@@ -1,7 +1,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from "vue";
 import { RouterLink, useRouter } from "vue-router";
-import ConfirmacaoExclusao from "@/components/ConfirmacaoExclusao.vue";
+import ConfirmacaoExclusaoPedido from "@/components/admin/ConfirmacaoExclusaoPedido.vue";
 import pedidosService, {
   situacoesPedido,
   moeda,
@@ -267,7 +267,7 @@ onMounted(carregar);
         </nav>
       </div>
     </div>
-    <ConfirmacaoExclusao
+    <ConfirmacaoExclusaoPedido
       v-if="selecionado"
       :pedido="selecionado"
       :busy="busy"

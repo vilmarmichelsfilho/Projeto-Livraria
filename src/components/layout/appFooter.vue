@@ -1,3 +1,7 @@
+<script setup>
+import { RouterLink } from 'vue-router';
+</script>
+
 <template>
   <footer class="rodape">
     <div class="rodape-conteudo">

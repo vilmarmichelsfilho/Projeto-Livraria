@@ -121,9 +121,8 @@
   align-items: center;
   gap: 26px;
 }
-.conta-identidade svg {
-  width: 78px;
-  height: 78px;
+.conta-identidade .v-icon {
+  font-size: 78px;
   color: #476b7b;
   flex-shrink: 0;
 }
@@ -202,9 +201,8 @@
   .conta-identidade {
     gap: 14px;
   }
-  .conta-identidade svg {
-    width: 54px;
-    height: 54px;
+  .conta-identidade .v-icon {
+    font-size: 54px;
   }
   .conta-identidade h2 {
     font-size: 23px;

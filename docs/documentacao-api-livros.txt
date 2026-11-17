@@ -1,0 +1,78 @@
+DOCUMENTAÇÃO TÉCNICA — OLYMPUSLIBRARY
+Atualização: 16/11/2026
+A documentação completa e atual do CRUD de Livros está no README.txt, com
+as dez seções do modelo da atividade.
+
+1. LIVROS — IGOR GABRIEL DECKER
+Coleção: livros. PK: id (equivalente a id_livro do modelo conceitual).
+Responsável pelo CRUD completo: Igor Gabriel Decker.
+Páginas, chamadas fetch, validações e estilos estão em componentes Vue.
+As pequenas funções compartilhadas ficam em src/utils.
+A API usa JSON Server 0.17.4 com rotas de conta, iniciada por npm run api.
+
+Operações: POST /livros, GET /livros, GET /livros/:id,
+PATCH /livros/:id e DELETE /livros/:id.
+Campos, tipos, obrigatoriedade, exemplos e telas: consultar README.txt.
+As relações com pedidos e avaliações são conferidas na interface antes
+da exclusão. A remoção das avaliações usa requisições DELETE separadas.
+O servidor padrão não valida campos ou vínculos e não executa transações.
+
+2. USUÁRIOS — VILMAR MICHELS FILHO
+Finalidade: identificação de clientes e administradores.
+Coleção: usuarios.
+Campos: id (inteiro, PK obrigatório); nome (texto, obrigatório); email (texto, obrigatório e único); senha_hash (texto, obrigatório, marcadores fictícios nesta base); telefone (texto, obrigatório); endereco (texto, obrigatório); cidade (texto, exigido para entrega); uf (texto de 2 letras, exigido para entrega); cep (texto de 8 dígitos, exigido para entrega); perfil (texto CLIENTE/ADMIN, obrigatório); ativo (booleano, obrigatório); criado_em e atualizado_em (datas ISO em texto, obrigatórios).
+Relacionamentos: 1:N Pedidos e 1:N Avaliações por id_usuario.
+O cadastro, o login e o gerenciamento da própria conta estão detalhados no README-conta.md.
+As telas administrativas de usuários seguem planejadas.
+
+3. PEDIDOS — DAVI AUGUSTO RAMOS (PLANEJADO)
+Finalidade: carrinho em rascunho e histórico de compras simuladas.
+Coleção: pedidos; sem coleção itens_pedido.
+Campos: id (inteiro, PK obrigatório); id_usuario (inteiro, FK obrigatório); status (texto de domínio, obrigatório); total (número monetário, obrigatório); itens (lista JSON, obrigatória, aceita vazia apenas em rascunho); destinatario e endereco_entrega (textos exigidos na confirmação); criado_em e atualizado_em (datas ISO em texto, obrigatórios); confirmado_em e cancelado_em (datas ISO ou null, opcionais); motivo_cancelamento (texto ou null, opcional).
+Cada item: id_livro (inteiro, referência a livros, obrigatório); quantidade (inteiro positivo, obrigatório); preco_unitario (texto decimal, duas casas, obrigatório); titulo_livro (texto, obrigatório). Cada livro aparece uma vez por pedido.
+Relacionamentos: N:1 Usuários; N:N Livros pelos objetos itens.
+Endpoints planejados: POST /pedidos, GET /pedidos, GET /pedidos/:id, PATCH /pedidos/:id, DELETE /pedidos/:id somente em RASCUNHO.
+Atualização planejada: PATCH, inclusive alteração da lista itens.
+Telas: carrinho, revisão, confirmação, histórico/detalhes e administração de pedidos.
+Regras de pedidos a implementar por Davi: rascunho não reserva estoque; confirmar exige itens, usuário e endereço válidos; registrar preços e títulos históricos; transição de status e baixa/reposição de estoque transacionais; cancelar uma única vez; preservar pedidos confirmados.
+Essas validações devem ser implementadas nas telas Vue de Pedidos; o JSON Server padrão não as aplica automaticamente.
+Estados previstos: carregando, sucesso, erro, carrinho/histórico vazio e pedido não encontrado.
+
+4. AVALIAÇÕES — VITOR (PLANEJADO)
+Finalidade: notas e comentários dos leitores.
+Coleção: avaliacoes.
+Campos: id (inteiro, PK obrigatório); id_usuario (inteiro, FK obrigatório); id_livro (inteiro, FK obrigatório); nota (inteiro de 1 a 5, obrigatório); comentario (texto, opcional); criado_em e atualizado_em (datas ISO em texto, obrigatórios no planejamento).
+Relacionamentos: N:1 Usuários e N:1 Livros.
+Endpoints planejados: POST /avaliacoes, GET /avaliacoes, GET /avaliacoes/:id, PATCH /avaliacoes/:id, DELETE /avaliacoes/:id.
+Atualização planejada: PATCH.
+Telas: avaliações nos detalhes, publicar, editar, confirmar exclusão; administração consulta/exclui para moderação.
+Regras a implementar por Vitor: somente autor edita/exclui a própria avaliação; administrador consulta/exclui para moderação; cliente deve estar autenticado e livro ativo.
+A leitura aparece na página do livro. GET /avaliacoes?id_livro=:id retorna o nome do leitor junto à avaliação, com o cadastro de usuários protegido pelas rotas de conta. As validações e a autorização do CRUD de Avaliações devem ser implementadas por Vitor nos respectivos fluxos.
+Estados previstos: carregando, sucesso, erro, nenhuma avaliação e avaliação não encontrada.
+
+
+5. VERIFICAÇÕES ATUAIS
+As funções reais dos componentes foram verificadas contra uma API padrão
+com uma cópia temporária de db.json. Foram aprovados cadastro, edição,
+validações de formulário, unicidade de slug na tela, confirmação sem DELETE
+ao cancelar, bloqueio de livro com pedido, inativação e exclusão das avaliações.
+Códigos observados: GET 200, POST 201, PATCH 200, DELETE 200 e GET posterior 404.
+Regras CSS preservadas nos componentes Vue, build e ESLint aprovados.
+A base da equipe permaneceu inalterada. Verificação visual/manual pendente.
+
+6. EXECUÇÃO E DEMONSTRAÇÃO
+npm install
+npm run api — API em http://localhost:3000.
+npm run dev — front em http://localhost:5173.
+npm run dev:all — ambos.
+Acessar /admin/livros e demonstrar o fluxo completo descrito no README.txt.
+
+7. DECISÕES E LIMITES
+Os livros usam as rotas padrão do JSON Server e as contas usam server.cjs.
+Os ícones continuam no Vuetify com Material Design Icons.
+Os estilos foram movidos para blocos style nos componentes.
+Pesquisa e paginação são realizadas no Vue.
+As regras do front podem ser contornadas por requisições diretas à API.
+A exclusão de livro e avaliações não é atômica; falhas precisam de nova tentativa.
+Cada integrante deve atualizar a documentação e registrar seus próprios testes
+quando concluir sua parte.
