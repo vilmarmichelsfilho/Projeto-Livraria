@@ -231,17 +231,3 @@ Igor Gabriel Decker — Livros.
 Vilmar Michels Filho — Usuários.
 Davi Augusto Ramos — Pedidos e seus itens.
 Vitor — Avaliações; confirmar o nome completo antes da entrega.
-
-Cada integrante deve implementar, documentar, testar e demonstrar cadastro,
-listagem, consulta por ID, atualização e exclusão de sua entidade, além de
-registrar suas próprias contribuições em commits.
-
-Esta versão é acadêmica, sem autenticação/autorização real, transações ou
-validação no servidor. Os CRUDs dos colegas permanecem sob suas responsabilidades.
-
-Referências:
-Modelo: https://docs.google.com/document/d/1CF04PmU7WKva8pbG5FElR_xv8Aip2xiw/edit
-Requisitos: https://docs.google.com/document/d/1lhLy79eVwcfModaC8a9pkyrQfhFdK7jhN3Rww8WC3Sk/edit
-Entidades: https://docs.google.com/document/d/1Km5zBOdBR-aYiv0iHNpsvxXV5RoZ-ifJwqqpKMhh4zs/edit
-Figma: https://www.figma.com/design/6wW9zCYEeEpcx1p20PHjyp/Olympos-Library--Copy-?node-id=5021-1166
-PetSchool: https://github.com/vilmarmichelsfilho/petsSchool
