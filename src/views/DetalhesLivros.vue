@@ -5,10 +5,12 @@ import { produtos } from '@/data/produtos';
 import { formataPreco } from '@/utils/produtosUtils';
 import { adicionaraoarrinho } from '@/utils/cartUtils';
 import CartIcon from '@iconify-vue/mdi/cart';
+import { computed } from 'vue';
+import AvaliacoesLivro from '@/components/Avaliacoes/AvaliacoesLivro.vue';
 
 const rota = useRoute();
 
-const livro = produtos.find(p => p.endereco === rota.params.endereco);
+const livro = computed(() => produtos.find(p => p.endereco === rota.params.endereco));
 </script>
 
 <template>
@@ -33,6 +35,7 @@ const livro = produtos.find(p => p.endereco === rota.params.endereco);
             </ul>
             </div>
         </div>
+        <AvaliacoesLivro :key="livro.id" :livro="livro" />
     </div>
 </template>
 
