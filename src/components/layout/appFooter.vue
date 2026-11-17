@@ -31,6 +31,7 @@ import EmailIcon from '@iconify-vue/mdi/email'
           <li>Vilmar Michels Filho</li>
           <li>Igor Gabriel Decker</li>
           <li>Davi Augusto Ramos</li>
+          <li>Vitor Avanzi Lipinski</li>
         </ul>
       </div>
       <div class="container-direita">
